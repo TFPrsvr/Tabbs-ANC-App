@@ -13,18 +13,27 @@ export class AudioProcessor {
   private isProcessing: boolean = false;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      this.audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    }
+    // Don't create AudioContext here - wait for user interaction
   }
 
   async initialize(): Promise<void> {
-    if (!this.audioContext) {
-      throw new Error('Audio context not available');
-    }
+    try {
+      // Create AudioContext only when needed (after user interaction)
+      if (!this.audioContext && typeof window !== 'undefined') {
+        this.audioContext = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      }
 
-    if (this.audioContext.state === 'suspended') {
-      await this.audioContext.resume();
+      if (!this.audioContext) {
+        console.warn('Audio context not available');
+        return;
+      }
+
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+    } catch (error) {
+      console.warn('Audio context initialization failed:', error);
+      // Don't throw error - let the app continue without audio processing
     }
   }
 

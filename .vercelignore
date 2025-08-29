@@ -1,0 +1,62 @@
+# Vercel deployment ignore file
+
+# Environment variable documentation (contains sensitive examples)
+docs/reference/environment-variables.md
+**/environment-variables.md
+
+# Local development files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Development databases and cache
+*.db
+*.sqlite
+*.sqlite3
+.cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output
+test-results/
+playwright-report/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Documentation drafts and internal notes
+docs/internal/
+*.draft.md
+**/NOTES.md
+**/TODO.md
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Local configuration overrides
+config.local.*
+settings.local.*

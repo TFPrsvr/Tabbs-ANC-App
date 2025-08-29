@@ -9,7 +9,7 @@
 - **🔊 Advanced ANC** - Studio-grade noise cancellation with transparency modes
 - **📱 Cross-Platform** - Responsive design for mobile, tablet, and desktop
 - **⚡ Real-Time Processing** - Live audio processing with visual feedback
-- **☁️ Cloud Storage** - Secure file storage with Supabase
+- **☁️ Cloud Storage** - Secure file storage with Neon Database
 - **💳 Subscription Plans** - Flexible pricing with Stripe integration
 - **🌙 Dark/Light Mode** - System preference support
 - **♿ Accessibility** - WCAG compliant with screen reader support
@@ -28,22 +28,22 @@ npm run dev
 
 ## 📋 What You Need to Complete Setup
 
-### 🗄️ **Supabase Database (Required)**
+### 🗄️ **Neon Database (Required)**
 
-1. **Create Project**: Go to [supabase.com](https://supabase.com) → New Project
-2. **Get Credentials**: Settings → API → Copy:
-   - Project URL: `https://your-project.supabase.co`
-   - Anon public key: `eyJhbGciOiJIUzI1NiIs...`
+1. **Create Project**: Go to [neon.tech](https://neon.tech) → New Project
+2. **Get Credentials**: Dashboard → Connection Details → Copy:
+   - Host: `ep-xyz.us-east-2.aws.neon.tech`
+   - Database: `anc_audio_db`
+   - Username/Password: Generated credentials
 
 3. **Setup Database**: 
-   - SQL Editor → New Query
+   - Neon SQL Editor → New Query
    - Copy & run: `scripts/database/schema.sql`
-   - Copy & run: `scripts/database/rls-policies.sql`
 
 4. **Update `.env.local`**:
    ```bash
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+   DATABASE_URL="postgresql://username:password@ep-xyz.us-east-2.aws.neon.tech/anc_audio_db?sslmode=require"
+   DIRECT_URL="postgresql://username:password@ep-xyz.us-east-2.aws.neon.tech/anc_audio_db?sslmode=require"
    ```
 
 ### ✅ **Already Configured:**
@@ -56,7 +56,7 @@ npm run dev
 ### 1. Upload Audio 📁
 - Drag & drop MP3, WAV, M4A, AAC, OGG, FLAC files
 - Real-time validation and progress tracking
-- Secure cloud storage with Supabase
+- Secure cloud storage with Neon Database
 
 ### 2. AI Audio Separation 🤖
 Your audio automatically separates into **4 controllable streams**:
@@ -115,7 +115,7 @@ Frontend (Next.js + TypeScript)
 
 Backend Services
 ├── 🔐 Auth (Clerk) - Users & sessions
-├── 🗄️ Database (Supabase) - Files & analytics  
+├── 🗄️ Database (Neon) - Files & analytics  
 ├── 💳 Payments (Stripe) - Subscriptions
 └── 🎨 Assets (Figma) - Design sync
 

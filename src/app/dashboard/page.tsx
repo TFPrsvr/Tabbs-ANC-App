@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { AudioUpload } from '@/components/audio/audio-upload';
 import { AdvancedAudioWorkspace } from '@/components/audio/advanced-audio-workspace';
+import { MobileDashboard } from '@/components/mobile/mobile-dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,6 +19,24 @@ export default function Dashboard() {
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [currentAudioBuffer, setCurrentAudioBuffer] = useState<AudioBuffer | null>(null);
   const [activeTab, setActiveTab] = useState('processor');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent;
+      const isMobileDevice = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const isSmallScreen = window.innerWidth < 768;
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      setIsMobile(isMobileDevice || (isSmallScreen && isTouchDevice));
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const loadUserAudioFiles = useCallback(async () => {
     if (!userId) return;
@@ -71,6 +90,11 @@ export default function Dashboard() {
       setIsProcessing(false);
     }
   };
+
+  // Use mobile dashboard for mobile devices
+  if (isMobile) {
+    return <MobileDashboard />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">

@@ -1,0 +1,119 @@
+{
+  "name": "ANC Audio Pro - AI Audio Processing",
+  "short_name": "ANC Audio Pro",
+  "description": "Advanced AI-powered audio processing with smart separation, voice recognition, and auto captions",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["productivity", "utilities", "music"],
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Audio",
+      "short_name": "Upload",
+      "description": "Quickly upload and process audio files",
+      "url": "/dashboard?tab=upload",
+      "icons": [{ "src": "/icons/upload-shortcut.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "AI Processor",
+      "short_name": "Process",
+      "description": "Access advanced AI audio processing",
+      "url": "/dashboard?tab=processor",
+      "icons": [{ "src": "/icons/process-shortcut.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Search Audio",
+      "short_name": "Search",
+      "description": "Search through your audio content",
+      "url": "/dashboard?tab=search",
+      "icons": [{ "src": "/icons/search-shortcut.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/dashboard?share=true",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "audio",
+          "accept": ["audio/*", "video/*"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/dashboard?handler=audio",
+      "accept": {
+        "audio/*": [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac"],
+        "video/*": [".mp4", ".webm", ".avi", ".mov", ".mkv"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+ancaudio",
+      "url": "/dashboard?audio=%s"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}

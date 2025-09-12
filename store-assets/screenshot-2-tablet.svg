@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="2560" height="1600" viewBox="0 0 2560 1600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Phone/tablet frame -->
+  <rect width="2560" height="1600" fill="url(#bgGradient)" rx="51.2"/>
+  
+  <!-- Status bar -->
+  <rect width="2560" height="64" fill="#000000" opacity="0.8" rx="51.2"/>
+  <text x="128" y="38.4" 
+        font-family="Arial, sans-serif" 
+        font-size="19.2" 
+        fill="white">9:41</text>
+  <text x="2176" y="38.4" 
+        font-family="Arial, sans-serif" 
+        font-size="16" 
+        fill="white">100%</text>
+  
+  <!-- Header -->
+  <rect y="64" width="2560" height="76.8" fill="url(#headerGradient)"/>
+  <text x="128" y="115.2" 
+        font-family="Arial, sans-serif" 
+        font-size="25.6" 
+        font-weight="bold"
+        fill="white">🎵 Voice Recognition & Search</text>
+  
+  <!-- Content area based on screen type -->
+  <g transform="translate(128, 160)">
+    
+        <!-- Search bar -->
+        <rect x="0" y="67.2" width="2304" height="107.52" fill="white" rx="25"/>
+        <text x="115.2" y="134.4" font-size="33.6" fill="#666">🔍 Search for "meeting notes"</text>
+        
+        <!-- Search results -->
+        <g transform="translate(0, 268.8)">
+          <rect x="0" y="0" width="2304" height="215.04000000000002" fill="white" rx="8"/>
+          <text x="115.2" y="53.760000000000005" font-size="33.6" font-weight="bold">👤 Speaker 1 (2:31)</text>
+          <text x="115.2" y="107.52000000000001" font-size="26.88" fill="#666">"Let's review the meeting notes from yesterday..."</text>
+          
+          <rect x="0" y="241.92000000000002" width="2304" height="215.04000000000002" fill="white" rx="8"/>
+          <text x="115.2" y="295.68000000000006" font-size="33.6" font-weight="bold">👤 Speaker 2 (5:17)</text>
+          <text x="115.2" y="349.44000000000005" font-size="26.88" fill="#666">"The action items from our notes include..."</text>
+        </g>
+      
+  </g>
+  
+  <!-- Bottom navigation (mobile) -->
+  
+  
+  <!-- Screen description overlay -->
+  <rect y="1360" width="2560" height="240" fill="rgba(0,0,0,0.8)"/>
+  <text x="128" y="1456" 
+        font-family="Arial, sans-serif" 
+        font-size="40" 
+        font-weight="bold"
+        fill="white">Find specific speakers and moments in your audio</text>
+</svg>

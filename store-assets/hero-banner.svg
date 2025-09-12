@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="url(#bgGradient)"/>
+  
+  <!-- Main title -->
+  <text x="96" y="324" 
+        font-family="Arial, sans-serif" 
+        font-size="162" 
+        font-weight="bold" 
+        fill="url(#textGradient)">ANC Audio Pro</text>
+  
+  <!-- Tagline -->
+  <text x="96" y="540" 
+        font-family="Arial, sans-serif" 
+        font-size="86.4" 
+        fill="white" 
+        opacity="0.9">AI-Powered Audio Processing</text>
+  
+  <!-- Feature highlights -->
+  <text x="96" y="702" 
+        font-family="Arial, sans-serif" 
+        font-size="54" 
+        fill="white" 
+        opacity="0.8">🎵 Smart Audio Separation • 🎤 Voice Recognition • 📱 Works Offline</text>
+  
+  <!-- App icon on the right -->
+  <g transform="translate(1497.6000000000001, 108)">
+    
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.95" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="17.28" stdDeviation="8.64" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+  </defs>
+  
+  <!-- Background with subtle shadow -->
+  <rect width="864" height="864" rx="155.51999999999998" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- Main sound wave pattern -->
+  <g transform="translate(129.6, 432)">
+    <!-- Primary wave -->
+    <path d="M 0,0 Q 151.2,-172.8 302.4,0 T 604.8,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="51.839999999999996" 
+          fill="none" 
+          stroke-linecap="round"/>
+    
+    <!-- Secondary waves for depth -->
+    <path d="M 0,0 Q 151.2,-86.4 302.4,0 T 604.8,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="25.919999999999998" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.7"/>
+    
+    <path d="M 0,0 Q 151.2,86.4 302.4,0 T 604.8,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="25.919999999999998" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.7"/>
+  </g>
+  
+  <!-- AI/Tech indicator -->
+  <g transform="translate(622.0799999999999, 241.92000000000002)">
+    <circle cx="0" cy="0" r="21.6" fill="white" opacity="0.9"/>
+    <circle cx="51.839999999999996" cy="25.919999999999998" r="12.959999999999999" fill="white" opacity="0.7"/>
+    <circle cx="25.919999999999998" cy="51.839999999999996" r="12.959999999999999" fill="white" opacity="0.7"/>
+    <circle cx="69.12" cy="69.12" r="8.64" fill="white" opacity="0.5"/>
+  </g>
+
+  </g>
+  
+  <!-- Decorative wave pattern -->
+  <g opacity="0.1">
+    <path d="M 0,864 Q 480,648 960,864 T 1920,864" 
+          stroke="white" 
+          stroke-width="2" 
+          fill="none"/>
+    <path d="M 0,918 Q 480,702 960,918 T 1920,918" 
+          stroke="white" 
+          stroke-width="2" 
+          fill="none"/>
+  </g>
+</svg>

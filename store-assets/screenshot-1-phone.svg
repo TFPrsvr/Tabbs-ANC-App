@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Phone/tablet frame -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)" rx="54"/>
+  
+  <!-- Status bar -->
+  <rect width="1080" height="115.19999999999999" fill="#000000" opacity="0.8" rx="54"/>
+  <text x="54" y="69.11999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="34.559999999999995" 
+        fill="white">9:41</text>
+  <text x="918" y="69.11999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="28.799999999999997" 
+        fill="white">100%</text>
+  
+  <!-- Header -->
+  <rect y="115.19999999999999" width="1080" height="138.23999999999998" fill="url(#headerGradient)"/>
+  <text x="54" y="207.35999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="46.08" 
+        font-weight="bold"
+        fill="white">🎵 Upload & Process Audio Files</text>
+  
+  <!-- Content area based on screen type -->
+  <g transform="translate(54, 288)">
+    
+        <!-- Upload area -->
+        <rect x="0" y="145.92000000000002" width="972" height="364.8" 
+              fill="white" stroke="#7c3aed" stroke-width="2" 
+              stroke-dasharray="8,4" rx="12" opacity="0.9"/>
+        <text x="486" y="291.84000000000003" 
+              font-family="Arial, sans-serif" 
+              font-size="58.368" 
+              text-anchor="middle" 
+              fill="#1f2937">📁 Drag audio files here</text>
+        <text x="486" y="364.8" 
+              font-family="Arial, sans-serif" 
+              font-size="36.480000000000004" 
+              text-anchor="middle" 
+              fill="#666">MP3, WAV, M4A, and more</text>
+        
+        <!-- Feature icons -->
+        <g transform="translate(0, 729.6)">
+          <rect x="0" y="0" width="291.59999999999997" height="291.84000000000003" fill="white" rx="8"/>
+          <text x="145.79999999999998" y="109.44" text-anchor="middle" font-size="43.775999999999996">🎤</text>
+          <text x="145.79999999999998" y="218.88" text-anchor="middle" font-size="29.184" fill="#666">Voice</text>
+          
+          <rect x="340.2" y="0" width="291.59999999999997" height="291.84000000000003" fill="white" rx="8"/>
+          <text x="486" y="109.44" text-anchor="middle" font-size="43.775999999999996">🎵</text>
+          <text x="486" y="218.88" text-anchor="middle" font-size="29.184" fill="#666">Music</text>
+          
+          <rect x="680.4" y="0" width="291.59999999999997" height="291.84000000000003" fill="white" rx="8"/>
+          <text x="826.1999999999999" y="109.44" text-anchor="middle" font-size="43.775999999999996">🔍</text>
+          <text x="826.1999999999999" y="218.88" text-anchor="middle" font-size="29.184" fill="#666">Search</text>
+        </g>
+      
+  </g>
+  
+  <!-- Bottom navigation (mobile) -->
+  
+  <rect y="1766.4" width="1080" height="153.6" fill="white" opacity="0.95"/>
+  <g transform="translate(108, 1812.48)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#7c3aed">📁 Upload</text>
+    <text x="270" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">⚡ Process</text>
+    <text x="540" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">🔍 Search</text>
+    <text x="756" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">📂 Files</text>
+  </g>
+  
+  
+  <!-- Screen description overlay -->
+  <rect y="1632" width="1080" height="288" fill="rgba(0,0,0,0.8)"/>
+  <text x="54" y="1747.2" 
+        font-family="Arial, sans-serif" 
+        font-size="48" 
+        font-weight="bold"
+        fill="white">Drag and drop audio files for instant AI processing</text>
+</svg>

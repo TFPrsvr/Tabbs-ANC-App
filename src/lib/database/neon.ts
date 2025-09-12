@@ -8,12 +8,29 @@ import type {
   PaymentPlan 
 } from '../../types';
 
-const sql = neon(process.env.DATABASE_URL!);
+// Initialize database connection only when DATABASE_URL is available
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+
+// TypeScript assertion for runtime safety
+const getSql = () => {
+  if (!sql) throw new Error('Database connection not initialized');
+  return sql;
+};
 
 export class NeonDatabaseService {
+  private static checkConnection() {
+    if (!sql) {
+      console.warn('Database connection not available - DATABASE_URL not set');
+      return false;
+    }
+    return true;
+  }
+
   static async createUser(clerkId: string, email: string, name: string, avatarUrl?: string): Promise<User | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         INSERT INTO users (clerk_id, email, name, avatar_url)
         VALUES (${clerkId}, ${email}, ${name}, ${avatarUrl})
         RETURNING *
@@ -32,8 +49,10 @@ export class NeonDatabaseService {
   }
 
   static async getUserByClerkId(clerkId: string): Promise<User | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         SELECT u.*, 
                s.id as subscription_id, s.status as subscription_status,
                pp.name as plan_name, pp.max_files, pp.max_duration,
@@ -56,8 +75,10 @@ export class NeonDatabaseService {
   }
 
   static async createDefaultUserPreferences(userId: string) {
+    if (!this.checkConnection()) return;
+    
     try {
-      await sql`
+      await getSql()`
         INSERT INTO user_preferences (user_id)
         VALUES (${userId})
         ON CONFLICT (user_id) DO NOTHING
@@ -77,8 +98,10 @@ export class NeonDatabaseService {
     mimeType: string = 'audio/mpeg',
     fileUrl: string = ''
   ): Promise<AudioFile | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         INSERT INTO audio_files (user_id, name, original_name, file_size, duration, format, mime_type, file_url)
         VALUES (${userId}, ${name}, ${originalName}, ${fileSize}, ${duration || 0}, ${format}, ${mimeType}, ${fileUrl})
         RETURNING *
@@ -95,8 +118,10 @@ export class NeonDatabaseService {
   }
 
   static async getUserAudioFiles(userId: string): Promise<AudioFile[]> {
+    if (!this.checkConnection()) return [];
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         SELECT af.*,
                json_agg(
                  json_build_object(
@@ -134,14 +159,16 @@ export class NeonDatabaseService {
     audioFileId: string,
     streams: Omit<AudioStream, 'id' | 'audioFileId' | 'createdAt' | 'updatedAt'>[]
   ): Promise<AudioStream[]> {
+    if (!this.checkConnection()) return [];
+    
     try {
       const values = streams.map(stream => 
         `('${audioFileId}', '${stream.name}', '${stream.type}', ${stream.volume}, ${stream.isActive}, ${stream.isMuted}, ${stream.frequency || 0})`
       ).join(', ');
 
-      const result = await sql`
+      const result = await getSql()`
         INSERT INTO audio_streams (audio_file_id, name, type, volume, is_active, is_muted, frequency_range)
-        VALUES ${sql.unsafe(values)}
+        VALUES ${getSql().unsafe(values)}
         RETURNING *
       `;
 
@@ -156,6 +183,8 @@ export class NeonDatabaseService {
     streamId: string,
     updates: Partial<Pick<AudioStream, 'volume' | 'isActive' | 'isMuted'>>
   ): Promise<AudioStream | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
       const setParts = [];
       if (updates.volume !== undefined) setParts.push(`volume = ${updates.volume}`);
@@ -164,9 +193,9 @@ export class NeonDatabaseService {
 
       if (setParts.length === 0) return null;
 
-      const result = await sql`
+      const result = await getSql()`
         UPDATE audio_streams 
-        SET ${sql.unsafe(setParts.join(', '))}
+        SET ${getSql().unsafe(setParts.join(', '))}
         WHERE id = ${streamId}
         RETURNING *
       `;
@@ -186,8 +215,10 @@ export class NeonDatabaseService {
     userId: string,
     settings: Record<string, unknown> = {}
   ): Promise<ProcessingJob | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         INSERT INTO processing_jobs (audio_file_id, user_id, processing_settings)
         VALUES (${audioFileId}, ${userId}, ${JSON.stringify(settings)})
         RETURNING *
@@ -207,6 +238,8 @@ export class NeonDatabaseService {
     jobId: string,
     updates: Partial<Pick<ProcessingJob, 'status' | 'progress' | 'error'>>
   ): Promise<ProcessingJob | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
       const setParts = [];
       if (updates.status !== undefined) setParts.push(`status = '${updates.status}'`);
@@ -222,9 +255,9 @@ export class NeonDatabaseService {
 
       if (setParts.length === 0) return null;
 
-      const result = await sql`
+      const result = await getSql()`
         UPDATE processing_jobs 
-        SET ${sql.unsafe(setParts.join(', '))}
+        SET ${getSql().unsafe(setParts.join(', '))}
         WHERE id = ${jobId}
         RETURNING *
       `;
@@ -240,8 +273,10 @@ export class NeonDatabaseService {
   }
 
   static async getPaymentPlans(): Promise<PaymentPlan[]> {
+    if (!this.checkConnection()) return [];
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         SELECT * FROM payment_plans 
         WHERE is_active = true 
         ORDER BY price ASC
@@ -255,8 +290,10 @@ export class NeonDatabaseService {
   }
 
   static async getUserSubscription(userId: string): Promise<Subscription | null> {
+    if (!this.checkConnection()) return null;
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         SELECT s.*, pp.name as plan_name, pp.max_files, pp.max_duration, pp.features
         FROM subscriptions s
         JOIN payment_plans pp ON s.plan_id = pp.id
@@ -279,8 +316,10 @@ export class NeonDatabaseService {
     eventData: Record<string, unknown> = {},
     sessionId?: string
   ): Promise<void> {
+    if (!this.checkConnection()) return;
+    
     try {
-      await sql`
+      await getSql()`
         INSERT INTO usage_analytics (user_id, event_type, event_data, session_id)
         VALUES (${userId}, ${eventType}, ${JSON.stringify(eventData)}, ${sessionId || ''})
       `;
@@ -295,8 +334,10 @@ export class NeonDatabaseService {
     fileSizeBytes: number,
     fileDurationSeconds: number
   ): Promise<boolean> {
+    if (!this.checkConnection()) return true; // Allow uploads when database is unavailable
+    
     try {
-      const result = await sql`
+      const result = await getSql()`
         SELECT can_user_upload_file(${clerkUserId}, ${fileSizeBytes}, ${fileDurationSeconds}) as can_upload
       `;
 

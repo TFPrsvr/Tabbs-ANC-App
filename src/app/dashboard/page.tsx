@@ -5,12 +5,13 @@ import { useAuth } from '@clerk/nextjs';
 import { AudioUpload } from '@/components/audio/audio-upload';
 import { AdvancedAudioWorkspace } from '@/components/audio/advanced-audio-workspace';
 import { MobileDashboard } from '@/components/mobile/mobile-dashboard';
+import { VideoToAudioExtractor } from '@/components/video/video-to-audio-extractor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AudioFile } from '@/types';
 import { EMOJIS } from '@/constants';
-import { Upload, Settings, User, BarChart3, Wand2, History } from 'lucide-react';
+import { Upload, Settings, User, BarChart3, Wand2, History, Video, Music } from 'lucide-react';
 
 export default function Dashboard() {
   const { userId } = useAuth();
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [currentAudioBuffer, setCurrentAudioBuffer] = useState<AudioBuffer | null>(null);
   const [activeTab, setActiveTab] = useState('processor');
   const [isMobile, setIsMobile] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'audio' | 'video'>('audio');
 
   // Detect mobile device
   useEffect(() => {
@@ -57,6 +59,12 @@ export default function Dashboard() {
       loadUserAudioFiles();
     }
   }, [userId, loadUserAudioFiles]);
+
+  const handleAudioReady = useCallback((audioFile: File, audioBuffer: AudioBuffer) => {
+    setCurrentFile(audioFile);
+    setCurrentAudioBuffer(audioBuffer);
+    setActiveTab('processor'); // Switch to processing tab
+  }, []);
 
   const handleFileUpload = async (file: File, duration?: number) => {
     if (!userId) return;
@@ -172,17 +180,55 @@ export default function Dashboard() {
           </TabsContent>
 
           <TabsContent value="upload" className="space-y-6">
-            <Card>
+            {/* Upload Mode Selection */}
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="w-5 h-5" />
-                  📁 Upload Audio File
+                  📁 Upload Media Files
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <AudioUpload 
-                  onFileUpload={handleFileUpload}
-                  isLoading={isProcessing}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <Button
+                    variant={uploadMode === 'audio' ? 'default' : 'outline'}
+                    onClick={() => setUploadMode('audio')}
+                    className="flex-1 h-16"
+                  >
+                    <Music className="w-6 h-6 mr-3" />
+                    <div className="text-left">
+                      <div className="font-medium">🎵 Audio Files</div>
+                      <div className="text-xs opacity-70">MP3, WAV, FLAC, OGG</div>
+                    </div>
+                  </Button>
+                  <Button
+                    variant={uploadMode === 'video' ? 'default' : 'outline'}
+                    onClick={() => setUploadMode('video')}
+                    className="flex-1 h-16"
+                  >
+                    <Video className="w-6 h-6 mr-3" />
+                    <div className="text-left">
+                      <div className="font-medium">🎬 Video Files</div>
+                      <div className="text-xs opacity-70">MP4, MOV, AVI, MKV</div>
+                    </div>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Audio Upload */}
+            {uploadMode === 'audio' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Music className="w-5 h-5" />
+                    🎵 Upload Audio File
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AudioUpload 
+                    onFileUpload={handleFileUpload}
+                    isLoading={isProcessing}
                 />
                 {currentFile && (
                   <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
@@ -206,8 +252,16 @@ export default function Dashboard() {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Video Upload */}
+            {uploadMode === 'video' && (
+              <VideoToAudioExtractor
+                onAudioExtracted={handleAudioReady}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="history" className="space-y-6">

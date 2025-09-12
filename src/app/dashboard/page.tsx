@@ -110,27 +110,24 @@ export default function Dashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">
-              {EMOJIS.DASHBOARD} ANC Audio Pro Dashboard
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              🎵 ANC Audio Pro
             </h1>
-            <p className="text-muted-foreground">
-              Advanced AI-powered audio processing with smart separation, voice recognition, and auto captions
+            <p className="text-muted-foreground max-w-md">
+              Advanced AI-powered audio processing with smart separation,<br />
+              voice recognition, and auto captions
             </p>
           </div>
           
-          <div className="flex gap-3 mt-4 md:mt-0">
+          <div className="flex gap-3 mt-4 md:mt-0 items-center">
             <Button variant="outline" size="sm">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>
-            <Button variant="outline" size="sm">
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </Button>
-            <Button variant="outline" size="sm">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Analytics
-            </Button>
+            {/* Profile Avatar */}
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow">
+              <User className="w-5 h-5 text-white" />
+            </div>
           </div>
         </div>
 
@@ -139,7 +136,7 @@ export default function Dashboard() {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="processor" className="flex items-center gap-2">
               <Wand2 className="w-4 h-4" />
-              ✨ AI Processor
+              🔊 Process
             </TabsTrigger>
             <TabsTrigger value="upload" className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
@@ -147,7 +144,7 @@ export default function Dashboard() {
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="w-4 h-4" />
-              📂 Files
+              📂 My Files
             </TabsTrigger>
           </TabsList>
 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Phone/tablet frame -->
+  <rect width="1080" height="1920" fill="url(#bgGradient)" rx="54"/>
+  
+  <!-- Status bar -->
+  <rect width="1080" height="115.19999999999999" fill="#000000" opacity="0.8" rx="54"/>
+  <text x="54" y="69.11999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="34.559999999999995" 
+        fill="white">9:41</text>
+  <text x="918" y="69.11999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="28.799999999999997" 
+        fill="white">100%</text>
+  
+  <!-- Header -->
+  <rect y="115.19999999999999" width="1080" height="138.23999999999998" fill="url(#headerGradient)"/>
+  <text x="54" y="207.35999999999999" 
+        font-family="Arial, sans-serif" 
+        font-size="46.08" 
+        font-weight="bold"
+        fill="white">🎵 Smart Audio Separation</text>
+  
+  <!-- Content area based on screen type -->
+  <g transform="translate(54, 288)">
+    
+        <!-- Audio waveform -->
+        <rect x="0" y="145.92000000000002" width="972" height="218.88" fill="white" rx="8"/>
+        <path d="M 48.6,255.35999999999999 Q 243,175.10399999999998 486,255.35999999999999 T 923.4,255.35999999999999" 
+              stroke="#7c3aed" stroke-width="3" fill="none"/>
+        
+        <!-- Processing controls -->
+        <g transform="translate(0, 510.71999999999997)">
+          <rect x="0" y="0" width="972" height="364.8" fill="white" rx="8"/>
+          <text x="48.6" y="109.44" font-size="43.775999999999996" font-weight="bold">🎯 Smart Separation</text>
+          
+          <!-- Volume sliders -->
+          <g transform="translate(48.6, 182.4)">
+            <text x="0" y="0" font-size="29.184" fill="#666">Vocals</text>
+            <rect x="145.79999999999998" y="-5" width="583.1999999999999" height="10" fill="#e5e7eb" rx="5"/>
+            <rect x="145.79999999999998" y="-5" width="388.8" height="10" fill="#7c3aed" rx="5"/>
+            
+            <text x="0" y="54.72" font-size="29.184" fill="#666">Music</text>
+            <rect x="145.79999999999998" y="49.72" width="583.1999999999999" height="10" fill="#e5e7eb" rx="5"/>
+            <rect x="145.79999999999998" y="49.72" width="291.59999999999997" height="10" fill="#3b82f6" rx="5"/>
+          </g>
+        </g>
+      
+  </g>
+  
+  <!-- Bottom navigation (mobile) -->
+  
+  <rect y="1766.4" width="1080" height="153.6" fill="white" opacity="0.95"/>
+  <g transform="translate(108, 1812.48)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#7c3aed">📁 Upload</text>
+    <text x="270" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">⚡ Process</text>
+    <text x="540" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">🔍 Search</text>
+    <text x="756" y="0" font-family="Arial, sans-serif" font-size="38.4" fill="#666">📂 Files</text>
+  </g>
+  
+  
+  <!-- Screen description overlay -->
+  <rect y="1632" width="1080" height="288" fill="rgba(0,0,0,0.8)"/>
+  <text x="54" y="1747.2" 
+        font-family="Arial, sans-serif" 
+        font-size="48" 
+        font-weight="bold"
+        fill="white">Separate vocals, music, and background sounds</text>
+</svg>

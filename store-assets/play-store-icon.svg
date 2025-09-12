@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.95" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10.24" stdDeviation="5.12" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+  </defs>
+  
+  <!-- Background with subtle shadow -->
+  <rect width="512" height="512" rx="92.16" fill="url(#bgGradient)" filter="url(#shadow)"/>
+  
+  <!-- Main sound wave pattern -->
+  <g transform="translate(76.8, 256)">
+    <!-- Primary wave -->
+    <path d="M 0,0 Q 89.6,-102.4 179.2,0 T 358.4,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="30.72" 
+          fill="none" 
+          stroke-linecap="round"/>
+    
+    <!-- Secondary waves for depth -->
+    <path d="M 0,0 Q 89.6,-51.2 179.2,0 T 358.4,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="15.36" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.7"/>
+    
+    <path d="M 0,0 Q 89.6,51.2 179.2,0 T 358.4,0" 
+          stroke="url(#waveGradient)" 
+          stroke-width="15.36" 
+          fill="none" 
+          stroke-linecap="round"
+          opacity="0.7"/>
+  </g>
+  
+  <!-- AI/Tech indicator -->
+  <g transform="translate(368.64, 143.36)">
+    <circle cx="0" cy="0" r="12.8" fill="white" opacity="0.9"/>
+    <circle cx="30.72" cy="15.36" r="7.68" fill="white" opacity="0.7"/>
+    <circle cx="15.36" cy="30.72" r="7.68" fill="white" opacity="0.7"/>
+    <circle cx="40.96" cy="40.96" r="5.12" fill="white" opacity="0.5"/>
+  </g>
+</svg>

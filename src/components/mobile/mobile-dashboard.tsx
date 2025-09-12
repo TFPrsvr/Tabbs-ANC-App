@@ -209,15 +209,15 @@ export function MobileDashboard({ className }: MobileDashboardProps) {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h1 className="text-2xl font-bold">
-                {EMOJIS.DASHBOARD} ANC Audio Pro
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                🎵 ANC Audio Pro
               </h1>
               <p className="text-sm text-muted-foreground">
                 AI-Powered Mobile Processing
               </p>
             </div>
             
-            {/* Connection & Device Status */}
+            {/* Connection & Device Status + Profile Avatar */}
             <div className="flex items-center gap-2">
               {isOnline ? (
                 <Wifi className="w-5 h-5 text-green-500" />
@@ -225,6 +225,10 @@ export function MobileDashboard({ className }: MobileDashboardProps) {
                 <WifiOff className="w-5 h-5 text-red-500" />
               )}
               {getDeviceIcon()}
+              {/* Profile Avatar */}
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center cursor-pointer">
+                <span className="text-white text-xs font-bold">U</span>
+              </div>
             </div>
           </div>
 

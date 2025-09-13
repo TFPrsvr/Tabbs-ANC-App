@@ -10,8 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AudioFile } from '@/types';
-import { EMOJIS } from '@/constants';
-import { Upload, Settings, User, BarChart3, Wand2, History, Video, Music } from 'lucide-react';
+import { Upload, Settings, User, Wand2, History, Video, Music } from 'lucide-react';
 
 export default function Dashboard() {
   const { userId } = useAuth();
@@ -75,7 +74,7 @@ export default function Dashboard() {
     try {
       // Convert file to AudioBuffer
       const arrayBuffer = await file.arrayBuffer();
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
       setCurrentAudioBuffer(audioBuffer);
 

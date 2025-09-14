@@ -1,0 +1,36 @@
+
+> anc-audio-app@0.1.0 build
+> next build --turbopack
+
+ ⚠ The config property `experimental.turbo` is deprecated. Move this setting to `config.turbopack` or run `npx @next/codemod@latest next-experimental-turbo-to-turbopack .`
+   ▲ Next.js 15.5.0 (Turbopack)
+   - Environments: .env.local, .env.production
+   - Experiments (use with caution):
+     · turbo
+     · webVitalsAttribution
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ⚠ Webpack is configured while Turbopack is not, which may cause problems.
+ ⚠ See instructions if you need to configure Turbopack:
+  https://nextjs.org/docs/app/api-reference/next-config-js/turbopack
+
+ ✓ Finished writing to disk in 119ms
+ ✓ Compiled successfully in 5.5s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./src/app/api/auth/sync-user/route.ts:22:59
+Type error: Argument of type 'User' is not assignable to parameter of type 'ClerkUser'.
+  Types of property 'fullName' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+
+[0m [90m 20 |[39m
+ [90m 21 |[39m     [36mif[39m ([33m![39mdbUser) {
+[31m[1m>[22m[39m[90m 22 |[39m       [36mconst[39m userData [33m=[39m clerkHelpers[33m.[39mformatUserForDatabase(user)[33m;[39m
+ [90m    |[39m                                                           [31m[1m^[22m[39m
+ [90m 23 |[39m       dbUser [33m=[39m [36mawait[39m [33mDatabaseService[39m[33m.[39mcreateUser(
+ [90m 24 |[39m         userData[33m.[39mclerkId[33m,[39m
+ [90m 25 |[39m         userData[33m.[39memail[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null

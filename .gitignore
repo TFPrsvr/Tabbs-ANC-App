@@ -47,7 +47,36 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# claude code instructions
+# Claude Code and AI-related files (sensitive content)
 CLAUDE.md
+**/CLAUDE.md
+CLAUDE_*.md
+**/CLAUDE_*.md
+*claude*
+*CLAUDE*
+PROJECT_MEMORY.md
+**/PROJECT_MEMORY.md
+USER_MEMORY.md
+**/USER_MEMORY.md
+*_MEMORY.md
+**/*_MEMORY.md
+memory.md
+**/memory.md
+
+# Additional sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+secrets.json
+config.secret.*
+*.secret.*
+
+# Local configuration and overrides
+config.local.*
+settings.local.*
+.env.secrets
+.env.private
 
 .vercel

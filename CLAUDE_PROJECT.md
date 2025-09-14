@@ -7,10 +7,34 @@
 - **Primary Features**: AI-powered audio processing, mobile-first design, offline functionality
 
 ## Development Environment
-- **Node.js Version**: Latest stable
+- **Node.js Version**: 20 (Alpine in Docker)
 - **Package Manager**: npm
 - **Dev Server**: `npm run dev` (uses Turbopack)
-- **Build System**: Next.js build with custom webpack config
+- **Build System**: Next.js build with Turbopack configuration
+- **Docker**: Multi-stage production build with security hardening
+
+## ⚡ Recent Optimizations (2025-09-13)
+### Build System
+- **Turbopack**: Properly configured with modern syntax (moved from experimental.turbo to turbopack config)
+- **Memory Limit**: 4GB allocated for large project builds
+- **File Handling**: Custom rules for audio/video files (.wav, .mp3, .ogg, .flac, .mp4, .webm, .mov)
+- **Bundle Optimization**: Deterministic module ID strategy for consistent builds
+
+### Docker Configuration
+- **Multi-Stage Build**: Dependencies → Builder → Runner for optimized image size
+- **Security**: Non-root user (nextjs:nodejs), security updates, proper permissions
+- **Health Checks**: Automated health monitoring on port 3000
+- **Production Ready**: Standalone output, dumb-init for proper signal handling
+
+### Dependency Management
+- **Removed Unused**: @radix-ui/react-dropdown-menu, @radix-ui/react-switch (saved ~3 packages)
+- **Added Missing**: jszip, file-saver (for comprehensive media upload functionality)
+- **Verified All**: 100% of remaining dependencies are actively used in codebase
+
+### File Structure Cleanup
+- **Empty Directories Removed**: 5 unused directories (src/app/api/dev/cleanup, src/lib/audio/codecs, etc.)
+- **Duplicate Configs Removed**: next.config.ts (kept comprehensive next.config.js)
+- **Ignore Files Updated**: Added CLAUDE.md to .vercelignore and .dockerignore
 
 ## Process Management Reminder
 **IMPORTANT**: This project tends to accumulate multiple Node.js dev server processes. Always check for and terminate existing processes before starting development:

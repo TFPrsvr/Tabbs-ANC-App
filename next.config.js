@@ -56,25 +56,90 @@ const nextConfig = {
           },
         ],
       },
-      // Security headers
+      // Military-grade security headers
       {
         source: '/(.*)',
         headers: [
+          // Prevent clickjacking
           {
             key: 'X-Frame-Options',
             value: 'DENY',
           },
+          // Prevent MIME type sniffing
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
+          // Enable XSS protection
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          // Control referrer information
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
+          // Restrict feature permissions
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(self), geolocation=()',
+            value: 'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=()',
+          },
+          // Force HTTPS
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          // Content Security Policy (Military-grade)
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://js.stripe.com https://challenges.cloudflare.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: blob: https://*.clerk.accounts.dev https://*.clerk.dev https://img.clerk.com",
+              "media-src 'self' blob: data:",
+              "connect-src 'self' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://api.stripe.com https://js.stripe.com https://*.neon.tech https://clerk.anc-audio-app.com/v1 wss://clerk.anc-audio-app.com",
+              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
+              "worker-src 'self' blob:",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
+            ].join('; '),
+          },
+          // Prevent information disclosure
+          {
+            key: 'X-Powered-By',
+            value: 'ANC-Audio-Pro',
+          },
+          // Cache control for sensitive pages
+          {
+            key: 'Cache-Control',
+            value: 'private, no-cache, no-store, must-revalidate',
+          },
+          // Additional security
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'off',
+          },
+          {
+            key: 'X-Download-Options',
+            value: 'noopen',
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: 'require-corp',
+          },
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'same-origin',
           },
         ],
       },
@@ -167,9 +232,6 @@ const nextConfig = {
   
   // Enable experimental features for PWA
   experimental: {
-    turbo: {
-      // Turbopack optimizations for faster builds
-    },
     optimizePackageImports: [
       'lucide-react',
       '@clerk/nextjs',
@@ -177,6 +239,9 @@ const nextConfig = {
     ],
     webVitalsAttribution: ['CLS', 'LCP'],
   },
+
+  // Note: Advanced Turbopack configuration is limited in current Next.js version
+  // Basic optimization flags are handled by the --turbopack flag in build scripts
 };
 
 module.exports = nextConfig;

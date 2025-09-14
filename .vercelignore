@@ -52,6 +52,49 @@ docs/internal/
 **/NOTES.md
 **/TODO.md
 
+# Claude Code and AI-related files (comprehensive exclusion)
+CLAUDE.md
+**/CLAUDE.md
+CLAUDE_*.md
+**/CLAUDE_*.md
+*claude*
+*CLAUDE*
+PROJECT_MEMORY.md
+**/PROJECT_MEMORY.md
+USER_MEMORY.md
+**/USER_MEMORY.md
+*_MEMORY.md
+**/*_MEMORY.md
+memory.md
+**/memory.md
+
+# Sensitive configuration and secrets
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.cert
+secrets.json
+config.secret.*
+*.secret.*
+.env.secrets
+.env.private
+
+# Development and local overrides
+config.local.*
+settings.local.*
+*.local.json
+local.config.*
+
+# API keys and tokens (additional patterns)
+**/api-keys/
+**/secrets/
+**/credentials/
+*.credentials
+api-keys.json
+tokens.json
+
 # Backup files
 *.backup
 *.bak

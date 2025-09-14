@@ -1,0 +1,44 @@
+# Docker Compose for ANC Audio Pro
+# Production and development environments
+
+version: '3.8'
+
+services:
+  # Main application service
+  anc-audio-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - anc-network
+    volumes:
+      - app-data:/app/data
+
+  # Optional: Redis for caching (if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - anc-network
+  #   restart: unless-stopped
+
+networks:
+  anc-network:
+    driver: bridge
+
+volumes:
+  app-data:
+    driver: local

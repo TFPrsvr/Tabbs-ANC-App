@@ -682,7 +682,6 @@ export function ComprehensiveMediaUpload({
                 <span className="text-sm">Processing...</span>
               </div>
             )}
-          </div>
         </CardContent>
       </Card>
       )}

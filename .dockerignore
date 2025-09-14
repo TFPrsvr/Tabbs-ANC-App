@@ -1,0 +1,139 @@
+# Docker ignore file for ANC Audio Pro
+# Optimize build context and enhance security
+
+# Development files
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files - keep sensitive data out
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js build artifacts
+.next/
+out/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Version control
+.git/
+.gitignore
+
+# Testing and coverage
+coverage/
+.nyc_output
+test-results/
+playwright-report/
+
+# Documentation and development tools
+README.md
+docs/
+.github/
+*.md
+
+# Deployment specific
+.vercel/
+.vercelignore
+vercel.json
+
+# Logs
+logs/
+*.log
+
+# Cache directories
+.cache/
+.tmp/
+tmp/
+temp/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Claude Code and AI-related files (comprehensive security exclusion)
+CLAUDE.md
+**/CLAUDE.md
+CLAUDE_*.md
+**/CLAUDE_*.md
+*claude*
+*CLAUDE*
+PROJECT_MEMORY.md
+**/PROJECT_MEMORY.md
+USER_MEMORY.md
+**/USER_MEMORY.md
+*_MEMORY.md
+**/*_MEMORY.md
+memory.md
+**/memory.md
+
+# Critical security files - NEVER include in Docker builds
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.cert
+*.crt
+secrets.json
+config.secret.*
+*.secret.*
+.env.secrets
+.env.private
+ssh_keys/
+**/ssh_keys/
+private_keys/
+**/private_keys/
+
+# API keys and authentication
+**/api-keys/
+**/secrets/
+**/credentials/
+*.credentials
+api-keys.json
+tokens.json
+auth.json
+*.auth
+service-account.json
+firebase-adminsdk*.json
+
+# Development and local configuration
+config.local.*
+settings.local.*
+*.local.json
+local.config.*
+.env.development
+.env.test
+
+# Development docker files
+docker-compose.yml
+docker-compose.*.yml
+Dockerfile.dev
+
+# Certificates and keys
+*.pem
+*.key
+*.cert
+
+# Local configuration
+config.local.*
+settings.local.*
+
+# Build tools
+scripts/

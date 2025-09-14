@@ -100,7 +100,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.clerk.accounts.dev https://*.clerk.dev https://img.clerk.com",
               "media-src 'self' blob: data:",
-              "connect-src 'self' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://api.stripe.com https://js.stripe.com https://*.neon.tech https://clerk.anc-audio-app.com/v1 wss://clerk.anc-audio-app.com",
+              "connect-src 'self' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://api.stripe.com https://js.stripe.com https://*.neon.tech https://clerk.anc-audio-app.com/v1 wss://clerk.anc-audio-app.com https://clerk-telemetry.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
               "worker-src 'self' blob:",
               "object-src 'none'",
@@ -156,67 +156,197 @@ const nextConfig = {
     ];
   },
 
-  // Bundle analyzer for production optimization
+  // Advanced Webpack configuration for modern builds
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Modern JavaScript target optimizations
+    config.target = isServer ? 'node' : ['web', 'es2017'];
+
     // Production optimizations
-    if (!dev && !isServer) {
-      // Tree shaking optimization
+    if (!dev) {
+      // Advanced tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
+      config.optimization.providedExports = true;
+      config.optimization.innerGraph = true;
 
-      // Bundle splitting for better caching
+      // Modern bundle splitting for better caching
       config.optimization.splitChunks = {
-        ...config.optimization.splitChunks,
+        chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
-          ...config.optimization.splitChunks.cacheGroups,
-          // Mobile-specific chunks
-          mobile: {
-            name: 'mobile',
-            test: /[\\/]src[\\/]components[\\/]mobile[\\/]/,
-            chunks: 'all',
+          vendor: {
+            name: 'vendors',
+            test: /[\\/]node_modules[\\/]/,
             priority: 10,
+            reuseExistingChunk: true,
+          },
+          // Framework chunk for React/Next.js
+          framework: {
+            name: 'framework',
+            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          // Clerk authentication chunk
+          clerk: {
+            name: 'clerk',
+            test: /[\\/]node_modules[\\/]@clerk[\\/]/,
+            priority: 30,
+            chunks: 'all',
+          },
+          // UI library chunks
+          ui: {
+            name: 'ui',
+            test: /[\\/](src[\\/]components[\\/]ui|node_modules[\\/]@radix-ui)[\\/]/,
+            priority: 25,
+            chunks: 'all',
           },
           // Audio processing chunks
           audio: {
-            name: 'audio',
-            test: /[\\/]src[\\/]lib[\\/]audio[\\/]/,
+            name: 'audio-processing',
+            test: /[\\/](src[\\/]lib[\\/]audio|src[\\/]lib[\\/]performance)[\\/]/,
+            priority: 20,
             chunks: 'all',
-            priority: 9,
           },
-          // UI components chunk
-          ui: {
-            name: 'ui',
-            test: /[\\/]src[\\/]components[\\/]ui[\\/]/,
+          // Collaboration features
+          collaboration: {
+            name: 'collaboration',
+            test: /[\\/]src[\\/]lib[\\/]collaboration[\\/]/,
+            priority: 18,
             chunks: 'all',
-            priority: 8,
           },
+          // Distribution and monetization
+          business: {
+            name: 'business',
+            test: /[\\/]src[\\/]lib[\\/](distribution|monetization)[\\/]/,
+            priority: 16,
+            chunks: 'all',
+          },
+          // Workflow tools
+          workflow: {
+            name: 'workflow',
+            test: /[\\/]src[\\/]lib[\\/]workflow[\\/]/,
+            priority: 14,
+            chunks: 'all',
+          },
+          // Accessibility features
+          accessibility: {
+            name: 'accessibility',
+            test: /[\\/]src[\\/]lib[\\/]accessibility[\\/]/,
+            priority: 12,
+            chunks: 'all',
+          },
+          // Common utilities
+          utils: {
+            name: 'utils',
+            test: /[\\/]src[\\/]lib[\\/](utils|helpers)[\\/]/,
+            priority: 10,
+            chunks: 'all',
+          },
+          // Default group
+          default: {
+            minChunks: 2,
+            priority: 0,
+            reuseExistingChunk: true,
+          },
+        },
+      };
+
+      // Minimize JavaScript for production
+      config.optimization.minimize = true;
+    }
+
+    // Modern ES modules support
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
+    // Audio and video file handling
+    config.module.rules.push({
+      test: /\.(mp3|wav|ogg|m4a|aac|flac|opus)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/audio/[name].[contenthash][ext]',
+      },
+    });
+
+    config.module.rules.push({
+      test: /\.(mp4|webm|mov|avi|mkv|wmv|flv)$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/video/[name].[contenthash][ext]',
+      },
+    });
+
+    // Web Worker support
+    config.module.rules.push({
+      test: /\.worker\.js$/,
+      use: {
+        loader: 'worker-loader',
+        options: {
+          filename: 'static/workers/[name].[contenthash].js',
+        },
+      },
+    });
+
+    // WebAssembly support for audio processing
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+      layers: true,
+      topLevelAwait: true,
+    };
+
+    // Advanced performance optimizations
+    if (!dev) {
+      // Enable modern JavaScript features
+      config.resolve.conditionNames = ['import', 'module', 'main'];
+
+      // Performance hints for bundle size
+      config.performance = {
+        hints: 'warning',
+        maxAssetSize: 500000, // 500 KB
+        maxEntrypointSize: 500000, // 500 KB
+      };
+    }
+
+    // Development optimizations
+    if (dev) {
+      // Faster rebuilds in development
+      config.cache = {
+        type: 'filesystem',
+        cacheDirectory: require('path').resolve(__dirname, '.next/cache/webpack'),
+        buildDependencies: {
+          config: [__filename],
         },
       };
     }
 
-    // Audio file handling
-    config.module.rules.push({
-      test: /\.(mp3|wav|ogg|m4a|aac|flac)$/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/media/[hash][ext]',
-      },
-    });
+    // Plugin optimizations
+    config.plugins.push(
+      // Define feature flags for better tree shaking
+      new webpack.DefinePlugin({
+        __DEV__: dev,
+        __PROD__: !dev,
+        __BROWSER__: !isServer,
+        __SERVER__: isServer,
+        'process.env.NODE_ENV': JSON.stringify(dev ? 'development' : 'production'),
+      })
+    );
 
-    // Video file handling
-    config.module.rules.push({
-      test: /\.(mp4|webm|mov|avi|mkv)$/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/media/[hash][ext]',
-      },
-    });
-
-    // WASM support for FFmpeg
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-    };
+    // Modern browser optimizations
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+        stream: false,
+        buffer: false,
+      };
+    }
 
     return config;
   },

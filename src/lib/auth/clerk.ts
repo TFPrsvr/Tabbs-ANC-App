@@ -44,7 +44,7 @@ export function useUserSubscription() {
     if (!userId) return false;
 
     try {
-      const { data, error } = await fetch('/api/auth/check-limits', {
+      const response = await fetch('/api/auth/check-limits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,10 +52,29 @@ export function useUserSubscription() {
           fileSize,
           fileDuration,
         }),
-      }).then(res => res.json());
+      });
 
-      if (error) throw new Error(error);
-      return data.canUpload;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // Handle different response structures
+      if (result.data && typeof result.data.canUpload !== 'undefined') {
+        return result.data.canUpload;
+      } else if (typeof result.canUpload !== 'undefined') {
+        return result.canUpload;
+      } else if (result.success) {
+        return true; // Default to true if successful but no specific canUpload field
+      }
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Default to false for safety
+      return false;
     } catch (error) {
       console.error('Error checking subscription limits:', error);
       return false;

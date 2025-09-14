@@ -69,7 +69,7 @@ export interface EnhancementOptions {
 export class AdvancedAudioSeparator {
   private audioContext: AudioContext;
   private modelCache: Map<string, any> = new Map();
-  private processingQueue: Array<{ id: string; resolve: Function; reject: Function }> = [];
+  private processingQueue: Array<{ id: string; resolve: (value: SeparationResult) => void; reject: (reason?: any) => void }> = [];
   private isProcessing: boolean = false;
 
   constructor() {

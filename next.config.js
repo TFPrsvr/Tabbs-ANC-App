@@ -156,8 +156,32 @@ const nextConfig = {
     ];
   },
 
-  // Advanced Webpack configuration for modern builds
+  // Turbopack configuration for development performance
+  turbopack: {
+    rules: {
+      // Audio and video file handling for Turbopack
+      '*.{mp3,wav,ogg,m4a,aac,flac,opus}': {
+        loaders: ['file-loader'],
+        as: '*.file',
+      },
+      '*.{mp4,webm,mov,avi,mkv,wmv,flv}': {
+        loaders: ['file-loader'],
+        as: '*.file',
+      },
+    },
+    resolveAlias: {
+      '@': './src',
+    },
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+  },
+
+  // Webpack configuration (fallback for production builds)
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Skip webpack modifications when using Turbopack
+    if (process.env.NODE_ENV === 'development' && process.argv.includes('--turbopack')) {
+      return config;
+    }
+
     // Modern JavaScript target optimizations
     config.target = isServer ? 'node' : ['web', 'es2017'];
 
@@ -207,41 +231,6 @@ const nextConfig = {
             name: 'audio-processing',
             test: /[\\/](src[\\/]lib[\\/]audio|src[\\/]lib[\\/]performance)[\\/]/,
             priority: 20,
-            chunks: 'all',
-          },
-          // Collaboration features
-          collaboration: {
-            name: 'collaboration',
-            test: /[\\/]src[\\/]lib[\\/]collaboration[\\/]/,
-            priority: 18,
-            chunks: 'all',
-          },
-          // Distribution and monetization
-          business: {
-            name: 'business',
-            test: /[\\/]src[\\/]lib[\\/](distribution|monetization)[\\/]/,
-            priority: 16,
-            chunks: 'all',
-          },
-          // Workflow tools
-          workflow: {
-            name: 'workflow',
-            test: /[\\/]src[\\/]lib[\\/]workflow[\\/]/,
-            priority: 14,
-            chunks: 'all',
-          },
-          // Accessibility features
-          accessibility: {
-            name: 'accessibility',
-            test: /[\\/]src[\\/]lib[\\/]accessibility[\\/]/,
-            priority: 12,
-            chunks: 'all',
-          },
-          // Common utilities
-          utils: {
-            name: 'utils',
-            test: /[\\/]src[\\/]lib[\\/](utils|helpers)[\\/]/,
-            priority: 10,
             chunks: 'all',
           },
           // Default group
@@ -299,19 +288,6 @@ const nextConfig = {
       topLevelAwait: true,
     };
 
-    // Advanced performance optimizations
-    if (!dev) {
-      // Enable modern JavaScript features
-      config.resolve.conditionNames = ['import', 'module', 'main'];
-
-      // Performance hints for bundle size
-      config.performance = {
-        hints: 'warning',
-        maxAssetSize: 500000, // 500 KB
-        maxEntrypointSize: 500000, // 500 KB
-      };
-    }
-
     // Development optimizations
     if (dev) {
       // Faster rebuilds in development
@@ -360,18 +336,41 @@ const nextConfig = {
   // Output optimization
   output: 'standalone',
   
-  // Enable experimental features for PWA
+  // Server external packages configuration
+  serverExternalPackages: [
+    'sharp', // Image processing
+    'canvas', // Canvas operations for audio visualization
+  ],
+
+  // Enable experimental features optimized for Turbopack
   experimental: {
+    // Package import optimizations
     optimizePackageImports: [
       'lucide-react',
       '@clerk/nextjs',
-      'sonner'
+      'sonner',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-select',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-label',
+      '@radix-ui/react-tabs'
     ],
-    webVitalsAttribution: ['CLS', 'LCP'],
-  },
 
-  // Note: Advanced Turbopack configuration is limited in current Next.js version
-  // Basic optimization flags are handled by the --turbopack flag in build scripts
+    // Performance monitoring
+    webVitalsAttribution: ['CLS', 'LCP', 'FID', 'FCP', 'TTFB'],
+
+    // Server actions (new configuration format)
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'localhost:3001', 'localhost:3002'],
+    },
+
+    // Development optimizations
+    optimizeServerReact: true,
+  }
 };
 
 module.exports = nextConfig;

@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings, Volume2, Headphones, Mic, Monitor, Palette, Shield } from 'lucide-react';
+import { Settings, Volume2, Headphones, Mic, Monitor, Palette, Shield, Bell } from 'lucide-react';
+import { NotificationsSettings } from './notifications-settings';
 
 interface SettingsModalProps {
   children: React.ReactNode;
@@ -56,7 +57,7 @@ export function SettingsModal({ children }: SettingsModalProps) {
         </DialogHeader>
 
         <Tabs defaultValue="audio" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="audio" className="flex items-center gap-2">
               <Volume2 className="w-4 h-4" />
               Audio
@@ -64,6 +65,10 @@ export function SettingsModal({ children }: SettingsModalProps) {
             <TabsTrigger value="processing" className="flex items-center gap-2">
               <Headphones className="w-4 h-4" />
               Processing
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              Notifications
             </TabsTrigger>
             <TabsTrigger value="display" className="flex items-center gap-2">
               <Monitor className="w-4 h-4" />
@@ -147,6 +152,10 @@ export function SettingsModal({ children }: SettingsModalProps) {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-6">
+            <NotificationsSettings />
           </TabsContent>
 
           <TabsContent value="processing" className="space-y-6">

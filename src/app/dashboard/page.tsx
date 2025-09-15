@@ -6,6 +6,9 @@ import { AudioUpload } from '@/components/audio/audio-upload';
 import { AdvancedAudioWorkspace } from '@/components/audio/advanced-audio-workspace';
 import { MobileDashboard } from '@/components/mobile/mobile-dashboard';
 import { VideoToAudioExtractor } from '@/components/video/video-to-audio-extractor';
+import { SettingsModal } from '@/components/settings/settings-modal';
+import { ProfileMenu } from '@/components/profile/profile-menu';
+import { DemoProcessor } from '@/components/audio/demo-processor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -119,14 +122,18 @@ export default function Dashboard() {
           </div>
           
           <div className="flex gap-3 mt-4 md:mt-0 items-center">
-            <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
+            <SettingsModal>
+              <Button variant="outline" size="sm">
+                <Settings className="w-4 h-4 mr-2" />
+                Settings
+              </Button>
+            </SettingsModal>
             {/* Profile Avatar */}
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow">
-              <User className="w-5 h-5 text-white" />
-            </div>
+            <ProfileMenu>
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow">
+                <User className="w-5 h-5 text-white" />
+              </div>
+            </ProfileMenu>
           </div>
         </div>
 
@@ -154,24 +161,7 @@ export default function Dashboard() {
                 audioBuffer={currentAudioBuffer}
               />
             ) : (
-              <Card>
-                <CardContent className="pt-8 pb-8 text-center">
-                  <Wand2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <div className="text-lg font-medium text-gray-600 mb-2">
-                    Ready for AI Processing
-                  </div>
-                  <div className="text-sm text-gray-500 mb-6">
-                    Upload an audio file to start using our advanced AI features
-                  </div>
-                  <Button 
-                    onClick={() => setActiveTab('upload')}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Go to Upload
-                  </Button>
-                </CardContent>
-              </Card>
+              <DemoProcessor onUploadClick={() => setActiveTab('upload')} />
             )}
           </TabsContent>
 

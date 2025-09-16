@@ -45,13 +45,21 @@ export {
   type AmbisonicsConfig
 } from './spatial-audio-processor';
 
-// Audio Separation (Advanced)
+// Audio Separation (Advanced) with ML Integration
 export {
   AdvancedAudioSeparator,
   type AudioStem,
   type SeparationResult,
   type EnhancementOptions
 } from './advanced-separation';
+
+// ML Model Service for Real AI Processing
+export {
+  mlModelService,
+  MLModelService,
+  type MLModelConfig,
+  type MLProcessingOptions
+} from './ml-model-service';
 
 // Audio Science Utility Functions
 export class AudioScienceUtils {
@@ -403,7 +411,7 @@ export const AudioScienceConstants = {
 };
 
 // Export everything as a complete audio science package
-export default {
+const AudioSciencePackage = {
   AdvancedDSPProcessor,
   advancedDSP,
   MultibandCompressor,
@@ -414,3 +422,5 @@ export default {
   AudioScienceUtils,
   AudioScienceConstants
 };
+
+export default AudioSciencePackage;

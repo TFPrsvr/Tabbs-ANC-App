@@ -1,7 +1,10 @@
 /**
  * Advanced Audio Separation and Enhancement System
  * AI-powered stem separation with professional audio processing
+ * Integrated with ML models (Spleeter, Demucs) via MLModelService
  */
+
+import { mlModelService, MLProcessingOptions } from './ml-model-service';
 
 export interface AudioStem {
   id: string;
@@ -78,6 +81,7 @@ export class AdvancedAudioSeparator {
 
   /**
    * Separate audio into stems using AI-powered analysis
+   * Now integrated with real ML models (Spleeter, Demucs)
    */
   async separateAudio(
     audioBuffer: AudioBuffer,
@@ -86,16 +90,48 @@ export class AdvancedAudioSeparator {
       stemTypes: AudioStem['type'][];
       preserveOriginal: boolean;
       adaptiveProcessing: boolean;
+      useMLModels?: boolean;
+      modelType?: 'spleeter' | 'demucs' | 'open-unmix';
+      processingMode?: 'server' | 'browser' | 'hybrid';
     } = {
       quality: 'standard',
       stemTypes: ['vocals', 'drums', 'bass', 'other'],
       preserveOriginal: true,
-      adaptiveProcessing: true
+      adaptiveProcessing: true,
+      useMLModels: true,
+      modelType: 'spleeter',
+      processingMode: 'hybrid'
     }
   ): Promise<SeparationResult> {
     const startTime = performance.now();
 
     try {
+      // Use real ML models if available and requested
+      if (options.useMLModels) {
+        console.log(`🧠 Using ML model: ${options.modelType} (${options.processingMode} mode)`);
+
+        const mlOptions: MLProcessingOptions = {
+          modelType: options.modelType || 'spleeter',
+          quality: options.quality,
+          stemTypes: options.stemTypes,
+          processingMode: options.processingMode || 'hybrid',
+          useGpu: options.quality === 'studio' || options.quality === 'professional'
+        };
+
+        const result = await mlModelService.separateAudio(audioBuffer, mlOptions);
+
+        // Apply additional enhancements if requested
+        if (options.adaptiveProcessing) {
+          const audioAnalysis = await this.analyzeAudio(audioBuffer);
+          result.stems = await this.enhanceStems(result.stems, audioAnalysis);
+        }
+
+        return result;
+      }
+
+      // Fallback to traditional DSP methods
+      console.log('🔧 Falling back to traditional DSP separation');
+
       // Pre-analysis for optimal processing
       const audioAnalysis = await this.analyzeAudio(audioBuffer);
 
@@ -125,11 +161,26 @@ export class AdvancedAudioSeparator {
           channels: audioBuffer.numberOfChannels,
           detectedGenre: audioAnalysis.genre,
           detectedKey: audioAnalysis.key,
-          detectedTempo: audioAnalysis.tempo
+          detectedTempo: audioAnalysis.tempo,
+          processingMethod: 'dsp-fallback'
         }
       };
     } catch (error) {
       console.error('Audio separation failed:', error);
+
+      // If ML processing fails, attempt fallback
+      if (options.useMLModels) {
+        console.warn('ML processing failed, attempting DSP fallback...');
+        try {
+          return await this.separateAudio(audioBuffer, {
+            ...options,
+            useMLModels: false
+          });
+        } catch (fallbackError) {
+          throw new Error(`Both ML and DSP separation failed: ${error.message}`);
+        }
+      }
+
       throw new Error(`Audio separation failed: ${error.message}`);
     }
   }

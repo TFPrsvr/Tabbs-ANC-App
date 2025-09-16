@@ -48,7 +48,7 @@ interface DynamicsMeter {
   density: number;             // Compressed feel metric
 }
 
-interface HarmonicAnalyzer {
+interface HarmonicAnalysis {
   fundamentalFrequency: number;
   totalHarmonicDistortion: number;
   thdn: number;                // THD+N
@@ -63,7 +63,7 @@ interface HarmonicAnalyzer {
   intermodulationDistortion: number;
 }
 
-interface PsychoacousticAnalyzer {
+interface PsychoacousticAnalysis {
   perceivedLoudness: number;    // Sones
   sharpness: number;           // Acum
   roughness: number;           // Asper
@@ -116,8 +116,8 @@ class AdvancedAudioAnalyzer {
     loudness: LoudnessMeter;
     stereo: StereoMeter;
     dynamics: DynamicsMeter;
-    harmonic: HarmonicAnalyzer;
-    psychoacoustic: PsychoacousticAnalyzer;
+    harmonic: HarmonicAnalysis;
+    psychoacoustic: PsychoacousticAnalysis;
   } {
     const mono = rightChannel
       ? this.mixToMono(leftChannel, rightChannel)
@@ -752,7 +752,7 @@ class HarmonicAnalyzer {
     this.fftSize = fftSize;
   }
 
-  analyze(input: Float32Array): HarmonicAnalyzer {
+  analyze(input: Float32Array): HarmonicAnalysis {
     // Simplified harmonic analysis
     return {
       fundamentalFrequency: 440, // Would implement pitch detection
@@ -775,7 +775,7 @@ class PsychoacousticAnalyzer {
     this.fftSize = fftSize;
   }
 
-  analyze(input: Float32Array): PsychoacousticAnalyzer {
+  analyze(input: Float32Array): PsychoacousticAnalysis {
     // Simplified psychoacoustic analysis
     return {
       perceivedLoudness: 1.0,
@@ -798,6 +798,6 @@ export {
   type LoudnessMeter,
   type StereoMeter,
   type DynamicsMeter,
-  type HarmonicAnalyzer,
-  type PsychoacousticAnalyzer
+  type HarmonicAnalysis,
+  type PsychoacousticAnalysis
 };

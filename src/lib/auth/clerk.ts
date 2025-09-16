@@ -101,14 +101,14 @@ export function useUserSubscription() {
 }
 
 interface ClerkUser {
-  fullName?: string;
-  firstName?: string;
-  lastName?: string;
-  username?: string;
-  imageUrl?: string;
-  profileImageUrl?: string;
+  fullName?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+  imageUrl?: string | null;
+  profileImageUrl?: string | null;
   emailAddresses?: Array<{ emailAddress: string }>;
-  email?: string;
+  email?: string | null;
   id: string;
 }
 

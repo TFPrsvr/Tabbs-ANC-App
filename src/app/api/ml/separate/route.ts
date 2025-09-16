@@ -130,7 +130,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       {
         error: 'Internal processing error',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
       },
       { status: 500 }
     );
@@ -200,7 +200,7 @@ async function processSpleeter(
 
   } catch (error) {
     console.error('Spleeter processing failed:', error);
-    throw new Error(`Spleeter failed: ${error.message}`);
+    throw new Error(`Spleeter failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -246,7 +246,7 @@ async function processDemucs(
 
   } catch (error) {
     console.error('Demucs processing failed:', error);
-    throw new Error(`Demucs failed: ${error.message}`);
+    throw new Error(`Demucs failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -290,7 +290,7 @@ async function processOpenUnmix(
 
   } catch (error) {
     console.error('Open-Unmix processing failed:', error);
-    throw new Error(`Open-Unmix failed: ${error.message}`);
+    throw new Error(`Open-Unmix failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

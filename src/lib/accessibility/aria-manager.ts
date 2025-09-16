@@ -71,7 +71,7 @@ export class AriaManager {
   };
 
   private liveRegions: Map<string, HTMLElement> = new Map();
-  private keyboardShortcuts: Map<string, { callback: Function; description: string }> = new Map();
+  private keyboardShortcuts: Map<string, { callback: () => void; description: string }> = new Map();
   private focusHistory: HTMLElement[] = [];
 
   constructor() {
@@ -699,7 +699,7 @@ export class AriaManager {
   /**
    * Register keyboard shortcut
    */
-  registerShortcut(key: string, callback: Function, description: string): void {
+  registerShortcut(key: string, callback: () => void, description: string): void {
     this.keyboardShortcuts.set(key, { callback, description });
   }
 

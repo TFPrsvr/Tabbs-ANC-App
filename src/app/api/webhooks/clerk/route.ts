@@ -14,6 +14,8 @@ interface ClerkWebhookEvent {
     username?: string;
     image_url?: string;
     profile_image_url?: string;
+    unsafe_metadata?: { [key: string]: unknown };
+    [key: string]: unknown;
   };
 }
 
@@ -36,6 +38,10 @@ export async function POST(req: NextRequest) {
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
+  if (!webhookSecret) {
+    return NextResponse.json({ error: 'Missing webhook secret' }, { status: 500 });
+  }
+
   const wh = new Webhook(webhookSecret);
 
   let evt: ClerkWebhookEvent;
@@ -45,13 +51,14 @@ export async function POST(req: NextRequest) {
       'svix-id': svixId,
       'svix-timestamp': svixTimestamp,
       'svix-signature': svixSignature,
-    });
+    }) as ClerkWebhookEvent;
   } catch (err) {
     console.error('Error verifying webhook:', err);
     return NextResponse.json({ error: 'Error verifying webhook' }, { status: 400 });
   }
 
-  const { id, type, data } = evt;
+  const { type, data } = evt;
+  const { id } = data;
   console.log(`Webhook received: ${type} for user ${id}`);
 
   try {
@@ -66,7 +73,7 @@ export async function POST(req: NextRequest) {
         await handleUserDeleted(data);
         break;
       case 'session.created':
-        await handleSessionCreated(data);
+        await handleSessionCreated({ ...data, user_id: data.id });
         break;
       default:
         console.log(`Unhandled webhook event: ${type}`);
@@ -157,7 +164,7 @@ async function handleSessionCreated(data: { user_id: string; [key: string]: unkn
       'session_created',
       { 
         sessionId: data.id,
-        loginAt: new Date(data.created_at).toISOString()
+        loginAt: new Date(data.created_at as string | number).toISOString()
       }
     );
   }

@@ -209,6 +209,11 @@ export class AudioSearchEngine {
         return;
       }
 
+      if (!this.audioIndex) {
+        reject(new Error('Audio index not available'));
+        return;
+      }
+
       this.worker.postMessage({
         type: 'search',
         query,

@@ -256,7 +256,7 @@ export class PodcastSuite {
           showWaveform: true,
           showProgress: false,
           showLogo: true,
-          logoPosition: 'top-center'
+          logoPosition: 'center'
         },
         duration: { min: 10, max: 30 },
         aspectRatio: '9:16'

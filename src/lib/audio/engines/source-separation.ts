@@ -54,7 +54,7 @@ export class AISourceSeparationEngine {
   private audioContext: AudioContext | null = null;
   private isInitialized = false;
   private worker: Worker | null = null;
-  private onProgress?: (progress: SeparationProgress) => void;
+  public onProgress?: (progress: SeparationProgress) => void;
 
   constructor(onProgressCallback?: (progress: SeparationProgress) => void) {
     this.onProgress = onProgressCallback;
@@ -264,7 +264,8 @@ export class AISourceSeparationEngine {
       );
       
       channelData.forEach((data, index) => {
-        buffer.copyToChannel(data, index);
+        const channelBuffer = new Float32Array(data);
+        buffer.copyToChannel(channelBuffer, index);
       });
       
       return { name: name as any, audioBuffer: buffer, confidence };

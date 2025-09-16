@@ -93,7 +93,7 @@ export interface TimelineMarker {
   duration?: number;
 }
 
-class ComprehensiveMediaProcessor {
+export class ComprehensiveMediaProcessor {
   private ffmpeg: FFmpeg;
   private audioContext: AudioContext;
   private isInitialized = false;
@@ -220,7 +220,7 @@ class ComprehensiveMediaProcessor {
           'vocals.wav'
         ]);
         const vocalData = await this.ffmpeg.readFile('vocals.wav');
-        results.vocals = new Blob([vocalData], { type: 'audio/wav' });
+        results.vocals = new Blob([vocalData as BlobPart], { type: 'audio/wav' });
       }
 
       // Music/instrumental separation (side channel extraction)
@@ -233,7 +233,7 @@ class ComprehensiveMediaProcessor {
           'music.wav'
         ]);
         const musicData = await this.ffmpeg.readFile('music.wav');
-        results.music = new Blob([musicData], { type: 'audio/wav' });
+        results.music = new Blob([musicData as BlobPart], { type: 'audio/wav' });
       }
 
       // Drum separation (frequency-based filtering)
@@ -246,7 +246,7 @@ class ComprehensiveMediaProcessor {
           'drums.wav'
         ]);
         const drumData = await this.ffmpeg.readFile('drums.wav');
-        results.drums = new Blob([drumData], { type: 'audio/wav' });
+        results.drums = new Blob([drumData as BlobPart], { type: 'audio/wav' });
       }
 
       // Bass separation (low-frequency extraction)
@@ -259,7 +259,7 @@ class ComprehensiveMediaProcessor {
           'bass.wav'
         ]);
         const bassData = await this.ffmpeg.readFile('bass.wav');
-        results.bass = new Blob([bassData], { type: 'audio/wav' });
+        results.bass = new Blob([bassData as BlobPart], { type: 'audio/wav' });
       }
 
       // Everything else (residual)
@@ -271,7 +271,7 @@ class ComprehensiveMediaProcessor {
         'other.wav'
       ]);
       const otherData = await this.ffmpeg.readFile('other.wav');
-      results.other = new Blob([otherData], { type: 'audio/wav' });
+      results.other = new Blob([otherData as BlobPart], { type: 'audio/wav' });
 
       const endTime = performance.now();
       results.metadata.processingTime = endTime - startTime;
@@ -383,7 +383,7 @@ class ComprehensiveMediaProcessor {
       await this.ffmpeg.exec(args);
 
       const outputData = await this.ffmpeg.readFile(outputFilename);
-      return new Blob([outputData], { type: `audio/${options.format || 'wav'}` });
+      return new Blob([outputData as BlobPart], { type: `audio/${options.format || 'wav'}` });
 
     } catch (error) {
       console.error('Audio enhancement failed:', error);
@@ -423,7 +423,7 @@ class ComprehensiveMediaProcessor {
       await this.ffmpeg.exec(args);
 
       const audioData = await this.ffmpeg.readFile(outputFilename);
-      return new Blob([audioData], { type: `audio/${options.format || 'wav'}` });
+      return new Blob([audioData as BlobPart], { type: `audio/${options.format || 'wav'}` });
 
     } catch (error) {
       console.error('Audio extraction failed:', error);
@@ -434,6 +434,11 @@ class ComprehensiveMediaProcessor {
   /**
    * Generate comprehensive waveform data with frequency analysis
    */
+  async loadAudioFile(file: File): Promise<AudioBuffer> {
+    const arrayBuffer = await file.arrayBuffer();
+    return await this.audioContext.decodeAudioData(arrayBuffer);
+  }
+
   async generateWaveform(file: File): Promise<Float32Array[]> {
     try {
       const arrayBuffer = await file.arrayBuffer();
@@ -577,7 +582,7 @@ class ComprehensiveMediaProcessor {
       await this.ffmpeg.exec(args);
 
       const outputData = await this.ffmpeg.readFile(outputFilename);
-      return new Blob([outputData], { type: `audio/${format}` });
+      return new Blob([outputData as BlobPart], { type: `audio/${format}` });
 
     } catch (error) {
       console.error('Media export failed:', error);

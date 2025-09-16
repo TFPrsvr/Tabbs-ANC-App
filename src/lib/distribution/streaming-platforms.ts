@@ -86,7 +86,7 @@ export class StreamingPlatformManager extends EventEmitter {
       this.emit('authenticated', { platform });
       return true;
     } catch (error) {
-      this.emit('error', { platform, error: error.message });
+      this.emit('error', { platform, error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }
@@ -151,9 +151,9 @@ export class StreamingPlatformManager extends EventEmitter {
       return contentUrl;
     } catch (error) {
       progress.status = 'error';
-      progress.error = error.message;
+      progress.error = error instanceof Error ? error.message : String(error);
       this.uploadQueue.set(uploadId, progress);
-      this.emit('uploadError', { uploadId, error: error.message });
+      this.emit('uploadError', { uploadId, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -186,7 +186,7 @@ export class StreamingPlatformManager extends EventEmitter {
 
       return streamSettings;
     } catch (error) {
-      this.emit('error', { platform, error: error.message });
+      this.emit('error', { platform, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -216,7 +216,7 @@ export class StreamingPlatformManager extends EventEmitter {
 
       return analytics;
     } catch (error) {
-      this.emit('error', { platform, error: error.message });
+      this.emit('error', { platform, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -246,7 +246,7 @@ export class StreamingPlatformManager extends EventEmitter {
           await this.uploadContent(platform, audioFile, config);
           this.emit('scheduledContentPublished', { scheduleId, platform });
         } catch (error) {
-          this.emit('scheduledContentError', { scheduleId, error: error.message });
+          this.emit('scheduledContentError', { scheduleId, error: error instanceof Error ? error.message : String(error) });
         }
       }, delay);
     }
@@ -266,7 +266,7 @@ export class StreamingPlatformManager extends EventEmitter {
         const url = await this.uploadContent(platform, audioFile, config);
         results[platform] = url;
       } catch (error) {
-        results[platform] = `Error: ${error.message}`;
+        results[platform] = `Error: ${error instanceof Error ? error.message : String(error)}`;
       }
     });
 
@@ -436,7 +436,7 @@ export class StreamingPlatformManager extends EventEmitter {
   }
 
   private getPlatformConfig(platform: string) {
-    const configs = {
+    const configs: Record<string, { authUrl: string; clientId: string | undefined; scopes: string[] }> = {
       'youtube': {
         authUrl: 'https://accounts.google.com/oauth2/auth',
         clientId: process.env.YOUTUBE_CLIENT_ID,
@@ -460,7 +460,7 @@ export class StreamingPlatformManager extends EventEmitter {
   private generateAuthUrl(platform: string): string {
     const config = this.getPlatformConfig(platform);
     const params = new URLSearchParams({
-      client_id: config.clientId,
+      client_id: config.clientId || '',
       response_type: 'code',
       scope: config.scopes.join(' '),
       redirect_uri: `${window.location.origin}/auth/callback`
@@ -493,7 +493,7 @@ export class StreamingPlatformManager extends EventEmitter {
   }
 
   private getYouTubeCategory(category: string): string {
-    const categories = {
+    const categories: Record<string, string> = {
       'music': '10',
       'entertainment': '24',
       'education': '27',
@@ -543,6 +543,86 @@ export class StreamingPlatformManager extends EventEmitter {
 
   getLiveStreamingPlatforms(): string[] {
     return ['youtube', 'twitch', 'facebook'];
+  }
+
+  private async uploadToApplePodcasts(
+    audioFile: File,
+    config: StreamConfig,
+    credentials: StreamingCredentials,
+    uploadId: string
+  ): Promise<string> {
+    // TODO: Implement Apple Podcasts upload
+    throw new Error('Apple Podcasts upload not yet implemented');
+  }
+
+  private async uploadToTwitch(
+    audioFile: File,
+    config: StreamConfig,
+    credentials: StreamingCredentials,
+    uploadId: string
+  ): Promise<string> {
+    // TODO: Implement Twitch upload
+    throw new Error('Twitch upload not yet implemented');
+  }
+
+  private async startTwitchLiveStream(
+    config: StreamConfig,
+    credentials: StreamingCredentials
+  ): Promise<LiveStreamSettings> {
+    // TODO: Implement Twitch live stream
+    throw new Error('Twitch live streaming not yet implemented');
+  }
+
+  private async startFacebookLiveStream(
+    config: StreamConfig,
+    credentials: StreamingCredentials
+  ): Promise<LiveStreamSettings> {
+    // TODO: Implement Facebook live stream
+    throw new Error('Facebook live streaming not yet implemented');
+  }
+
+  private async getSpotifyAnalytics(
+    credentials: StreamingCredentials,
+    contentId?: string
+  ): Promise<PlatformAnalytics> {
+    // TODO: Implement Spotify analytics
+    return {
+      platform: 'spotify',
+      views: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      subscribers: 0,
+      watchTime: 0,
+      engagement: 0,
+      demographics: {
+        ageGroups: {},
+        geography: {},
+        devices: {}
+      }
+    };
+  }
+
+  private async getSoundCloudAnalytics(
+    credentials: StreamingCredentials,
+    contentId?: string
+  ): Promise<PlatformAnalytics> {
+    // TODO: Implement SoundCloud analytics
+    return {
+      platform: 'soundcloud',
+      views: 0,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      subscribers: 0,
+      watchTime: 0,
+      engagement: 0,
+      demographics: {
+        ageGroups: {},
+        geography: {},
+        devices: {}
+      }
+    };
   }
 }
 

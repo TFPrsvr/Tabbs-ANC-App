@@ -188,7 +188,14 @@ export interface CacheEntry {
 }
 
 export class ResourceManager extends EventEmitter {
-  private systemResources: SystemResources;
+  private systemResources: SystemResources = {
+    cpu: { cores: 1, usage: 0, frequency: 0, loadAverage: [0, 0, 0] },
+    memory: { total: 0, used: 0, free: 0, available: 0, buffers: 0, cached: 0, swapTotal: 0, swapUsed: 0 },
+    gpu: { name: 'Unknown GPU', usage: 0, memory: 0, temperature: 0, computeUnits: 0 },
+    disk: { total: 0, used: 0, free: 0, readSpeed: 0, writeSpeed: 0, iops: 0 },
+    audio: { inputDevices: [], outputDevices: [], currentSampleRate: 44100, bufferSize: 512, latency: 0, dropouts: 0 },
+    network: { downloadSpeed: 0, uploadSpeed: 0, latency: 0, packetLoss: 0 }
+  };
   private performanceProfiles: Map<string, PerformanceProfile> = new Map();
   private resourceMonitors: Map<string, ResourceMonitor> = new Map();
   private processingQueue: ProcessingTask[] = [];

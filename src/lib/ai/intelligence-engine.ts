@@ -1268,7 +1268,7 @@ class AIIntelligenceEngine {
       // Submit analysis task to resource manager
       const taskId = await resourceManager.addProcessingTask({
         name: 'AI Audio Analysis',
-        type: 'ai-analysis',
+        type: 'ai-enhance',
         priority: 7,
         estimatedDuration: Math.max(2000, audioBuffer.byteLength / 10000),
         requiredResources: {

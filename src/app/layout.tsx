@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'default',
     title: 'ANC Audio Pro',
-    startUpImage: [
+    startupImage: [
       {
         url: '/icons/splash-640x1136.png',
         media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)',

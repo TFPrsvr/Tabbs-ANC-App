@@ -23,7 +23,7 @@ export default function Home() {
             </p>
             <Link href="/dashboard">
               <Button size="lg" variant="audio" className="text-lg px-8 py-3">
-                {EMOJIS.DASHBOARD} Go to Dashboard
+                {EMOJIS.DESKTOP} Go to Dashboard
               </Button>
             </Link>
           </div>

@@ -258,7 +258,7 @@ export class DAWIntegration extends EventEmitter {
         installed: Array.from(this.installedDAWs.values()).filter(d => d.isInstalled).length
       });
     } catch (error) {
-      this.emit('error', { type: 'daw_scan', error: error.message });
+      this.emit('error', { type: 'daw_scan', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -296,7 +296,7 @@ export class DAWIntegration extends EventEmitter {
         }
       }
     } catch (error) {
-      this.emit('error', { type: 'daw_monitoring', error: error.message });
+      this.emit('error', { type: 'daw_monitoring', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -377,7 +377,7 @@ export class DAWIntegration extends EventEmitter {
       this.emit('syncConnected', sync);
     } catch (error) {
       sync.status = 'disconnected';
-      this.emit('error', { type: 'sync_connection', syncId: sync.id, error: error.message });
+      this.emit('error', { type: 'sync_connection', syncId: sync.id, error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -448,7 +448,7 @@ export class DAWIntegration extends EventEmitter {
 
       return plugin;
     } catch (error) {
-      this.emit('error', { type: 'plugin_load', error: error.message });
+      this.emit('error', { type: 'plugin_load', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -594,7 +594,7 @@ export class DAWIntegration extends EventEmitter {
       return connection;
     } catch (error) {
       connection.status = 'error';
-      this.emit('error', { type: 'rewire_connection', error: error.message });
+      this.emit('error', { type: 'rewire_connection', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -613,7 +613,7 @@ export class DAWIntegration extends EventEmitter {
       try {
         await this.establishSyncConnection(sync);
       } catch (error) {
-        this.emit('error', { type: 'auto_sync', syncId: sync.id, error: error.message });
+        this.emit('error', { type: 'auto_sync', syncId: sync.id, error: error instanceof Error ? error.message : String(error) });
       }
     }
   }
@@ -746,7 +746,7 @@ export class DAWIntegration extends EventEmitter {
       this.emit('syncCompleted', sync);
     } catch (error) {
       sync.status = 'conflict';
-      this.emit('syncError', { sync, error: error.message });
+      this.emit('syncError', { sync, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }

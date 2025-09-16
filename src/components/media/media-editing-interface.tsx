@@ -10,7 +10,7 @@ import {
   Play, Pause, Square, SkipBack, SkipForward,
   Volume2, VolumeX, Settings, Download, Upload,
   Scissors, Copy, Trash2, Undo, Redo,
-  Layers, Waveform, BarChart3, Sliders,
+  Layers, BarChart3, Sliders,
   MousePointer, Hand, Move, ZoomIn, ZoomOut,
   Save, FileUp, FileDown, Share2, Headphones,
   Mic, MicOff, Split, Merge, RotateCcw

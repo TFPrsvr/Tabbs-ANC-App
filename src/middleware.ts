@@ -137,7 +137,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   // SECURITY LAYER 5: Admin route protection with enhanced logging
   if (isAdminRoute(req)) {
-    const isAdmin = sessionClaims?.metadata?.role === 'admin';
+    const isAdmin = (sessionClaims?.metadata as any)?.role === 'admin';
     if (!isAdmin) {
       console.warn(`Unauthorized admin access attempt from user: ${userId}, IP: ${clientIP}`);
       const url = new URL('/', req.url);

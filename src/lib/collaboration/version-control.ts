@@ -481,8 +481,8 @@ export class VersionControlSystem extends EventEmitter {
     };
 
     this.mergeRequests.set(mergeRequest.id, mergeRequest);
-    sourceBranch.mergeRequests.push(mergeRequest.id);
-    targetBranch.mergeRequests.push(mergeRequest.id);
+    sourceBranch.mergeRequests.push(mergeRequest);
+    targetBranch.mergeRequests.push(mergeRequest);
 
     this.emit('mergeRequestCreated', mergeRequest);
     return mergeRequest;

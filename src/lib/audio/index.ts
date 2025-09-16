@@ -31,8 +31,8 @@ export {
   type LoudnessMeter,
   type StereoMeter,
   type DynamicsMeter,
-  type HarmonicAnalyzer as HarmonicAnalyzerType,
-  type PsychoacousticAnalyzer as PsychoacousticAnalyzerType
+  type HarmonicAnalysis as HarmonicAnalyzerType,
+  type PsychoacousticAnalysis as PsychoacousticAnalyzerType
 } from './audio-analysis-suite';
 
 // Spatial Audio Processing
@@ -410,17 +410,5 @@ export const AudioScienceConstants = {
   }
 };
 
-// Export everything as a complete audio science package
-const AudioSciencePackage = {
-  AdvancedDSPProcessor,
-  advancedDSP,
-  MultibandCompressor,
-  SpectralDeEsser,
-  AdvancedAudioAnalyzer,
-  SpatialAudioProcessor,
-  AdvancedAudioSeparator,
-  AudioScienceUtils,
-  AudioScienceConstants
-};
-
-export default AudioSciencePackage;
+// All exports are available individually above
+export default AudioScienceUtils;

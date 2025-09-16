@@ -58,7 +58,7 @@ export class SpeechRecognitionEngine {
   private isInitialized = false;
   private webSpeechRecognition: any = null;
   private worker: Worker | null = null;
-  private onProgress?: (progress: TranscriptionProgress) => void;
+  public onProgress?: (progress: TranscriptionProgress) => void;
   private onCaptionGenerated?: (caption: CaptionSegment) => void;
   
   // Language support mapping

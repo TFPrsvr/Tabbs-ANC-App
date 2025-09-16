@@ -99,7 +99,7 @@ function getSeverityForEventType(eventType: SecurityEventType): SecuritySeverity
     [SecurityEventType.PATH_TRAVERSAL_ATTEMPT]: SecuritySeverity.HIGH,
     [SecurityEventType.BRUTE_FORCE_ATTEMPT]: SecuritySeverity.HIGH,
     [SecurityEventType.MALICIOUS_FILE_UPLOAD]: SecuritySeverity.HIGH,
-    [SecurityEventType.DDOS_PATTERN_DETECTED]: SecuritySeverity.HIGH,
+    [SecurityEventType.DDoS_PATTERN_DETECTED]: SecuritySeverity.HIGH,
     [SecurityEventType.UNAUTHORIZED_DATA_ACCESS]: SecuritySeverity.HIGH,
     [SecurityEventType.SECURITY_BYPASS_ATTEMPT]: SecuritySeverity.HIGH,
 

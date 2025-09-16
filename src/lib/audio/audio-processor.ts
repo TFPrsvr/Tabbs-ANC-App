@@ -219,7 +219,8 @@ export class AudioProcessor {
       inputData.length,
       sampleRate
     );
-    sourceBuffer.copyToChannel(inputData, 0);
+    const channelData = new Float32Array(inputData);
+    sourceBuffer.copyToChannel(channelData, 0);
     
     const source = this.audioContext.createBufferSource();
     source.buffer = sourceBuffer;

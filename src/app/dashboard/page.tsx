@@ -269,19 +269,19 @@ export default function Dashboard() {
                         <div className="flex-1">
                           <h4 className="font-medium">{file.name}</h4>
                           <p className="text-sm text-muted-foreground">
-                            {file.format?.toUpperCase()} • {Math.round(file.duration || 0)}s • {Math.round((file.file_size || 0) / 1024 / 1024 * 100) / 100}MB
+                            {file.format?.toUpperCase()} • {Math.round(file.duration || 0)}s • {Math.round((file.size || 0) / 1024 / 1024 * 100) / 100}MB
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(file.created_at).toLocaleDateString()}
+                            {new Date(file.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`px-2 py-1 text-xs rounded-full ${
-                            file.is_processed 
+                            file.processed 
                               ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                               : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
                           }`}>
-                            {file.is_processed ? '✅ Processed' : '⏳ Processing'}
+                            {file.processed ? '✅ Processed' : '⏳ Processing'}
                           </span>
                         </div>
                       </div>

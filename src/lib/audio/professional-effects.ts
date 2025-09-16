@@ -133,10 +133,12 @@ class MultibandCompressor extends AudioEffect {
 
       // Apply band filtering
       if (band.frequencyRange.high < 22000) {
-        bandSignal = band.lowpass.process(bandSignal);
+        const filtered = band.lowpass.process(bandSignal);
+        bandSignal = new Float32Array(filtered);
       }
       if (band.frequencyRange.low > 0) {
-        bandSignal = band.highpass.process(bandSignal);
+        const filtered = band.highpass.process(bandSignal);
+        bandSignal = new Float32Array(filtered);
       }
 
       // Configure compressor for this band
@@ -316,8 +318,8 @@ class SpectralDeEsser extends AudioEffect {
   private detectSibilance(magnitudes: Float32Array): number {
     const freqBin = (freq: number) => Math.floor(freq * this.fftSize / this.sampleRate);
 
-    const startBin = freqBin(this.parameters.frequency as number - this.parameters.bandwidth as number / 2);
-    const endBin = freqBin(this.parameters.frequency as number + this.parameters.bandwidth as number / 2);
+    const startBin = freqBin((this.parameters.frequency as number) - (this.parameters.bandwidth as number) / 2);
+    const endBin = freqBin((this.parameters.frequency as number) + (this.parameters.bandwidth as number) / 2);
 
     let sibilantEnergy = 0;
     let totalEnergy = 0;

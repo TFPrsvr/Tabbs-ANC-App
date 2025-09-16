@@ -174,7 +174,8 @@ export function AdvancedAudioWorkspace({
         };
 
         separationEngine.onProgress = separationCallback;
-        const streams = await separationEngine.separateAudio(audioBuffer, preset.settings.separation!);
+        const separationSettings = 'separation' in preset.settings ? preset.settings.separation : AISourceSeparationEngine.PRESETS.KARAOKE.settings;
+        const streams = await separationEngine.separateAudio(audioBuffer, separationSettings);
         setSeparatedStreams(streams);
         completedSteps++;
       }
@@ -190,7 +191,8 @@ export function AdvancedAudioWorkspace({
         };
 
         voiceEngine.onProgress = voiceCallback;
-        detectedVoices = await voiceEngine.detectVoices(audioBuffer, preset.settings.voices!);
+        const voiceSettings = 'voices' in preset.settings ? preset.settings.voices : VoiceDetectionEngine.PRESETS.PODCAST.settings;
+        detectedVoices = await voiceEngine.detectVoices(audioBuffer, voiceSettings);
         setVoiceProfiles(detectedVoices);
         completedSteps++;
       }
@@ -205,9 +207,10 @@ export function AdvancedAudioWorkspace({
         };
 
         speechEngine.onProgress = captionCallback;
+        const captionSettings = 'captions' in preset.settings ? preset.settings.captions : SpeechRecognitionEngine.PRESETS.PODCAST.settings;
         const generatedCaptions = await speechEngine.transcribeAudio(
           audioBuffer,
-          preset.settings.captions!,
+          captionSettings,
           detectedVoices.map(profile => ({
             startTime: profile.segments[0]?.startTime || 0,
             endTime: profile.segments[profile.segments.length - 1]?.endTime || 0,
@@ -239,13 +242,14 @@ export function AdvancedAudioWorkspace({
     }
 
     const preset = workflowPresets[selectedPreset as keyof typeof workflowPresets];
-    const stepNames = {
+    const stepNames: Record<string, string> = {
       separation: "🎯 Smart Audio Separation",
-      voices: "👥 Speaker Recognition", 
-      captions: "📝 Auto Captions"
+      voices: "👥 Speaker Recognition",
+      captions: "📝 Auto Captions",
+      complete: "🎉 Processing Complete"
     };
 
-    return `${stepNames[currentStep]} in progress...`;
+    return `${stepNames[currentStep] || 'Processing'} in progress...`;
   };
 
   // Format time display

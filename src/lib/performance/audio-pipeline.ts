@@ -464,7 +464,7 @@ class OptimizedAudioPipeline {
       // Cache the result if caching is enabled
       if (item.options.enableCaching !== false) {
         const cacheKey = await this.generateCacheKey(item.audioBuffer, item.effects, item.options);
-        cacheManager.setAudioAnalysis(cacheKey, result, { ttl: 30 * 60 * 1000 }); // 30 minutes
+        cacheManager.setAudioAnalysis(cacheKey, result); // 30 minutes
       }
 
       result.processingTime = performance.now() - startTime;

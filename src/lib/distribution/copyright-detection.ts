@@ -100,7 +100,7 @@ export class CopyrightDetectionEngine extends EventEmitter {
 
       return fingerprintData;
     } catch (error) {
-      this.emit('error', { type: 'fingerprint_generation', error: error.message });
+      this.emit('error', { type: 'fingerprint_generation', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -132,7 +132,7 @@ export class CopyrightDetectionEngine extends EventEmitter {
 
       return matches;
     } catch (error) {
-      this.emit('error', { type: 'copyright_detection', error: error.message });
+      this.emit('error', { type: 'copyright_detection', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -175,7 +175,7 @@ export class CopyrightDetectionEngine extends EventEmitter {
     } catch (error) {
       clearing.status = 'rejected';
       clearing.responseDate = new Date();
-      clearing.resolution = error.message;
+      clearing.resolution = error instanceof Error ? error.message : String(error);
       this.contentClearings.set(`${fingerprint.id}_${platform}`, clearing);
       throw error;
     }
@@ -253,7 +253,7 @@ export class CopyrightDetectionEngine extends EventEmitter {
         results.set(file.name, matches);
       } catch (error) {
         results.set(file.name, []);
-        this.emit('batchError', { fileName: file.name, error: error.message });
+        this.emit('batchError', { fileName: file.name, error: error instanceof Error ? error.message : String(error) });
       }
     });
 

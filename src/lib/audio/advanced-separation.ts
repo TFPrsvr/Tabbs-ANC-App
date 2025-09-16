@@ -29,6 +29,7 @@ export interface SeparationResult {
     detectedGenre?: string;
     detectedKey?: string;
     detectedTempo?: number;
+    processingMethod?: string;
   };
 }
 
@@ -177,11 +178,11 @@ export class AdvancedAudioSeparator {
             useMLModels: false
           });
         } catch (fallbackError) {
-          throw new Error(`Both ML and DSP separation failed: ${error.message}`);
+          throw new Error(`Both ML and DSP separation failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
 
-      throw new Error(`Audio separation failed: ${error.message}`);
+      throw new Error(`Audio separation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

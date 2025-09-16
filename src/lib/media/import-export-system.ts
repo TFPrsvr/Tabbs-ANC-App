@@ -368,7 +368,7 @@ export class ImportExportSystem {
 
     } catch (error) {
       console.error('Single file export failed:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -418,7 +418,7 @@ export class ImportExportSystem {
 
     } catch (error) {
       console.error('Batch export failed:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -478,7 +478,7 @@ export class ImportExportSystem {
         }
 
       } catch (error) {
-        errors.push({ file: file.name, error: error.message });
+        errors.push({ file: file.name, error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -569,7 +569,7 @@ export class ImportExportSystem {
 
     } catch (error) {
       console.error('Project export failed:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
@@ -677,6 +677,15 @@ export class ImportExportSystem {
     // Placeholder - use proper MP3 encoder
     const wavData = this.audioBufferToWAV(audioBuffer, 16);
     return new Blob([wavData], { type: 'audio/mpeg' });
+  }
+
+  private async exportToFLAC(
+    audioBuffer: AudioBuffer,
+    parameters: Record<string, any>
+  ): Promise<Blob> {
+    // TODO: Implement FLAC export
+    // For now, fall back to WAV export
+    return await this.exportToWAV(audioBuffer, parameters);
   }
 
   private async exportStemsToZip(
@@ -923,7 +932,7 @@ export class ImportExportSystem {
 
     } catch (error) {
       operation.status = 'failed';
-      operation.error = error.message;
+      operation.error = error instanceof Error ? error.message : String(error);
     } finally {
       // Keep operation in active list for status checking, but remove after some time
       setTimeout(() => {
@@ -963,7 +972,7 @@ export class ImportExportSystem {
         }
 
       } catch (error) {
-        errors.push({ fileId: operation.files[i], error: error.message });
+        errors.push({ fileId: operation.files[i], error: error instanceof Error ? error.message : String(error) });
       }
     }
 

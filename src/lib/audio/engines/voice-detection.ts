@@ -54,7 +54,7 @@ export class VoiceDetectionEngine {
   private audioContext: AudioContext | null = null;
   private isInitialized = false;
   private worker: Worker | null = null;
-  private onProgress?: (progress: VoiceDetectionProgress) => void;
+  public onProgress?: (progress: VoiceDetectionProgress) => void;
   
   // Speaker color palette for UI
   private readonly speakerColors = [

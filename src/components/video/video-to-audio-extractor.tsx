@@ -38,22 +38,22 @@ export function VideoToAudioExtractor({ onAudioExtracted, className }: VideoToAu
     podcast: {
       name: "🎙️ Podcast/Interview",
       description: "Perfect for speech - high quality, efficient compression",
-      options: { format: 'mp3' as const, quality: 'high' as const, channels: 1 }
+      options: { format: 'mp3' as const, quality: 'high' as const, channels: 1 as const }
     },
     music: {
       name: "🎵 Music/Song",
       description: "Maximum quality for music - lossless stereo",
-      options: { format: 'flac' as const, quality: 'lossless' as const, channels: 2 }
+      options: { format: 'flac' as const, quality: 'lossless' as const, channels: 2 as const }
     },
     meeting: {
       name: "💼 Meeting/Conference",
       description: "Optimized for multiple speakers - balanced quality",
-      options: { format: 'wav' as const, quality: 'medium' as const, channels: 2 }
+      options: { format: 'wav' as const, quality: 'medium' as const, channels: 2 as const }
     },
     quick: {
       name: "⚡ Quick & Small",
       description: "Fast processing, smaller file size",
-      options: { format: 'mp3' as const, quality: 'medium' as const, channels: 1 }
+      options: { format: 'mp3' as const, quality: 'medium' as const, channels: 1 as const }
     }
   };
 

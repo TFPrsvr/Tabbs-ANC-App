@@ -49,7 +49,7 @@ export function ProfileMenu({ children }: ProfileMenuProps) {
   const isAdmin = user?.publicMetadata?.role === 'admin';
 
   const handleSignOut = () => {
-    signOut(() => window.location.href = '/');
+    signOut(() => { window.location.href = '/'; });
   };
 
   return (

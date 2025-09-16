@@ -433,8 +433,7 @@ export class RealTimeCollaborationEngine extends EventEmitter {
       type,
       timestamp: new Date(),
       metadata,
-      reactions: [],
-      replyTo: metadata?.replyTo
+      reactions: []
     };
 
     const chatHistory = this.chatHistory.get(sessionId)!;

@@ -71,7 +71,7 @@ export function getClientIP(request: NextRequest): string {
     return ips[0].trim();
   }
 
-  return cfIP || realIP || request.ip || 'unknown';
+  return cfIP || realIP || 'unknown';
 }
 
 /**
@@ -200,7 +200,7 @@ export async function apiSecurityMiddleware(request: NextRequest): Promise<{
 
   // Get authentication context
   const { userId, sessionClaims } = await auth();
-  const isAdmin = sessionClaims?.metadata?.role === 'admin';
+  const isAdmin = (sessionClaims?.metadata as any)?.role === 'admin';
 
   const context: SecurityContext = {
     ip,
@@ -318,7 +318,7 @@ export async function apiSecurityMiddleware(request: NextRequest): Promise<{
     return { isAllowed: true, context };
 
   } catch (error) {
-    logSecurityEvent('SECURITY_MIDDLEWARE_ERROR', context, { error: error.message });
+    logSecurityEvent('SECURITY_MIDDLEWARE_ERROR', context, { error: error instanceof Error ? error.message : String(error) });
     return {
       isAllowed: false,
       response: NextResponse.json(

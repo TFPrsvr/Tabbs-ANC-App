@@ -22,7 +22,7 @@ export function AudioUpload({ onFileUpload, isLoading, className }: AudioUploadP
     setUploadError(null);
 
     // Check file type
-    if (!SUPPORTED_AUDIO_FORMATS.includes(file.type as string)) {
+    if (!SUPPORTED_AUDIO_FORMATS.includes(file.type as any)) {
       setUploadError(
         `${EMOJIS.ERROR} Unsupported file format. Please use MP3, WAV, M4A, AAC, OGG, or FLAC.`
       );

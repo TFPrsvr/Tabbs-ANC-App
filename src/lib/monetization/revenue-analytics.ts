@@ -148,7 +148,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('metricsGenerated', { period, metrics });
       return metrics;
     } catch (error) {
-      this.emit('error', { type: 'metrics_generation', error: error.message });
+      this.emit('error', { type: 'metrics_generation', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -161,7 +161,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('cohortAnalysisComplete', { cohort: cohortMonth, data: cohortData });
       return cohortData;
     } catch (error) {
-      this.emit('error', { type: 'cohort_analysis', error: error.message });
+      this.emit('error', { type: 'cohort_analysis', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -177,7 +177,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('financialReportGenerated', report);
       return report;
     } catch (error) {
-      this.emit('error', { type: 'financial_report', error: error.message });
+      this.emit('error', { type: 'financial_report', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -193,7 +193,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('forecastGenerated', forecast);
       return forecast;
     } catch (error) {
-      this.emit('error', { type: 'revenue_forecasting', error: error.message });
+      this.emit('error', { type: 'revenue_forecasting', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -204,7 +204,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('paymentAnalyticsComplete', { period, analytics });
       return analytics;
     } catch (error) {
-      this.emit('error', { type: 'payment_analytics', error: error.message });
+      this.emit('error', { type: 'payment_analytics', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -224,7 +224,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       this.emit('predictiveInsightsGenerated', insights);
       return insights;
     } catch (error) {
-      this.emit('error', { type: 'predictive_insights', error: error.message });
+      this.emit('error', { type: 'predictive_insights', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -474,7 +474,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
     }
 
     return {
-      method,
+      method: method as 'linear' | 'exponential' | 'arima',
       period: {
         start: new Date(),
         end: predictions[predictions.length - 1].date

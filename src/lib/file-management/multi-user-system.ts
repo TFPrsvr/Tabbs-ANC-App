@@ -149,17 +149,17 @@ export class MultiUserFileManager {
   ): Promise<{ success: boolean; fileId?: string; error?: string }> {
     try {
       // Validate inputs
-      const userIdValidation = validateInput(userId, 'userId');
+      const userIdValidation = validateInput(userId, 'username');
       if (!userIdValidation.isValid) {
         logSecurityEvent(
-          SecurityEventType.INVALID_INPUT,
+          SecurityEventType.SUSPICIOUS_REQUEST_PATTERN,
           'file-upload',
           { userId, ip: 'unknown', userAgent: 'unknown', details: { error: 'Invalid user ID' } }
         );
         return { success: false, error: 'Invalid user ID' };
       }
 
-      const fileValidation = validateInput(file, 'file');
+      const fileValidation = validateInput(file, 'filename');
       if (!fileValidation.isValid) {
         logSecurityEvent(
           SecurityEventType.MALICIOUS_FILE_UPLOAD,
@@ -242,9 +242,9 @@ export class MultiUserFileManager {
       console.error('File upload failed:', error);
 
       logSecurityEvent(
-        SecurityEventType.SYSTEM_ERROR,
+        SecurityEventType.SUSPICIOUS_REQUEST_PATTERN,
         'file-upload',
-        { userId, ip: 'unknown', userAgent: 'unknown', details: { error: error.message } }
+        { userId, ip: 'unknown', userAgent: 'unknown', details: { error: error instanceof Error ? error.message : String(error) } }
       );
 
       return { success: false, error: 'Upload failed' };
@@ -259,7 +259,7 @@ export class MultiUserFileManager {
     filters: FileSearchFilter = {}
   ): Promise<{ files: MediaFile[]; totalCount: number; hasMore: boolean }> {
     // Validate user ID
-    const userIdValidation = validateInput(userId, 'userId');
+    const userIdValidation = validateInput(userId, 'username');
     if (!userIdValidation.isValid) {
       return { files: [], totalCount: 0, hasMore: false };
     }
@@ -607,7 +607,7 @@ export class MultiUserFileManager {
 
   // Private helper methods
 
-  private async loadUserData(): void {
+  private async loadUserData(): Promise<void> {
     // In production, load from database
     console.log('📊 Loading user data from storage...');
   }
@@ -794,7 +794,7 @@ export class MultiUserFileManager {
 
     } catch (error) {
       operation.status = 'failed';
-      operation.error = error.message;
+      operation.error = error instanceof Error ? error.message : String(error);
     } finally {
       this.activeProcessing.delete(operation.id);
     }

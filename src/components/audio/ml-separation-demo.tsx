@@ -150,7 +150,7 @@ export function MLSeparationDemo() {
 
     } catch (error) {
       console.error('Separation failed:', error);
-      toast.error(`Separation failed: ${error.message}`);
+      toast.error(`Separation failed: ${error instanceof Error ? error.message : String(error)}`);
 
       setProcessingStatus({
         isProcessing: false,

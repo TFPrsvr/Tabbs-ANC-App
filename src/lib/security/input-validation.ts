@@ -264,7 +264,7 @@ export function validateFileUpload(
   }
 
   // Validate file type
-  if (!ALLOWED_FILE_TYPES[category].includes(file.type)) {
+  if (!(ALLOWED_FILE_TYPES[category] as unknown as string[]).includes(file.type)) {
     errors.push(`File type ${file.type} not allowed for ${category}`);
   }
 
@@ -351,7 +351,7 @@ export function validateURL(url: string): ValidationResult {
   const sanitizedUrl = sanitizeString(url, { maxLength: VALIDATION_RULES.url.maxLength });
 
   if (!validator.isURL(sanitizedUrl, {
-    protocols: VALIDATION_RULES.url.protocols,
+    protocols: VALIDATION_RULES.url.protocols as unknown as string[],
     require_protocol: true,
     require_valid_protocol: true,
   })) {

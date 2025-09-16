@@ -223,7 +223,10 @@ export class MediaFormatDetector {
     
     // Fallback to MIME type detection
     if (!format && mimeType) {
-      format = this.getFormatByMimeType(mimeType);
+      const mimeFormat = this.getFormatByMimeType(mimeType);
+      if (mimeFormat) {
+        format = mimeFormat;
+      }
     }
     
     return format || null;

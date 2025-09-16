@@ -142,7 +142,7 @@ export class FFmpegWrapper {
 
       // Create blob with appropriate MIME type
       const mimeType = this.getMimeType(options.format);
-      const audioBlob = new Blob([audioData], { type: mimeType });
+      const audioBlob = new Blob([audioData as BlobPart], { type: mimeType });
 
       this.reportProgress('complete', 100, '🎉 Audio extracted successfully!');
       return audioBlob;

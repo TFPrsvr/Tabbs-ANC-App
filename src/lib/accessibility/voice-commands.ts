@@ -62,38 +62,40 @@ export class VoiceCommandProcessor {
                                (window as any).webkitSpeechRecognition;
 
       this.recognition = new SpeechRecognition();
-      this.recognition.continuous = true;
-      this.recognition.interimResults = true;
-      this.recognition.lang = 'en-US';
-      this.recognition.maxAlternatives = 5;
+      if (this.recognition) {
+        this.recognition.continuous = true;
+        this.recognition.interimResults = true;
+        this.recognition.lang = 'en-US';
+        this.recognition.maxAlternatives = 5;
 
-      this.recognition.onstart = () => {
-        console.log('🎤 Voice recognition started');
-        this.isListening = true;
-      };
+        this.recognition.onstart = () => {
+          console.log('🎤 Voice recognition started');
+          this.isListening = true;
+        };
 
-      this.recognition.onend = () => {
-        console.log('🎤 Voice recognition ended');
-        this.isListening = false;
+        this.recognition.onend = () => {
+          console.log('🎤 Voice recognition ended');
+          this.isListening = false;
 
-        // Auto-restart if in continuous mode
-        if (this.isWakeWordMode) {
-          setTimeout(() => this.startListening(), 1000);
-        }
-      };
+          // Auto-restart if in continuous mode
+          if (this.isWakeWordMode) {
+            setTimeout(() => this.startListening(), 1000);
+          }
+        };
 
-      this.recognition.onresult = (event) => {
-        this.handleSpeechResult(event);
-      };
+        this.recognition.onresult = (event) => {
+          this.handleSpeechResult(event);
+        };
 
-      this.recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
+        this.recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
 
-        // Restart on error
-        if (event.error === 'network' || event.error === 'aborted') {
-          setTimeout(() => this.startListening(), 2000);
-        }
-      };
+          // Restart on error
+          if (event.error === 'network' || event.error === 'aborted') {
+            setTimeout(() => this.startListening(), 2000);
+          }
+        };
+      }
     } else {
       console.warn('Speech recognition not supported in this browser');
     }

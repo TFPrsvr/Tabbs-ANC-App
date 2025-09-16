@@ -74,7 +74,7 @@ export function DragDropZone({
   // Touch and gesture support
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isLongPress, setIsLongPress] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout>();
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // File validation
   const validateFile = useCallback((file: File): { valid: boolean; error?: string } => {
@@ -214,7 +214,7 @@ export function DragDropZone({
 
       setUploadQueue(prev => prev.map(item =>
         item.id === uploadItem.id
-          ? { ...item, status: 'error', error: error.message }
+          ? { ...item, status: 'error', error: error instanceof Error ? error.message : String(error) }
           : item
       ));
     }
@@ -309,7 +309,7 @@ export function DragDropZone({
       // Cancel long press if user moved too much
       if (deltaX > 10 || deltaY > 10) {
         clearTimeout(longPressTimer.current);
-        longPressTimer.current = undefined;
+        longPressTimer.current = null;
       }
     }
   };
@@ -317,7 +317,7 @@ export function DragDropZone({
   const handleTouchEnd = () => {
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
-      longPressTimer.current = undefined;
+      longPressTimer.current = null;
     }
     setTouchStartPos(null);
   };

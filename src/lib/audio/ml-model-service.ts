@@ -68,7 +68,7 @@ export class MLModelService {
       return result;
     } catch (error) {
       console.error('ML model separation failed:', error);
-      throw new Error(`ML separation failed: ${error.message}`);
+      throw new Error(`ML separation failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -122,7 +122,6 @@ export class MLModelService {
         detectedGenre: result.metadata?.genre,
         detectedKey: result.metadata?.key,
         detectedTempo: result.metadata?.tempo,
-        modelUsed: result.modelInfo?.name,
         processingMethod: 'server-ml'
       }
     };
@@ -224,7 +223,7 @@ export class MLModelService {
       console.log(`Loaded browser ML model: ${modelKey}`);
     } catch (error) {
       console.error(`Failed to load browser model ${modelKey}:`, error);
-      throw new Error(`Browser model loading failed: ${error.message}`);
+      throw new Error(`Browser model loading failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -320,7 +319,7 @@ export class MLModelService {
       return results;
     } catch (error) {
       console.error('Chunk processing error:', error);
-      throw new Error(`Model inference failed: ${error.message}`);
+      throw new Error(`Model inference failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -404,7 +403,7 @@ export class MLModelService {
   }
 
   private getModelOutputKey(stemType: string, modelType: string): string {
-    const keyMappings = {
+    const keyMappings: Record<string, Record<string, string>> = {
       'spleeter': {
         'vocals': 'vocals_output',
         'drums': 'drums_output',

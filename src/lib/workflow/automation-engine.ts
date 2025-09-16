@@ -649,7 +649,7 @@ export class AutomationEngine extends EventEmitter {
       this.emit('executionCompleted', execution);
     } catch (error) {
       execution.status = 'failed';
-      execution.error = error.message;
+      execution.error = error instanceof Error ? error.message : String(error);
       execution.endTime = new Date();
 
       // Update workflow statistics
@@ -657,7 +657,7 @@ export class AutomationEngine extends EventEmitter {
       workflow.statistics.failedRuns++;
 
       // Handle error according to workflow policy
-      await this.handleWorkflowError(execution, workflow, error);
+      await this.handleWorkflowError(execution, workflow, error instanceof Error ? error : new Error(String(error)));
 
       this.emit('executionFailed', { execution, error });
     }
@@ -705,7 +705,7 @@ export class AutomationEngine extends EventEmitter {
 
     } catch (error) {
       step.status = 'failed';
-      step.error = error.message;
+      step.error = error instanceof Error ? error.message : String(error);
       step.endTime = new Date();
       throw error;
     }
@@ -752,7 +752,7 @@ export class AutomationEngine extends EventEmitter {
         attempt++;
         return await this.executeAction(action, input);
       } catch (error) {
-        lastError = error;
+        lastError = error instanceof Error ? error : new Error(String(error));
 
         if (attempt < action.retryPolicy.maxAttempts) {
           const delay = action.retryPolicy.delayMs * Math.pow(action.retryPolicy.backoffMultiplier, attempt - 1);
@@ -873,7 +873,7 @@ export class AutomationEngine extends EventEmitter {
       try {
         await this.rollbackStep(step);
       } catch (rollbackError) {
-        this.emit('rollbackError', { execution, step, error: rollbackError.message });
+        this.emit('rollbackError', { execution, step, error: rollbackError instanceof Error ? rollbackError.message : String(rollbackError) });
       }
     }
 

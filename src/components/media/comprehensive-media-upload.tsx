@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { AudioSlider } from '../ui/slider';
-import { Upload, FileAudio, FileVideo, File, Trash2, Play, Pause, Download, Archive, Mic, Video, Headphones, Volume2, VolumeX, RotateCcw, FastForward, Rewind, Settings } from 'lucide-react';
+import { Upload, FileAudio, FileVideo, File as FileIcon, Trash2, Play, Pause, Download, Archive, Mic, Video, Headphones, Volume2, VolumeX, RotateCcw, FastForward, Rewind, Settings } from 'lucide-react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { cn } from '@/lib/utils';
@@ -447,7 +447,7 @@ export function ComprehensiveMediaUpload({
     } else if (supportedFormats.video.includes(extension)) {
       return <FileVideo className="w-8 h-8 text-purple-600" />;
     } else {
-      return <File className="w-8 h-8 text-gray-600" />;
+      return <FileIcon className="w-8 h-8 text-gray-600" />;
     }
   };
 
@@ -691,7 +691,7 @@ export function ComprehensiveMediaUpload({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <File className="w-6 h-6" />
+              <FileIcon className="w-6 h-6" />
               📋 Uploaded Files ({uploadedFiles.length})
             </CardTitle>
           </CardHeader>

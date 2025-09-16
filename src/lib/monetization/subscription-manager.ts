@@ -305,10 +305,10 @@ export class SubscriptionManager extends EventEmitter {
         id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId,
         tierId,
-        status: tier.trialDays > 0 ? 'trialing' : 'active',
+        status: (tier.trialDays ?? 0) > 0 ? 'trialing' : 'active',
         currentPeriodStart: new Date(),
         currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-        trialEnd: tier.trialDays > 0 ? new Date(Date.now() + tier.trialDays * 24 * 60 * 60 * 1000) : undefined,
+        trialEnd: (tier.trialDays ?? 0) > 0 ? new Date(Date.now() + (tier.trialDays ?? 0) * 24 * 60 * 60 * 1000) : undefined,
         cancelAtPeriodEnd: false,
         usage: this.initializeUsageMetrics(),
         invoices: [],
@@ -330,7 +330,7 @@ export class SubscriptionManager extends EventEmitter {
 
       return subscription;
     } catch (error) {
-      this.emit('error', { type: 'subscription_creation', error: error.message, userId });
+      this.emit('error', { type: 'subscription_creation', error: error instanceof Error ? error.message : String(error), userId });
       throw error;
     }
   }

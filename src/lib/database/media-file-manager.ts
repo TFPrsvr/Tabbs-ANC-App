@@ -277,7 +277,7 @@ export class MediaFileManager {
     const values = userId ? [fileId, userId] : [fileId];
     const result = await this.client.query(query, values);
     
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   // Search and Filter Operations

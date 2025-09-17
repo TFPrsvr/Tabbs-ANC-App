@@ -156,7 +156,7 @@ const nextConfig = {
     ];
   },
 
-  // Turbopack configuration for development performance
+  // Enhanced Turbopack configuration for maximum development performance
   turbopack: {
     rules: {
       // Audio and video file handling for Turbopack
@@ -168,11 +168,27 @@ const nextConfig = {
         loaders: ['file-loader'],
         as: '*.file',
       },
+      // Web Workers optimization
+      '*.worker.{js,ts}': {
+        loaders: ['worker-loader'],
+        as: '*.worker',
+      },
+      // WASM files for audio processing
+      '*.wasm': {
+        loaders: ['file-loader'],
+        as: '*.wasm',
+      },
     },
     resolveAlias: {
       '@': './src',
+      '@/components': './src/components',
+      '@/lib': './src/lib',
+      '@/types': './src/types',
+      '@/utils': './src/utils',
     },
-    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.wasm'],
+    // Enhanced module resolution for faster builds
+    moduleIdStrategy: 'deterministic',
   },
 
   // Webpack configuration (fallback for production builds)

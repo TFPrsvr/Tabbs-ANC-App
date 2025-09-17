@@ -395,9 +395,9 @@ export class GestureControlsManager {
     let centerY = 0;
 
     for (let i = 0; i < data1.length; i += 4) {
-      const diff = Math.abs(data1[i] - data2[i]) +
-                   Math.abs(data1[i + 1] - data2[i + 1]) +
-                   Math.abs(data1[i + 2] - data2[i + 2]);
+      const diff = Math.abs((data1[i] ?? 0) - (data2[i] ?? 0)) +
+                   Math.abs((data1[i + 1] ?? 0) - (data2[i + 1] ?? 0)) +
+                   Math.abs((data1[i + 2] ?? 0) - (data2[i + 2] ?? 0));
 
       if (diff > 30) { // Motion threshold
         totalDiff += diff;
@@ -542,10 +542,12 @@ export class GestureControlsManager {
     // Detect gesture based on number of touches
     if (e.touches.length === 1) {
       // Single touch - potential tap or swipe
-      this.startGestureDetection('tap', e.touches[0]);
+      const touch = e.touches[0];
+      if (touch) this.startGestureDetection('tap', touch);
     } else if (e.touches.length === 2) {
       // Two touches - potential pinch
-      this.startGestureDetection('pinch', e.touches[0]);
+      const touch = e.touches[0];
+      if (touch) this.startGestureDetection('pinch', touch);
     }
   }
 

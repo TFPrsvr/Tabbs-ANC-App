@@ -90,7 +90,7 @@ export function SettingsModal({ children }: SettingsModalProps) {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
-                  <Label>Output Gain: {Math.round(audioSettings.outputGain[0] * 100)}%</Label>
+                  <Label>Output Gain: {Math.round((audioSettings.outputGain[0] ?? 0) * 100)}%</Label>
                   <Slider
                     value={audioSettings.outputGain}
                     onValueChange={(value) => setAudioSettings(prev => ({ ...prev, outputGain: value }))}
@@ -102,7 +102,7 @@ export function SettingsModal({ children }: SettingsModalProps) {
                 </div>
 
                 <div className="space-y-3">
-                  <Label>Input Gain: {Math.round(audioSettings.inputGain[0] * 100)}%</Label>
+                  <Label>Input Gain: {Math.round((audioSettings.inputGain[0] ?? 0) * 100)}%</Label>
                   <Slider
                     value={audioSettings.inputGain}
                     onValueChange={(value) => setAudioSettings(prev => ({ ...prev, inputGain: value }))}

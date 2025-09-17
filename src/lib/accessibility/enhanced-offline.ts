@@ -461,7 +461,7 @@ export class EnhancedOfflineManager {
       let max = 0;
 
       for (let j = start; j < end; j++) {
-        max = Math.max(max, Math.abs(channelData[j]));
+        max = Math.max(max, Math.abs(channelData[j] ?? 0));
       }
       waveform[i] = max;
     }
@@ -478,7 +478,7 @@ export class EnhancedOfflineManager {
     // Calculate loudness (RMS)
     let sumSquares = 0;
     for (let i = 0; i < channelData.length; i++) {
-      sumSquares += channelData[i] * channelData[i];
+      sumSquares += (channelData[i] ?? 0) * (channelData[i] ?? 0);
     }
     const loudness = Math.sqrt(sumSquares / channelData.length);
 
@@ -781,7 +781,7 @@ export class EnhancedOfflineManager {
 
       // Apply simple filtering (placeholder)
       for (let i = 0; i < channelData.length; i++) {
-        newChannelData[i] = channelData[i] * 0.5; // Simplified isolation
+        newChannelData[i] = (channelData[i] ?? 0) * 0.5; // Simplified isolation
       }
     }
 
@@ -802,7 +802,7 @@ export class EnhancedOfflineManager {
       // Find peak
       let peak = 0;
       for (let i = 0; i < channelData.length; i++) {
-        peak = Math.max(peak, Math.abs(channelData[i]));
+        peak = Math.max(peak, Math.abs(channelData[i] ?? 0));
       }
 
       // Normalize to -3dB
@@ -810,7 +810,7 @@ export class EnhancedOfflineManager {
       const gain = peak > 0 ? targetLevel / peak : 1;
 
       for (let i = 0; i < channelData.length; i++) {
-        newChannelData[i] = channelData[i] * gain;
+        newChannelData[i] = (channelData[i] ?? 0) * gain;
       }
     }
 
@@ -837,7 +837,7 @@ export class EnhancedOfflineManager {
       // Simple noise gate
       const threshold = 0.01;
       for (let i = 0; i < channelData.length; i++) {
-        newChannelData[i] = Math.abs(channelData[i]) > threshold ? channelData[i] : 0;
+        newChannelData[i] = Math.abs(channelData[i] ?? 0) > threshold ? (channelData[i] ?? 0) : 0;
       }
     }
 
@@ -879,7 +879,7 @@ export class EnhancedOfflineManager {
     for (let i = 0; i < length; i++) {
       for (let channel = 0; channel < numberOfChannels; channel++) {
         const sample = audioBuffer.getChannelData(channel)[i];
-        const intSample = Math.max(-32768, Math.min(32767, sample * 32768));
+        const intSample = Math.max(-32768, Math.min(32767, (sample ?? 0) * 32768));
         view.setInt16(offset, intSample, true);
         offset += 2;
       }

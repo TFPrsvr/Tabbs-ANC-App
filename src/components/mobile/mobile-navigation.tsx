@@ -118,6 +118,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
 
       return () => handler.destroy();
     }
+    return undefined;
   }, [isMenuOpen]);
 
   // Handle overlay tap to close menu
@@ -133,6 +134,7 @@ export function MobileNavigation({ className }: MobileNavigationProps) {
 
       return () => handler.destroy();
     }
+    return undefined;
   }, [isMenuOpen]);
 
   const handleNavigation = (item: NavigationItem) => {

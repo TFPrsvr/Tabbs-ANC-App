@@ -652,7 +652,7 @@ export class AriaManager {
     if (focusableElements.length === 0) return;
 
     // Focus first element
-    focusableElements[0].focus();
+    focusableElements[0]?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
@@ -661,12 +661,12 @@ export class AriaManager {
 
         if (e.shiftKey) {
           if (document.activeElement === firstFocusable) {
-            lastFocusable.focus();
+            lastFocusable?.focus();
             e.preventDefault();
           }
         } else {
           if (document.activeElement === lastFocusable) {
-            firstFocusable.focus();
+            firstFocusable?.focus();
             e.preventDefault();
           }
         }

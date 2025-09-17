@@ -277,7 +277,7 @@ class AdvancedDSPProcessor {
     const windowSize = Math.min(data.length, this.windowFunction.length);
 
     for (let i = 0; i < windowSize; i++) {
-      windowed[i] = data[i] * this.windowFunction[i];
+      windowed[i] = (data[i] ?? 0) * (this.windowFunction[i] ?? 0);
     }
 
     return windowed;
@@ -299,8 +299,8 @@ class AdvancedDSPProcessor {
     const phases = new Float32Array(size / 2);
 
     for (let i = 0; i < size / 2; i++) {
-      magnitudes[i] = Math.sqrt(real[i] * real[i] + imag[i] * imag[i]);
-      phases[i] = Math.atan2(imag[i], real[i]);
+      magnitudes[i] = Math.sqrt((real[i] ?? 0) * (real[i] ?? 0) + (imag[i] ?? 0) * (imag[i] ?? 0));
+      phases[i] = Math.atan2(imag[i] ?? 0, real[i] ?? 0);
     }
 
     return { magnitudes, phases };
@@ -313,26 +313,26 @@ class AdvancedDSPProcessor {
 
     // Reconstruct complex spectrum
     for (let i = 0; i < magnitudes.length; i++) {
-      real[i] = magnitudes[i] * Math.cos(phases[i]);
-      imag[i] = magnitudes[i] * Math.sin(phases[i]);
+      real[i] = (magnitudes[i] ?? 0) * Math.cos(phases[i] ?? 0);
+      imag[i] = (magnitudes[i] ?? 0) * Math.sin(phases[i] ?? 0);
 
       // Mirror for negative frequencies
       if (i > 0 && i < magnitudes.length - 1) {
-        real[size - i] = real[i];
-        imag[size - i] = -imag[i];
+        real[size - i] = real[i] ?? 0;
+        imag[size - i] = -(imag[i] ?? 0);
       }
     }
 
     // IFFT (conjugate, FFT, conjugate, scale)
     for (let i = 0; i < size; i++) {
-      imag[i] = -imag[i];
+      imag[i] = -(imag[i] ?? 0);
     }
 
     this.cooleyTukeyFFT(real, imag);
 
     const result = new Float32Array(size);
     for (let i = 0; i < size; i++) {
-      result[i] = real[i] / size;
+      result[i] = (real[i] ?? 0) / size;
     }
 
     return result;
@@ -352,8 +352,8 @@ class AdvancedDSPProcessor {
       j ^= bit;
 
       if (i < j) {
-        [real[i], real[j]] = [real[j], real[i]];
-        [imag[i], imag[j]] = [imag[j], imag[i]];
+        [real[i], real[j]] = [real[j] ?? 0, real[i] ?? 0];
+        [imag[i], imag[j]] = [imag[j] ?? 0, imag[i] ?? 0];
       }
     }
 
@@ -368,10 +368,10 @@ class AdvancedDSPProcessor {
         let w_imag = 0;
 
         for (let j = 0; j < length / 2; j++) {
-          const u_real = real[i + j];
-          const u_imag = imag[i + j];
-          const v_real = real[i + j + length / 2] * w_real - imag[i + j + length / 2] * w_imag;
-          const v_imag = real[i + j + length / 2] * w_imag + imag[i + j + length / 2] * w_real;
+          const u_real = real[i + j] ?? 0;
+          const u_imag = imag[i + j] ?? 0;
+          const v_real = (real[i + j + length / 2] ?? 0) * w_real - (imag[i + j + length / 2] ?? 0) * w_imag;
+          const v_imag = (real[i + j + length / 2] ?? 0) * w_imag + (imag[i + j + length / 2] ?? 0) * w_real;
 
           real[i + j] = u_real + v_real;
           imag[i + j] = u_imag + v_imag;

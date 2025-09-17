@@ -119,7 +119,8 @@ export class PerformanceMonitor {
     // Monitor First Input Delay (FID)
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const fid = entry.processingStart - entry.startTime;
+        const perfEntry = entry as any;
+        const fid = perfEntry.processingStart - entry.startTime;
         console.info(`⚡ FID: ${fid.toFixed(2)}ms`);
       }
     }).observe({ entryTypes: ['first-input'] });
@@ -164,7 +165,7 @@ export class PerformanceMonitor {
       console.info(`Request: ${(navigation.responseStart - navigation.requestStart).toFixed(2)}ms`);
       console.info(`Response: ${(navigation.responseEnd - navigation.responseStart).toFixed(2)}ms`);
       console.info(`DOM Processing: ${(navigation.domContentLoadedEventEnd - navigation.responseEnd).toFixed(2)}ms`);
-      console.info(`Total Load Time: ${(navigation.loadEventEnd - navigation.navigationStart).toFixed(2)}ms`);
+      console.info(`Total Load Time: ${(navigation.loadEventEnd - navigation.fetchStart).toFixed(2)}ms`);
       console.groupEnd();
     });
   }

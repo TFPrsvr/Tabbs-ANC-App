@@ -189,11 +189,11 @@ class AdvancedDSPProcessor {
 
     // Apply masking
     for (let i = 0; i < magnitudes.length; i++) {
-      const magnitudeDb = 20 * Math.log10(magnitudes[i] + 1e-10);
-      const thresholdDb = maskingThreshold[i];
+      const magnitudeDb = 20 * Math.log10((magnitudes[i] ?? 0) + 1e-10);
+      const thresholdDb = maskingThreshold[i] ?? 0;
 
       if (magnitudeDb < thresholdDb) {
-        magnitudes[i] *= 0.1; // Heavily attenuate masked frequencies
+        if (magnitudes[i] !== undefined) magnitudes[i]! *= 0.1; // Heavily attenuate masked frequencies
       }
     }
 
@@ -215,8 +215,8 @@ class AdvancedDSPProcessor {
 
     // Spectral subtraction
     for (let i = 0; i < magnitudes.length; i++) {
-      const subtracted = magnitudes[i] - alpha * noiseMagnitudes[i];
-      magnitudes[i] = Math.max(subtracted, beta * magnitudes[i]);
+      const subtracted = (magnitudes[i] ?? 0) - alpha * (noiseMagnitudes[i] ?? 0);
+      magnitudes[i] = Math.max(subtracted, beta * (magnitudes[i] ?? 0));
     }
 
     return this.computeIFFT(magnitudes, phases);

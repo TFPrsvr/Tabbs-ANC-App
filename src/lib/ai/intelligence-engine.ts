@@ -1444,7 +1444,7 @@ class AIIntelligenceEngine {
     let hash = 0;
 
     for (let i = 0; i < view.length; i++) {
-      hash = ((hash << 5) - hash + view[i]) & 0xffffffff;
+      hash = ((hash << 5) - hash + (view[i] ?? 0)) & 0xffffffff;
     }
 
     return Math.abs(hash).toString(36);

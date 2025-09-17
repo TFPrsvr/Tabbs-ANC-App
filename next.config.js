@@ -100,7 +100,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.clerk.accounts.dev https://*.clerk.dev https://img.clerk.com",
               "media-src 'self' blob: data:",
-              "connect-src 'self' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://api.stripe.com https://js.stripe.com https://*.neon.tech https://clerk.anc-audio-app.com/v1 wss://clerk.anc-audio-app.com https://clerk-telemetry.com",
+              "connect-src 'self' https://clerk.anc-audio-app.com https://*.clerk.accounts.dev https://*.clerk.dev https://api.stripe.com https://js.stripe.com https://*.neon.tech https://clerk.anc-audio-app.com/v1 wss://clerk.anc-audio-app.com https://clerk-telemetry.com https://img.clerk.com",
               "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://*.clerk.accounts.dev https://*.clerk.dev",
               "worker-src 'self' blob:",
               "object-src 'none'",

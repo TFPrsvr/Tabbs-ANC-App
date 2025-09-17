@@ -1,0 +1,38 @@
+{
+  "recommendations": [
+    // Essential development
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+
+    // Next.js and React
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-json",
+
+    // Git and version control
+    "eamodio.gitlens",
+    "github.vscode-pull-request-github",
+
+    // Code quality and productivity
+    "streetsidesoftware.code-spell-checker",
+    "aaron-bond.better-comments",
+    "pkief.material-icon-theme",
+    "ms-vscode.theme-tomorrowkit",
+
+    // Environment and configuration
+    "mikestead.dotenv",
+    "ms-vscode.vscode-env",
+
+    // Additional utilities
+    "wix.vscode-import-cost",
+    "ms-vscode.vscode-css-peek",
+    "zignd.html-css-class-completion",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.vscode-typescript",
+    "hookyqr.beautify"
+  ]
+}

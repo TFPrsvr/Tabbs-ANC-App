@@ -546,7 +546,7 @@ export function MediaEditingInterface({
             <Volume2 className="h-4 w-4" />
             <Slider
               value={[session.masterVolume]}
-              onValueChange={([value]) => setSession(prev => ({ ...prev, masterVolume: value }))}
+              onValueChange={([value]) => setSession(prev => ({ ...prev, masterVolume: value ?? 100 }))}
               max={200}
               min={0}
               className="w-20"
@@ -646,7 +646,7 @@ export function MediaEditingInterface({
                     setSession(prev => ({
                       ...prev,
                       tracks: prev.tracks.map(t =>
-                        t.id === track.id ? { ...t, volume: value } : t
+                        t.id === track.id ? { ...t, volume: value ?? 100 } : t
                       )
                     }));
                   }}

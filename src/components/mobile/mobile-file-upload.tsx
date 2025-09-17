@@ -43,6 +43,7 @@ export function MobileFileUpload({
 
       return () => handler.destroy();
     }
+    return undefined;
   }, [dropZoneRef.current]);
 
   const triggerFileInput = useCallback(() => {
@@ -53,12 +54,13 @@ export function MobileFileUpload({
     if (!files || files.length === 0) return;
 
     const file = files[0];
-    
+    if (!file) return;
+
     // Validate file type
     const isValidType = acceptedTypes.some(type => {
       if (type.includes('*')) {
         const baseType = type.split('/')[0];
-        return file.type.startsWith(baseType);
+        return baseType ? file.type.startsWith(baseType) : false;
       }
       return file.type === type;
     });

@@ -248,7 +248,7 @@ export function ProfessionalWaveform({
       const sampleIndex = Math.floor((x + viewportStart) * samplesPerPixel);
       if (sampleIndex < analysis.peaks.length) {
         const peak = analysis.peaks[sampleIndex];
-        const y = centerY - (peak * centerY * 0.9);
+        const y = centerY - ((peak ?? 0) * centerY * 0.9);
 
         if (x === 0) {
           ctx.moveTo(x, y);
@@ -265,7 +265,7 @@ export function ProfessionalWaveform({
       const sampleIndex = Math.floor((x + viewportStart) * samplesPerPixel);
       if (sampleIndex < analysis.peaks.length) {
         const peak = analysis.peaks[sampleIndex];
-        const y = centerY + (peak * centerY * 0.9);
+        const y = centerY + ((peak ?? 0) * centerY * 0.9);
 
         if (x === 0) {
           ctx.moveTo(x, y);
@@ -288,7 +288,7 @@ export function ProfessionalWaveform({
         const x = (i * rmsPixelsPerSample) - viewportStart;
         if (x >= 0 && x <= width) {
           const rmsValue = analysis.rms[i];
-          const y = centerY - (rmsValue * centerY * 0.5);
+          const y = centerY - ((rmsValue ?? 0) * centerY * 0.5);
 
           if (i === 0) {
             ctx.moveTo(x, y);

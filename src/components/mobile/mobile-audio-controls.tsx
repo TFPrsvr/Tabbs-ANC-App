@@ -67,6 +67,7 @@ export function MobileAudioControls({
         setGestureHandler(null);
       };
     }
+    return undefined;
   }, [progressBarRef.current]);
 
   // Volume gesture handling
@@ -87,6 +88,7 @@ export function MobileAudioControls({
 
       return () => handler.destroy();
     }
+    return undefined;
   }, [volumeBarRef.current]);
 
   const handleProgressTap = useCallback((x: number) => {

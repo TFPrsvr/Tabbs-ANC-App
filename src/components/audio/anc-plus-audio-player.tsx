@@ -252,7 +252,7 @@ export function ANCPlusAudioPlayer({
       
       // Draw frequency bars
       for (let i = 0; i < frequencyData.length; i++) {
-        const barHeight = (frequencyData[i] / 255) * height;
+        const barHeight = ((frequencyData[i] ?? 0) / 255) * height;
         
         // Color based on frequency range
         let color = '#3b82f6'; // Default blue
@@ -865,7 +865,7 @@ export function ANCPlusAudioPlayer({
                 <div className="flex-1">
                   <AudioSlider
                     value={[stream.volume]}
-                    onValueChange={(value) => updateStreamVolume(stream.id, value[0])}
+                    onValueChange={(value) => updateStreamVolume(stream.id, value[0] ?? 0)}
                     max={100}
                     step={1}
                     className="w-full"

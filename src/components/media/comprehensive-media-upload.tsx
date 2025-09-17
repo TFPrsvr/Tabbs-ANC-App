@@ -384,7 +384,7 @@ export function ComprehensiveMediaUpload({
 
     try {
       for (const mediaFile of processedFiles) {
-        const folder = zip.folder(mediaFile.name.split('.')[0]);
+        const folder = zip.folder(mediaFile.name.split('.')[0] ?? 'unnamed');
         
         if (mediaFile.streams && folder) {
           // Create mock stream files (in real implementation, these would be actual processed streams)
@@ -543,7 +543,7 @@ export function ComprehensiveMediaUpload({
                 <label className="text-sm font-medium">Compression Level: {compressionLevel}</label>
                 <AudioSlider
                   value={[compressionLevel]}
-                  onValueChange={(value) => setCompressionLevel(value[0])}
+                  onValueChange={(value) => setCompressionLevel(value[0] ?? 6)}
                   min={0}
                   max={9}
                   step={1}

@@ -207,7 +207,7 @@ export function MLSeparationDemo() {
       // Convert audio data
       let offset = 44;
       for (let i = 0; i < length; i++) {
-        const sample = Math.max(-1, Math.min(1, channelData[i]));
+        const sample = Math.max(-1, Math.min(1, channelData[i] ?? 0));
         view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
         offset += 2;
       }

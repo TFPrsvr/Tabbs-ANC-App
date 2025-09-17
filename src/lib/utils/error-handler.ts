@@ -172,7 +172,7 @@ export class ErrorHandler {
       message,
       ErrorSeverity.LOW,
       ErrorCategory.VALIDATION,
-      { field },
+      { additionalData: { field } },
       'Please check your input and try again.'
     );
   }

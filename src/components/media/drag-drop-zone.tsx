@@ -291,7 +291,7 @@ export function DragDropZone({
   // Touch event handlers for mobile
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
-    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    setTouchStartPos({ x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 });
     setIsLongPress(false);
 
     longPressTimer.current = setTimeout(() => {
@@ -303,8 +303,8 @@ export function DragDropZone({
   const handleTouchMove = (event: React.TouchEvent) => {
     if (touchStartPos && longPressTimer.current) {
       const touch = event.touches[0];
-      const deltaX = Math.abs(touch.clientX - touchStartPos.x);
-      const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+      const deltaX = Math.abs((touch?.clientX ?? 0) - touchStartPos.x);
+      const deltaY = Math.abs((touch?.clientY ?? 0) - touchStartPos.y);
 
       // Cancel long press if user moved too much
       if (deltaX > 10 || deltaY > 10) {

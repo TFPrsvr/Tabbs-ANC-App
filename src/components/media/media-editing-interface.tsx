@@ -246,7 +246,7 @@ export function MediaEditingInterface({
     if (undoStack.length > 0) {
       const previousState = undoStack[undoStack.length - 1];
       setRedoStack(prev => [session, ...prev]);
-      setSession(previousState);
+      if (previousState) setSession(previousState);
       setUndoStack(prev => prev.slice(0, -1));
     }
   }, [undoStack, session]);
@@ -255,7 +255,7 @@ export function MediaEditingInterface({
     if (redoStack.length > 0) {
       const nextState = redoStack[0];
       setUndoStack(prev => [...prev, session]);
-      setSession(nextState);
+      if (nextState) setSession(nextState);
       setRedoStack(prev => prev.slice(1));
     }
   }, [redoStack, session]);

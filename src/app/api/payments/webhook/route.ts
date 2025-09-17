@@ -116,7 +116,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
         current_period_start, current_period_end, cancel_at_period_end
       )
       VALUES (
-        ${userId}, ${plan.id}, ${subscription.id}, ${subscription.status},
+        ${userId}, ${plan?.id}, ${subscription.id}, ${subscription.status},
         ${new Date((subscription as any).current_period_start * 1000).toISOString()},
         ${new Date((subscription as any).current_period_end * 1000).toISOString()},
         ${subscription.cancel_at_period_end}
@@ -125,7 +125,7 @@ async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
 
     // Track subscription creation
     await DatabaseService.trackUsage(userId, 'subscription_created', {
-      planName: plan.name,
+      planName: plan?.name,
       subscriptionId: subscription.id,
       priceId: priceId,
     });

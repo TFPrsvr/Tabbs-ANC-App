@@ -55,7 +55,7 @@ export function StreamController({
         
         let sum = 0;
         for (let i = 0; i < dataArray.length; i++) {
-          sum += dataArray[i];
+          sum += dataArray[i] ?? 0;
         }
         setVolumeLevel(sum / (dataArray.length * 255));
       } else {
@@ -80,7 +80,7 @@ export function StreamController({
   };
 
   const handleVolumeChange = (values: number[]) => {
-    const newVolume = values[0] / 100;
+    const newVolume = (values[0] ?? 50) / 100;
     onVolumeChange(stream.id, newVolume);
   };
 

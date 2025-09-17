@@ -107,7 +107,7 @@ export function ProfessionalWaveform({
       let max = 0;
 
       for (let j = start; j < end; j++) {
-        max = Math.max(max, Math.abs(channelData[j]));
+        max = Math.max(max, Math.abs(channelData[j] ?? 0));
       }
       peaks[i] = max;
     }
@@ -123,7 +123,7 @@ export function ProfessionalWaveform({
       let sum = 0;
 
       for (let j = start; j < end; j++) {
-        sum += channelData[j] * channelData[j];
+        sum += (channelData[j] ?? 0) * (channelData[j] ?? 0);
       }
       rms.push(Math.sqrt(sum / (end - start)));
     }
@@ -145,7 +145,7 @@ export function ProfessionalWaveform({
     for (let i = 0; i < channelData.length - windowSize; i += windowSize) {
       let crossings = 0;
       for (let j = i; j < i + windowSize - 1; j++) {
-        if ((channelData[j] >= 0) !== (channelData[j + 1] >= 0)) {
+        if (((channelData[j] ?? 0) >= 0) !== ((channelData[j + 1] ?? 0) >= 0)) {
           crossings++;
         }
       }
@@ -172,7 +172,7 @@ export function ProfessionalWaveform({
 
     for (let i = 0; i < bins; i++) {
       const frequency = (i * sampleRate) / (2 * bins);
-      const magnitude = Math.abs(segment[i]);
+      const magnitude = Math.abs(segment[i] ?? 0);
       weightedSum += frequency * magnitude;
       magnitudeSum += magnitude;
     }

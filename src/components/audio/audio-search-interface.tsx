@@ -261,8 +261,8 @@ export function AudioSearchInterface({
                     </label>
                     <Slider
                       value={[filters.confidenceThreshold]}
-                      onValueChange={([value]) => 
-                        setFilters(prev => ({ ...prev, confidenceThreshold: value }))
+                      onValueChange={([value]) =>
+                        setFilters(prev => ({ ...prev, confidenceThreshold: value ?? 75 }))
                       }
                       max={100}
                       min={1}

@@ -73,6 +73,7 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
       }, 100);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [isPlaying]);
 
   useEffect(() => {

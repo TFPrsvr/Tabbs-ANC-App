@@ -126,7 +126,7 @@ export function SmartAudioSeparation({
         // Pause all other streams
         Object.values(audioRefs.current).forEach(a => a.pause());
         
-        audio.volume = streamVolumes[streamKey] / 100;
+        audio.volume = (streamVolumes[streamKey] ?? 50) / 100;
         await audio.play();
         setPlayingStream(streamKey);
         
@@ -189,7 +189,7 @@ export function SmartAudioSeparation({
     let offset = 44;
     for (let i = 0; i < audioBuffer.length; i++) {
       for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
-        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i]));
+        const sample = Math.max(-1, Math.min(1, audioBuffer.getChannelData(channel)[i] ?? 0));
         view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
         offset += 2;
       }
@@ -450,8 +450,8 @@ export function SmartAudioSeparation({
                     
                     <div className="space-y-2">
                       <AudioSlider
-                        value={[streamVolumes[key]]}
-                        onValueChange={(value) => handleVolumeChange(key, value[0])}
+                        value={[streamVolumes[key] ?? 50]}
+                        onValueChange={(value) => handleVolumeChange(key, value[0] ?? 50)}
                         max={100}
                         step={1}
                         className="w-full"

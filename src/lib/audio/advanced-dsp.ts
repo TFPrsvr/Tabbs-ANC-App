@@ -405,12 +405,12 @@ class AdvancedDSPProcessor {
     const minThreshold = maxMag * threshold;
 
     for (let i = 1; i < magnitudes.length - 1; i++) {
-      if (magnitudes[i] > magnitudes[i - 1] &&
-          magnitudes[i] > magnitudes[i + 1] &&
-          magnitudes[i] > minThreshold) {
+      if ((magnitudes[i] ?? 0) > (magnitudes[i - 1] ?? 0) &&
+          (magnitudes[i] ?? 0) > (magnitudes[i + 1] ?? 0) &&
+          (magnitudes[i] ?? 0) > minThreshold) {
         peaks.push({
-          frequency: frequencies[i],
-          magnitude: magnitudes[i],
+          frequency: frequencies[i] ?? 0,
+          magnitude: magnitudes[i] ?? 0,
           phase: 0 // Would need phase spectrum for accurate phase
         });
       }
@@ -424,8 +424,8 @@ class AdvancedDSPProcessor {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      numerator += frequencies[i] * magnitudes[i];
-      denominator += magnitudes[i];
+      numerator += (frequencies[i] ?? 0) * (magnitudes[i] ?? 0);
+      denominator += magnitudes[i] ?? 0;
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -437,9 +437,9 @@ class AdvancedDSPProcessor {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const deviation = frequencies[i] - centroid;
-      numerator += deviation * deviation * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = (frequencies[i] ?? 0) - centroid;
+      numerator += deviation * deviation * (magnitudes[i] ?? 0);
+      denominator += magnitudes[i] ?? 0;
     }
 
     return denominator > 0 ? Math.sqrt(numerator / denominator) : 0;
@@ -455,13 +455,13 @@ class AdvancedDSPProcessor {
 
     let cumulativeEnergy = 0;
     for (let i = 0; i < magnitudes.length; i++) {
-      cumulativeEnergy += magnitudes[i] * magnitudes[i];
+      cumulativeEnergy += (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       if (cumulativeEnergy >= targetEnergy) {
-        return frequencies[i];
+        return frequencies[i] ?? 0;
       }
     }
 
-    return frequencies[frequencies.length - 1];
+    return frequencies[frequencies.length - 1] ?? 0;
   }
 
   private calculateSpectralFlux(current: Float32Array, previous?: Float32Array): number {
@@ -474,7 +474,7 @@ class AdvancedDSPProcessor {
     const minLength = Math.min(current.length, previous.length);
 
     for (let i = 0; i < minLength; i++) {
-      const diff = current[i] - previous[i];
+      const diff = (current[i] ?? 0) - (previous[i] ?? 0);
       flux += diff * diff;
     }
 
@@ -492,7 +492,7 @@ class AdvancedDSPProcessor {
 
     for (let i = 0; i < peaks.length; i++) {
       for (let j = i + 1; j < peaks.length; j++) {
-        const ratio = peaks[j].frequency / peaks[i].frequency;
+        const ratio = (peaks[j]?.frequency ?? 0) / (peaks[i]?.frequency ?? 1);
         const nearestInteger = Math.round(ratio);
 
         if (Math.abs(ratio - nearestInteger) < 0.05 && nearestInteger >= 2) {
@@ -583,7 +583,7 @@ class AdvancedDSPProcessor {
     for (let i = 0; i < this.barkFilters.length; i++) {
       let sum = 0;
       for (let j = 0; j < magnitudes.length; j++) {
-        sum += magnitudes[j] * this.barkFilters[i][j];
+        sum += (magnitudes[j] ?? 0) * (this.barkFilters[i]?.[j] ?? 0);
       }
       barkSpectrum[i] = sum;
     }
@@ -597,7 +597,7 @@ class AdvancedDSPProcessor {
     for (let i = 0; i < this.melFilters.length; i++) {
       let sum = 0;
       for (let j = 0; j < magnitudes.length; j++) {
-        sum += magnitudes[j] * this.melFilters[i][j];
+        sum += (magnitudes[j] ?? 0) * (this.melFilters[i]?.[j] ?? 0);
       }
       melSpectrum[i] = Math.log(sum + 1e-10); // Log mel spectrum
     }
@@ -623,7 +623,7 @@ class AdvancedDSPProcessor {
 
       let energy = 0;
       for (let i = lowBin; i <= highBin && i < magnitudes.length; i++) {
-        energy += magnitudes[i] * magnitudes[i];
+        energy += (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       }
 
       return {

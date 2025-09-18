@@ -213,7 +213,7 @@ export function validateEnvironment(): {
   if (process.env.NODE_ENV === 'production') {
     // Ensure all sensitive keys are present in production
     const missingSensitive = Array.from(sensitiveKeys).filter(
-      key => ENV_SCHEMA[key].required && !validatedEnvironment[key]
+      key => ENV_SCHEMA[key]?.required && !validatedEnvironment[key]
     );
 
     if (missingSensitive.length > 0) {

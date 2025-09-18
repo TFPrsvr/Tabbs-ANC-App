@@ -871,10 +871,16 @@ export class VersionControlSystem extends EventEmitter {
     }
 
     const lastVersion = branchVersions[0];
+    if (!lastVersion) {
+      return '1.0.0';
+    }
     const versionParts = lastVersion.version.split('.').map(Number);
 
     // Increment patch version
-    versionParts[2]++;
+    const patchVersion = versionParts[2];
+    if (patchVersion !== undefined) {
+      versionParts[2] = patchVersion + 1;
+    }
 
     return versionParts.join('.');
   }

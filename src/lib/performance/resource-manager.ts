@@ -929,7 +929,7 @@ export class ResourceManager extends EventEmitter {
     for (let i = this.processingQueue.length - 1; i >= 0; i--) {
       const task = this.processingQueue[i];
 
-      if (this.canStartTask(task)) {
+      if (task && this.canStartTask(task)) {
         this.startTask(task);
         this.processingQueue.splice(i, 1);
       }
@@ -1279,7 +1279,9 @@ export class ResourceManager extends EventEmitter {
     const queueIndex = this.processingQueue.findIndex(task => task.id === taskId);
     if (queueIndex !== -1) {
       const task = this.processingQueue.splice(queueIndex, 1)[0];
-      task.status = 'cancelled';
+      if (task) {
+        task.status = 'cancelled';
+      }
       this.emit('taskCancelled', task);
       return;
     }

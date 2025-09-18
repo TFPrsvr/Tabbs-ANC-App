@@ -75,7 +75,7 @@ export class AudioVisualizer {
     let x = 0;
     
     for (let i = 0; i < bufferLength; i++) {
-      const v = dataArray[i] / 128.0;
+      const v = (dataArray[i] ?? 0) / 128.0;
       const y = (v * height) / 2;
       
       if (i === 0) {
@@ -112,10 +112,10 @@ export class AudioVisualizer {
     let x = 0;
     
     for (let i = 0; i < bufferLength; i++) {
-      barHeight = (dataArray[i] / 255) * height;
+      barHeight = ((dataArray[i] ?? 0) / 255) * height;
       
       const hue = (i / bufferLength) * 360;
-      const lightness = 50 + (dataArray[i] / 255) * 30;
+      const lightness = 50 + ((dataArray[i] ?? 0) / 255) * 30;
       
       this.canvasContext.fillStyle = `hsl(${hue}, 70%, ${lightness}%)`;
       this.canvasContext.fillRect(x, height - barHeight, barWidth, barHeight);
@@ -146,7 +146,7 @@ export class AudioVisualizer {
     const angleStep = (Math.PI * 2) / bufferLength;
     
     for (let i = 0; i < bufferLength; i++) {
-      const amplitude = dataArray[i] / 255;
+      const amplitude = (dataArray[i] ?? 0) / 255;
       const angle = i * angleStep;
       
       const innerRadius = radius;

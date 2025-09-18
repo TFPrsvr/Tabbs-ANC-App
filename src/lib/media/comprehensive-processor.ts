@@ -458,7 +458,10 @@ export class ComprehensiveMediaProcessor {
           const end = Math.floor(((i + 1) * channelData.length) / sampleSize);
 
           for (let j = start; j < end; j++) {
-            sum += Math.abs(channelData[j]);
+            const sample = channelData[j];
+            if (sample !== undefined) {
+              sum += Math.abs(sample);
+            }
           }
 
           waveform[i] = sum / (end - start);

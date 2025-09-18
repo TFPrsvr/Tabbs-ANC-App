@@ -280,7 +280,7 @@ export class AdvancedAudioSeparator {
 
       // Apply window function
       for (let j = 0; j < fftSize; j++) {
-        window[j] *= windowFunction[j];
+        window[j] = (window[j] ?? 0) * (windowFunction[j] ?? 0);
       }
 
       // Perform FFT (simplified - in production use a proper FFT library)
@@ -292,7 +292,7 @@ export class AdvancedAudioSeparator {
     const avgSpectrum = new Float32Array(fftSize / 2);
     fftResults.forEach(spectrum => {
       for (let i = 0; i < avgSpectrum.length; i++) {
-        avgSpectrum[i] += spectrum[i] / fftResults.length;
+        avgSpectrum[i] = (avgSpectrum[i] ?? 0) + ((spectrum[i] ?? 0) / fftResults.length);
       }
     });
 
@@ -327,7 +327,7 @@ export class AdvancedAudioSeparator {
       // Calculate spectral flux (measure of spectral change)
       let spectralFlux = 0;
       for (let j = 0; j < spectrum.length; j++) {
-        const diff = spectrum[j] - (i > 0 ? prevSpectralFlux : 0);
+        const diff = (spectrum[j] ?? 0) - (i > 0 ? prevSpectralFlux : 0);
         spectralFlux += Math.max(0, diff); // Half-wave rectification
       }
 
@@ -561,7 +561,7 @@ export class AdvancedAudioSeparator {
     const processedData = new Float32Array(channelData.length);
 
     for (let i = 0; i < channelData.length; i++) {
-      const input = Math.abs(channelData[i]);
+      const input = Math.abs(channelData[i] ?? 0);
 
       // Envelope follower
       if (input > envelope) {
@@ -578,7 +578,7 @@ export class AdvancedAudioSeparator {
         gainReduction = (options.threshold + compressedOver) / envelope;
       }
 
-      processedData[i] = channelData[i] * gainReduction;
+      processedData[i] = (channelData[i] ?? 0) * gainReduction;
     }
 
     const processedBuffer = this.audioContext.createBuffer(
@@ -624,8 +624,8 @@ export class AdvancedAudioSeparator {
 
       for (let n = 0; n < N; n++) {
         const angle = -2 * Math.PI * k * n / N;
-        real += input[n] * Math.cos(angle);
-        imag += input[n] * Math.sin(angle);
+        real += (input[n] ?? 0) * Math.cos(angle);
+        imag += (input[n] ?? 0) * Math.sin(angle);
       }
 
       output[k] = Math.sqrt(real * real + imag * imag);
@@ -640,8 +640,8 @@ export class AdvancedAudioSeparator {
 
     for (let i = 0; i < spectrum.length; i++) {
       const frequency = (i * sampleRate) / (2 * spectrum.length);
-      weightedSum += frequency * spectrum[i];
-      magnitudeSum += spectrum[i];
+      weightedSum += frequency * (spectrum[i] ?? 0);
+      magnitudeSum += (spectrum[i] ?? 0);
     }
 
     return magnitudeSum > 0 ? weightedSum / magnitudeSum : 0;
@@ -651,7 +651,7 @@ export class AdvancedAudioSeparator {
     let crossings = 0;
 
     for (let i = 1; i < data.length; i++) {
-      if ((data[i] >= 0) !== (data[i - 1] >= 0)) {
+      if (((data[i] ?? 0) >= 0) !== ((data[i - 1] ?? 0) >= 0)) {
         crossings++;
       }
     }
@@ -741,7 +741,7 @@ export class AdvancedAudioSeparator {
 
       // Apply window
       for (let j = 0; j < frameSize; j++) {
-        frame[j] *= window[j];
+        frame[j] = (frame[j] ?? 0) * (window[j] ?? 0);
       }
 
       // FFT -> Apply mask -> IFFT (simplified)
@@ -749,7 +749,7 @@ export class AdvancedAudioSeparator {
 
       // Apply mask
       for (let j = 0; j < Math.min(spectrum.length, mask.length); j++) {
-        spectrum[j] *= mask[j];
+        spectrum[j] = (spectrum[j] ?? 0) * (mask[j] ?? 0);
       }
 
       // IFFT (simplified - convert back to time domain)
@@ -757,7 +757,7 @@ export class AdvancedAudioSeparator {
 
       // Overlap-add
       for (let j = 0; j < frameSize && i + j < processedData.length; j++) {
-        processedData[i + j] += processedFrame[j] * window[j];
+        processedData[i + j] = (processedData[i + j] ?? 0) + ((processedFrame[j] ?? 0) * (window[j] ?? 0));
       }
     }
 
@@ -778,7 +778,7 @@ export class AdvancedAudioSeparator {
 
       for (let k = 0; k < spectrum.length; k++) {
         const angle = 2 * Math.PI * k * n / N;
-        sum += spectrum[k] * Math.cos(angle);
+        sum += (spectrum[k] ?? 0) * Math.cos(angle);
       }
 
       output[n] = sum / N;
@@ -828,7 +828,7 @@ export class AdvancedAudioSeparator {
 
     const intervals = [];
     for (let i = 1; i < onsets.length; i++) {
-      intervals.push(onsets[i] - onsets[i - 1]);
+      intervals.push((onsets[i] ?? 0) - (onsets[i - 1] ?? 0));
     }
 
     // Find most common interval (simplified)
@@ -913,7 +913,7 @@ export class AdvancedAudioSeparator {
 
     let cumulativeEnergy = 0;
     for (let i = 0; i < spectrum.length; i++) {
-      cumulativeEnergy += spectrum[i];
+      cumulativeEnergy += (spectrum[i] ?? 0);
       if (cumulativeEnergy >= targetEnergy) {
         return (i * sampleRate) / (2 * spectrum.length);
       }
@@ -928,12 +928,12 @@ export class AdvancedAudioSeparator {
     let totalEnergy = 0;
 
     for (let i = 0; i < spectrum.length; i++) {
-      totalEnergy += spectrum[i];
+      totalEnergy += (spectrum[i] ?? 0);
 
       // Check if frequency is likely harmonic (simplified)
       const freq = (i / spectrum.length) * 22050;
       if (freq % 110 < 10 || freq % 110 > 100) { // Multiples of A2 (110Hz)
-        harmonicEnergy += spectrum[i];
+        harmonicEnergy += (spectrum[i] ?? 0);
       }
     }
 
@@ -951,7 +951,7 @@ export class AdvancedAudioSeparator {
       const spectrum = this.simpleFFT(frameData);
 
       for (let i = 0; i < profile.length; i++) {
-        profile[i] += spectrum[i] / numFrames;
+        profile[i] = (profile[i] ?? 0) + ((spectrum[i] ?? 0) / numFrames);
       }
     }
 
@@ -974,22 +974,22 @@ export class AdvancedAudioSeparator {
 
       // Apply window
       for (let j = 0; j < frameSize; j++) {
-        frame[j] *= window[j];
+        frame[j] = (frame[j] ?? 0) * (window[j] ?? 0);
       }
 
       const spectrum = this.simpleFFT(frame);
 
       // Spectral subtraction
       for (let j = 0; j < Math.min(spectrum.length, noiseProfile.length); j++) {
-        const noiseMagnitude = noiseProfile[j] * strength;
-        spectrum[j] = Math.max(0.1 * spectrum[j], spectrum[j] - noiseMagnitude);
+        const noiseMagnitude = (noiseProfile[j] ?? 0) * strength;
+        spectrum[j] = Math.max(0.1 * (spectrum[j] ?? 0), (spectrum[j] ?? 0) - noiseMagnitude);
       }
 
       const processedFrame = this.simpleIFFT(spectrum);
 
       // Overlap-add
       for (let j = 0; j < frameSize && i + j < processedData.length; j++) {
-        processedData[i + j] += processedFrame[j] * window[j];
+        processedData[i + j] = (processedData[i + j] ?? 0) + ((processedFrame[j] ?? 0) * (window[j] ?? 0));
       }
     }
 

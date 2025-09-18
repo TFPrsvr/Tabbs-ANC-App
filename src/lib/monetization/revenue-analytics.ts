@@ -439,7 +439,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
     forecastPeriod: number
   ): Promise<RevenueForecasting> {
     const predictions = [];
-    const lastRevenue = historicalData[historicalData.length - 1].revenue;
+    const lastRevenue = historicalData[historicalData.length - 1]?.revenue ?? 0;
 
     for (let i = 1; i <= forecastPeriod; i++) {
       const date = new Date();
@@ -477,7 +477,7 @@ export class RevenueAnalyticsEngine extends EventEmitter {
       method: method as 'linear' | 'exponential' | 'arima',
       period: {
         start: new Date(),
-        end: predictions[predictions.length - 1].date
+        end: predictions[predictions.length - 1]?.date ?? new Date()
       },
       predictions,
       accuracy: {

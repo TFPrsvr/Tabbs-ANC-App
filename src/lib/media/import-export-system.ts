@@ -766,7 +766,8 @@ export class ImportExportSystem {
     let offset = 44;
     for (let i = 0; i < length; i++) {
       for (let channel = 0; channel < numberOfChannels; channel++) {
-        const sample = audioBuffer.getChannelData(channel)[i];
+        const channelData = audioBuffer.getChannelData(channel);
+        const sample = channelData[i] || 0;
 
         if (bitDepth === 16) {
           const intSample = Math.max(-32768, Math.min(32767, sample * 32768));
@@ -807,7 +808,9 @@ export class ImportExportSystem {
         const fraction = sourceIndex - index;
 
         if (index + 1 < inputData.length) {
-          outputData[i] = inputData[index] * (1 - fraction) + inputData[index + 1] * fraction;
+          const sample1 = inputData[index] || 0;
+          const sample2 = inputData[index + 1] || 0;
+          outputData[i] = sample1 * (1 - fraction) + sample2 * fraction;
         } else {
           outputData[i] = inputData[index] || 0;
         }
@@ -822,7 +825,7 @@ export class ImportExportSystem {
     return this.importFormats.find(format =>
       format.extensions.includes(extension) ||
       format.mimeTypes.some(mimeType =>
-        mimeType === '*/*' || file.type.includes(mimeType.split('/')[0])
+        mimeType === '*/*' || file.type.includes((mimeType.split('/')[0]) || '')
       )
     ) || null;
   }
@@ -891,7 +894,10 @@ export class ImportExportSystem {
     const bytes = new Uint8Array(data);
     let binary = '';
     for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
+      const byte = bytes[i];
+      if (byte !== undefined) {
+        binary += String.fromCharCode(byte);
+      }
     }
     return btoa(binary);
   }
@@ -953,6 +959,10 @@ export class ImportExportSystem {
     for (let i = 0; i < operation.files.length; i++) {
       try {
         const fileId = operation.files[i];
+        if (!fileId) {
+          errors.push({ fileId: 'unknown', error: 'Invalid file ID' });
+          continue;
+        }
 
         // Update progress
         operation.progress = (i / operation.files.length) * 100;
@@ -968,11 +978,12 @@ export class ImportExportSystem {
         if (exportResult.success && exportResult.downloadUrl) {
           results.push({ fileId, downloadUrl: exportResult.downloadUrl });
         } else {
-          errors.push({ fileId, error: exportResult.error || 'Export failed' });
+          errors.push({ fileId, error: exportResult.error ?? 'Export failed' });
         }
 
       } catch (error) {
-        errors.push({ fileId: operation.files[i], error: error instanceof Error ? error.message : String(error) });
+        const currentFileId = operation.files[i];
+        errors.push({ fileId: currentFileId || 'unknown', error: error instanceof Error ? error.message : String(error) });
       }
     }
 
@@ -995,7 +1006,7 @@ export class ImportExportSystem {
       };
     } else if (results.length === 1) {
       operation.results = {
-        downloadUrl: results[0].downloadUrl,
+        downloadUrl: results[0]?.downloadUrl || '',
         individualFiles: results,
         errors
       };

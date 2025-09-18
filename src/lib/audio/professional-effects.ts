@@ -129,6 +129,8 @@ class MultibandCompressor extends AudioEffect {
     // Process each band
     for (let bandIndex = 0; bandIndex < this.bands.length; bandIndex++) {
       const band = this.bands[bandIndex];
+      if (!band) continue;
+
       let bandSignal = new Float32Array(input);
 
       // Apply band filtering
@@ -160,7 +162,7 @@ class MultibandCompressor extends AudioEffect {
     for (let i = 0; i < output.length; i++) {
       let sum = 0;
       for (const bandOutput of bandOutputs) {
-        sum += bandOutput[i];
+        sum += bandOutput[i] ?? 0;
       }
       output[i] = sum;
     }
@@ -168,7 +170,7 @@ class MultibandCompressor extends AudioEffect {
     // Apply wet/dry mix
     const mix = (this.parameters.mix as number) / 100;
     for (let i = 0; i < output.length; i++) {
-      output[i] = input[i] * (1 - mix) + output[i] * mix;
+      output[i] = (input[i] ?? 0) * (1 - mix) + (output[i] ?? 0) * mix;
     }
 
     return {
@@ -273,7 +275,7 @@ class SpectralDeEsser extends AudioEffect {
       // Overlap-add
       for (let i = 0; i < this.fftSize; i++) {
         if (pos + i < output.length) {
-          output[pos + i] += processedFrame[i] * this.windowFunction[i];
+          output[pos + i] = (output[pos + i] ?? 0) + (processedFrame[i] ?? 0) * (this.windowFunction[i] ?? 0);
         }
       }
 
@@ -294,7 +296,7 @@ class SpectralDeEsser extends AudioEffect {
     // Apply window
     const windowed = new Float32Array(this.fftSize);
     for (let i = 0; i < this.fftSize; i++) {
-      windowed[i] = frame[i] * this.windowFunction[i];
+      windowed[i] = (frame[i] ?? 0) * (this.windowFunction[i] ?? 0);
     }
 
     // FFT
@@ -325,7 +327,7 @@ class SpectralDeEsser extends AudioEffect {
     let totalEnergy = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const energy = magnitudes[i] * magnitudes[i];
+      const energy = (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       totalEnergy += energy;
 
       if (i >= startBin && i <= endBin) {
@@ -351,8 +353,8 @@ class SpectralDeEsser extends AudioEffect {
     let peakMagnitude = 0;
 
     for (let i = startBin; i <= endBin && i < magnitudes.length; i++) {
-      if (magnitudes[i] > peakMagnitude) {
-        peakMagnitude = magnitudes[i];
+      if ((magnitudes[i] ?? 0) > peakMagnitude) {
+        peakMagnitude = magnitudes[i] ?? 0;
         peakBin = i;
       }
     }
@@ -390,7 +392,7 @@ class SpectralDeEsser extends AudioEffect {
         const smoothing = 0.5 * (1 + Math.cos(Math.PI * normalizedDistance));
         const localReduction = 1 - (1 - reduction) * smoothing;
 
-        spectrum.magnitudes[i] *= localReduction;
+        spectrum.magnitudes[i] = (spectrum.magnitudes[i] ?? 0) * localReduction;
       }
     }
 
@@ -398,7 +400,7 @@ class SpectralDeEsser extends AudioEffect {
     if (this.parameters.spectral_gate) {
       const gate = this.dbToLinear(-60); // -60dB gate
       for (let i = 0; i < spectrum.magnitudes.length; i++) {
-        if (spectrum.magnitudes[i] < gate) {
+        if ((spectrum.magnitudes[i] ?? 0) < gate) {
           spectrum.magnitudes[i] = 0;
         }
       }
@@ -433,8 +435,8 @@ class SpectralDeEsser extends AudioEffect {
     const phases = new Float32Array(size / 2);
 
     for (let i = 0; i < size / 2; i++) {
-      magnitudes[i] = Math.sqrt(real[i] * real[i] + imag[i] * imag[i]);
-      phases[i] = Math.atan2(imag[i], real[i]);
+      magnitudes[i] = Math.sqrt((real[i] ?? 0) * (real[i] ?? 0) + (imag[i] ?? 0) * (imag[i] ?? 0));
+      phases[i] = Math.atan2(imag[i] ?? 0, real[i] ?? 0);
     }
 
     return { magnitudes, phases };
@@ -447,12 +449,12 @@ class SpectralDeEsser extends AudioEffect {
 
     // Reconstruct complex spectrum
     for (let i = 0; i < magnitudes.length; i++) {
-      real[i] = magnitudes[i] * Math.cos(phases[i]);
-      imag[i] = magnitudes[i] * Math.sin(phases[i]);
+      real[i] = (magnitudes[i] ?? 0) * Math.cos(phases[i] ?? 0);
+      imag[i] = (magnitudes[i] ?? 0) * Math.sin(phases[i] ?? 0);
 
       if (i > 0 && i < magnitudes.length - 1) {
-        real[size - i] = real[i];
-        imag[size - i] = -imag[i];
+        real[size - i] = real[i] ?? 0;
+        imag[size - i] = -(imag[i] ?? 0);
       }
     }
 
@@ -461,7 +463,7 @@ class SpectralDeEsser extends AudioEffect {
 
     const result = new Float32Array(size);
     for (let i = 0; i < size; i++) {
-      result[i] = real[i] / size;
+      result[i] = (real[i] ?? 0) / size;
     }
 
     return result;
@@ -482,8 +484,8 @@ class SpectralDeEsser extends AudioEffect {
       j ^= bit;
 
       if (i < j) {
-        [real[i], real[j]] = [real[j], real[i]];
-        [imag[i], imag[j]] = [imag[j], imag[i]];
+        [real[i], real[j]] = [real[j] ?? 0, real[i] ?? 0];
+        [imag[i], imag[j]] = [imag[j] ?? 0, imag[i] ?? 0];
       }
     }
 
@@ -498,10 +500,10 @@ class SpectralDeEsser extends AudioEffect {
         let w_imag = 0;
 
         for (let j = 0; j < length / 2; j++) {
-          const u_real = real[i + j];
-          const u_imag = imag[i + j];
-          const v_real = real[i + j + length / 2] * w_real - imag[i + j + length / 2] * w_imag;
-          const v_imag = real[i + j + length / 2] * w_imag + imag[i + j + length / 2] * w_real;
+          const u_real = real[i + j] ?? 0;
+          const u_imag = imag[i + j] ?? 0;
+          const v_real = (real[i + j + length / 2] ?? 0) * w_real - (imag[i + j + length / 2] ?? 0) * w_imag;
+          const v_imag = (real[i + j + length / 2] ?? 0) * w_imag + (imag[i + j + length / 2] ?? 0) * w_real;
 
           real[i + j] = u_real + v_real;
           imag[i + j] = u_imag + v_imag;
@@ -520,7 +522,7 @@ class SpectralDeEsser extends AudioEffect {
   private ifft(real: Float32Array, imag: Float32Array): void {
     // Conjugate
     for (let i = 0; i < imag.length; i++) {
-      imag[i] = -imag[i];
+      imag[i] = -(imag[i] ?? 0);
     }
 
     // FFT
@@ -528,8 +530,8 @@ class SpectralDeEsser extends AudioEffect {
 
     // Conjugate and scale
     for (let i = 0; i < real.length; i++) {
-      real[i] /= real.length;
-      imag[i] = -imag[i] / real.length;
+      real[i] = (real[i] ?? 0) / real.length;
+      imag[i] = -(imag[i] ?? 0) / real.length;
     }
   }
 
@@ -544,7 +546,7 @@ class SpectralDeEsser extends AudioEffect {
   private calculateRMS(data: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
     }
     return Math.sqrt(sum / data.length);
   }
@@ -670,7 +672,7 @@ class BiquadFilter {
     const output = new Float32Array(input.length);
 
     for (let i = 0; i < input.length; i++) {
-      const x = input[i];
+      const x = input[i] ?? 0;
       const y = this.a0 * x + this.a1 * this.x1 + this.a2 * this.x2 - this.b1 * this.y1 - this.b2 * this.y2;
 
       // Update delay line
@@ -730,7 +732,7 @@ class DynamicsProcessor {
     let maxGainReduction = 0;
 
     for (let i = 0; i < input.length; i++) {
-      const inputLevel = Math.abs(input[i]);
+      const inputLevel = Math.abs(input[i] ?? 0);
 
       // Envelope follower
       const targetEnv = inputLevel > this.envelope ? inputLevel : this.envelope;
@@ -749,7 +751,7 @@ class DynamicsProcessor {
       }
 
       // Apply gain and makeup
-      output[i] = input[i] * gain * makeupGainLinear;
+      output[i] = (input[i] ?? 0) * gain * makeupGainLinear;
     }
 
     this.gainReduction = maxGainReduction;

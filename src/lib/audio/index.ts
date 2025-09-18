@@ -135,16 +135,16 @@ export class AudioScienceUtils {
 
     const intervals = [];
     for (let i = 1; i < onsetTimes.length; i++) {
-      intervals.push(onsetTimes[i] - onsetTimes[i - 1]);
+      intervals.push((onsetTimes[i] ?? 0) - (onsetTimes[i - 1] ?? 0));
     }
 
     // Find most common interval (simplified)
     intervals.sort((a, b) => a - b);
-    const medianInterval = intervals[Math.floor(intervals.length / 2)];
+    const medianInterval = intervals[Math.floor(intervals.length / 2)] ?? 0;
 
-    if (medianInterval > 0) {
-      const samplesPerBeat = medianInterval;
-      const beatsPerSecond = sampleRate / samplesPerBeat;
+    if ((medianInterval ?? 0) > 0) {
+      const samplesPerBeat = medianInterval ?? 0;
+      const beatsPerSecond = sampleRate / (samplesPerBeat ?? 1);
       return beatsPerSecond * 60; // BPM
     }
 
@@ -157,8 +157,8 @@ export class AudioScienceUtils {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      numerator += frequencies[i] * magnitudes[i];
-      denominator += magnitudes[i];
+      numerator += (frequencies[i] ?? 0) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -173,9 +173,9 @@ export class AudioScienceUtils {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const deviation = frequencies[i] - centroid;
-      numerator += deviation * deviation * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = (frequencies[i] ?? 0) - centroid;
+      numerator += deviation * deviation * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? Math.sqrt(numerator / denominator) : 0;
@@ -193,9 +193,9 @@ export class AudioScienceUtils {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const deviation = frequencies[i] - centroid;
-      numerator += Math.pow(deviation / spread, 3) * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = (frequencies[i] ?? 0) - centroid;
+      numerator += Math.pow(deviation / spread, 3) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -213,9 +213,9 @@ export class AudioScienceUtils {
     let denominator = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const deviation = frequencies[i] - centroid;
-      numerator += Math.pow(deviation / spread, 4) * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = (frequencies[i] ?? 0) - centroid;
+      numerator += Math.pow(deviation / spread, 4) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? (numerator / denominator) - 3 : 0; // Subtract 3 for excess kurtosis
@@ -240,7 +240,7 @@ export class AudioScienceUtils {
       let count = 0;
 
       for (let i = 0; i < audioData.length - period; i++) {
-        correlation += audioData[i] * audioData[i + period];
+        correlation += (audioData[i] ?? 0) * (audioData[i + period] ?? 0);
         count++;
       }
 
@@ -266,15 +266,15 @@ export class AudioScienceUtils {
     let totalEnergy = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      const energy = magnitudes[i] * magnitudes[i];
+      const energy = (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       totalEnergy += energy;
 
       // Check if this frequency is close to a harmonic
-      const harmonic = Math.round(frequencies[i] / fundamentalFreq);
+      const harmonic = Math.round((frequencies[i] ?? 0) / fundamentalFreq);
       const expectedFreq = harmonic * fundamentalFreq;
       const tolerance = fundamentalFreq * 0.1; // 10% tolerance
 
-      if (Math.abs(frequencies[i] - expectedFreq) < tolerance && harmonic >= 1) {
+      if (Math.abs((frequencies[i] ?? 0) - expectedFreq) < tolerance && harmonic >= 1) {
         harmonicEnergy += energy;
       }
     }
@@ -286,14 +286,14 @@ export class AudioScienceUtils {
   static calculateTHD(harmonics: number[]): number {
     if (harmonics.length < 2) return 0;
 
-    const fundamental = harmonics[0];
+    const fundamental = harmonics[0] ?? 0;
     let harmonicSum = 0;
 
     for (let i = 1; i < harmonics.length; i++) {
-      harmonicSum += harmonics[i] * harmonics[i];
+      harmonicSum += (harmonics[i] ?? 0) * (harmonics[i] ?? 0);
     }
 
-    return fundamental > 0 ? Math.sqrt(harmonicSum) / fundamental : 0;
+    return (fundamental ?? 0) > 0 ? Math.sqrt(harmonicSum) / (fundamental ?? 1) : 0;
   }
 
   static calculateSNR(signal: Float32Array, noise: Float32Array): number {
@@ -325,7 +325,7 @@ export class AudioScienceUtils {
         const rightIdx = i - delay;
 
         if (rightIdx >= 0 && rightIdx < rightChannel.length) {
-          correlation += leftChannel[leftIdx] * rightChannel[rightIdx];
+          correlation += (leftChannel[leftIdx] ?? 0) * (rightChannel[rightIdx] ?? 0);
           count++;
         }
       }

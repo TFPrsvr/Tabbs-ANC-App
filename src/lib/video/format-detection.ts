@@ -443,14 +443,15 @@ export class MediaFormatDetector {
 }
 
 // Export format lists for use in UI components
-export const VIDEO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext => 
-  SUPPORTED_FORMATS[ext].category === 'video'
+export const VIDEO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext =>
+  SUPPORTED_FORMATS[ext]?.category === 'video'
 );
 
-export const AUDIO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext => 
-  SUPPORTED_FORMATS[ext].category === 'audio'
+export const AUDIO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext =>
+  SUPPORTED_FORMATS[ext]?.category === 'audio'
 );
 
-export const EXTRACTABLE_VIDEO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext => 
-  SUPPORTED_FORMATS[ext].category === 'video' && SUPPORTED_FORMATS[ext].audioSupport
-);
+export const EXTRACTABLE_VIDEO_EXTENSIONS = Object.keys(SUPPORTED_FORMATS).filter(ext => {
+  const format = SUPPORTED_FORMATS[ext];
+  return format?.category === 'video' && format?.audioSupport;
+});

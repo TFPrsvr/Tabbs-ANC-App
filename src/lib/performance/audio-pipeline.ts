@@ -659,7 +659,7 @@ class OptimizedAudioPipeline {
       let rms = 0;
 
       for (let i = 0; i < channelData.length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         peak = Math.max(peak, sample);
         rms += sample * sample;
       }
@@ -706,7 +706,7 @@ class OptimizedAudioPipeline {
     let offset = 44;
     for (let i = 0; i < buffer.length; i++) {
       for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
-        const sample = buffer.getChannelData(channel)[i];
+        const sample = buffer.getChannelData(channel)[i] ?? 0;
         const int16Sample = Math.max(-32768, Math.min(32767, sample * 32767));
         view.setInt16(offset, int16Sample, true);
         offset += 2;
@@ -781,7 +781,10 @@ class OptimizedAudioPipeline {
   public updateEffect(effectId: string, updates: Partial<AudioEffect>): void {
     const index = this.effectsChain.findIndex(e => e.id === effectId);
     if (index !== -1) {
-      this.effectsChain[index] = { ...this.effectsChain[index], ...updates };
+      const currentEffect = this.effectsChain[index];
+      if (currentEffect) {
+        this.effectsChain[index] = { ...currentEffect, ...updates };
+      }
     }
   }
 

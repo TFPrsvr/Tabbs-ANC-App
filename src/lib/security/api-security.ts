@@ -68,7 +68,7 @@ export function getClientIP(request: NextRequest): string {
 
   if (forwarded) {
     const ips = forwarded.split(',');
-    return ips[0].trim();
+    return ips[0]?.trim() ?? 'unknown';
   }
 
   return cfIP || realIP || 'unknown';

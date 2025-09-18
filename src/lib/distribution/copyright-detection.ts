@@ -293,14 +293,14 @@ export class CopyrightDetectionEngine extends EventEmitter {
     const imag = new Float32Array(signal.length);
 
     for (let i = 0; i < signal.length; i++) {
-      real[i] = signal[i];
+      real[i] = signal[i] ?? 0;
       imag[i] = 0;
     }
 
     // Apply windowing function (Hann window)
     for (let i = 0; i < signal.length; i++) {
       const window = 0.5 * (1 - Math.cos((2 * Math.PI * i) / (signal.length - 1)));
-      real[i] *= window;
+      real[i] = (real[i] ?? 0) * window;
     }
 
     return real; // Simplified - return magnitude spectrum
@@ -311,8 +311,9 @@ export class CopyrightDetectionEngine extends EventEmitter {
     let denominator = 0;
 
     for (let i = 0; i < spectrum.length; i++) {
-      numerator += i * Math.abs(spectrum[i]);
-      denominator += Math.abs(spectrum[i]);
+      const spectrumValue = spectrum[i] ?? 0;
+      numerator += i * Math.abs(spectrumValue);
+      denominator += Math.abs(spectrumValue);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -324,7 +325,8 @@ export class CopyrightDetectionEngine extends EventEmitter {
 
     let cumulativeEnergy = 0;
     for (let i = 0; i < spectrum.length; i++) {
-      cumulativeEnergy += Math.abs(spectrum[i]);
+      const spectrumValue = spectrum[i] ?? 0;
+      cumulativeEnergy += Math.abs(spectrumValue);
       if (cumulativeEnergy >= threshold) {
         return i / spectrum.length;
       }
@@ -337,7 +339,9 @@ export class CopyrightDetectionEngine extends EventEmitter {
     // Simplified spectral flux calculation
     let flux = 0;
     for (let i = 1; i < spectrum.length; i++) {
-      const diff = Math.abs(spectrum[i]) - Math.abs(spectrum[i - 1]);
+      const currentValue = spectrum[i] ?? 0;
+      const previousValue = spectrum[i - 1] ?? 0;
+      const diff = Math.abs(currentValue) - Math.abs(previousValue);
       flux += Math.max(diff, 0);
     }
     return flux / spectrum.length;
@@ -355,7 +359,7 @@ export class CopyrightDetectionEngine extends EventEmitter {
       const endIdx = Math.min(startIdx + binSize, features.length);
 
       for (let j = startIdx; j < endIdx; j++) {
-        binValue += features[j];
+        binValue += features[j] ?? 0;
       }
 
       compact.push(binValue / binSize);
@@ -478,7 +482,9 @@ export class CopyrightDetectionEngine extends EventEmitter {
 
     let correlation = 0;
     for (let i = 0; i < fingerprint1.length; i++) {
-      correlation += fingerprint1[i] * fingerprint2[i];
+      const value1 = fingerprint1[i] ?? 0;
+      const value2 = fingerprint2[i] ?? 0;
+      correlation += value1 * value2;
     }
 
     const norm1 = Math.sqrt(fingerprint1.reduce((sum, val) => sum + val * val, 0));

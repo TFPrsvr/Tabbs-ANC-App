@@ -174,14 +174,16 @@ export class FFmpegWrapper {
     
     for (let i = 0; i < videoFiles.length; i++) {
       const file = videoFiles[i];
-      this.reportProgress('extracting', (i / videoFiles.length) * 100, 
-        `🎬 Processing video ${i + 1} of ${videoFiles.length}: ${file.name}`);
-      
+      if (!file) continue;
+
+      this.reportProgress('extracting', (i / videoFiles.length) * 100,
+        `🎬 Processing video ${i + 1} of ${videoFiles.length}: ${file.name || 'Unknown file'}`);
+
       try {
         const audioBlob = await this.extractAudio(file, options);
         results.push(audioBlob);
       } catch (error) {
-        console.error(`Failed to extract from ${file.name}:`, error);
+        console.error(`Failed to extract from ${file.name || 'Unknown file'}:`, error);
         // Continue with other files, could push null or skip
       }
     }

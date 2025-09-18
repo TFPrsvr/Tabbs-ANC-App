@@ -263,6 +263,9 @@ export class StreamingPlatformManager extends EventEmitter {
     const promises = platforms.map(async (platform) => {
       try {
         const config = configs[platform] || configs.default;
+        if (!config) {
+          throw new Error(`No configuration found for platform: ${platform}`);
+        }
         const url = await this.uploadContent(platform, audioFile, config);
         results[platform] = url;
       } catch (error) {
@@ -459,10 +462,14 @@ export class StreamingPlatformManager extends EventEmitter {
 
   private generateAuthUrl(platform: string): string {
     const config = this.getPlatformConfig(platform);
+    if (!config) {
+      throw new Error(`Platform config not found: ${platform}`);
+    }
+
     const params = new URLSearchParams({
       client_id: config.clientId || '',
       response_type: 'code',
-      scope: config.scopes.join(' '),
+      scope: (config.scopes || []).join(' '),
       redirect_uri: `${window.location.origin}/auth/callback`
     });
 

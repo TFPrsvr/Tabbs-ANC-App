@@ -82,7 +82,7 @@ export class GestureHandler {
     if (touches.length === 1) {
       // Single touch
       const touch = touches[0];
-      this.startTouch = { x: touch.clientX, y: touch.clientY };
+      this.startTouch = { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 };
       this.isLongPress = false;
       
       // Start long press timer
@@ -97,7 +97,7 @@ export class GestureHandler {
     } else if (touches.length === 2) {
       // Two finger pinch/zoom
       this.isPinching = true;
-      this.startDistance = this.getTouchDistance(touches[0], touches[1]);
+      this.startDistance = this.getTouchDistance(touches[0]!, touches[1]!);
       this.startScale = 1;
       this.clearLongPressTimer();
     }
@@ -112,8 +112,8 @@ export class GestureHandler {
 
     if (touches.length === 1 && this.startTouch) {
       const touch = touches[0];
-      const deltaX = touch.clientX - this.startTouch.x;
-      const deltaY = touch.clientY - this.startTouch.y;
+      const deltaX = (touch?.clientX ?? 0) - this.startTouch.x;
+      const deltaY = (touch?.clientY ?? 0) - this.startTouch.y;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       // Cancel long press if moved too much
@@ -124,19 +124,19 @@ export class GestureHandler {
       // Trigger pan gesture
       this.triggerCallback('pan', {
         type: 'pan',
-        position: { x: touch.clientX, y: touch.clientY },
+        position: { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 },
         deltaX,
         deltaY,
       });
 
     } else if (touches.length === 2 && this.isPinching) {
-      const distance = this.getTouchDistance(touches[0], touches[1]);
+      const distance = this.getTouchDistance(touches[0]!, touches[1]!);
       const scale = distance / this.startDistance;
 
       if (Math.abs(scale - this.startScale) > this.options.pinchThreshold) {
         this.triggerCallback('pinch', {
           type: 'pinch',
-          position: this.getTouchCenter(touches[0], touches[1]),
+          position: this.getTouchCenter(touches[0]!, touches[1]!),
           scale,
         });
         this.startScale = scale;
@@ -149,15 +149,15 @@ export class GestureHandler {
 
     if (touches.length === 1 && this.startTouch && !this.isLongPress) {
       const touch = touches[0];
-      const deltaX = touch.clientX - this.startTouch.x;
-      const deltaY = touch.clientY - this.startTouch.y;
+      const deltaX = (touch?.clientX ?? 0) - this.startTouch.x;
+      const deltaY = (touch?.clientY ?? 0) - this.startTouch.y;
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       if (distance < this.options.tapThreshold) {
         // Tap gesture
         this.triggerCallback('tap', {
           type: 'tap',
-          position: { x: touch.clientX, y: touch.clientY },
+          position: { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 },
         });
       } else if (distance > this.options.swipeThreshold) {
         // Swipe gesture
@@ -166,7 +166,7 @@ export class GestureHandler {
 
         this.triggerCallback('swipe', {
           type: 'swipe',
-          position: { x: touch.clientX, y: touch.clientY },
+          position: { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 },
           deltaX,
           deltaY,
           direction,
@@ -360,6 +360,7 @@ export function useGestures(
         setGestureHandler(null);
       };
     }
+    return undefined;
   }, [ref.current, options]);
 
   return gestureHandler;

@@ -3,8 +3,31 @@
 import { AudioStream, AudioProcessingSettings } from '../../types';
 import { clamp, mapRange } from '../utils';
 
+// ANC (Active Noise Cancellation) interfaces
+export interface ANCSettings {
+  enabled: boolean;
+  intensity: number;
+  adaptiveMode: boolean;
+  voiceFocusMode: boolean;
+  selectiveHearing: boolean;
+  transparencyMode: boolean;
+  transparencyLevel: number;
+  environmentalAwareness: boolean;
+}
+
+export interface AdvancedProcessorConfig {
+  sampleRate?: number;
+  bufferSize?: number;
+  channels?: number;
+  enableRealTimeProcessing?: boolean;
+  voiceDetectionSensitivity?: number;
+  separationQuality?: string;
+  enableClosedCaptions?: boolean;
+  deviceType?: string;
+}
+
 export class AudioProcessor {
-  private audioContext: AudioContext | null = null;
+  protected audioContext: AudioContext | null = null;
   private sourceNode: AudioBufferSourceNode | null = null;
   private audioBuffer: AudioBuffer | null = null;
   private analysers: AnalyserNode[] = [];
@@ -246,9 +269,9 @@ export class AudioProcessor {
     for (let i = 0; i < inputData.length; i++) {
       const freq = (i / inputData.length) * (sampleRate / 2);
       if (freq >= freqMin && freq <= freqMax) {
-        outputData[i] = inputData[i] * sensitivity;
+        outputData[i] = (inputData[i] ?? 0) * sensitivity;
       } else {
-        outputData[i] = inputData[i] * (1 - sensitivity) * 0.1; // Reduce non-target frequencies
+        outputData[i] = (inputData[i] ?? 0) * (1 - sensitivity) * 0.1; // Reduce non-target frequencies
       }
     }
     
@@ -257,8 +280,8 @@ export class AudioProcessor {
     let maxValue = 0;
     
     for (let i = 0; i < dataArray.length; i++) {
-      if (dataArray[i] > maxValue) {
-        maxValue = dataArray[i];
+      if ((dataArray[i] ?? 0) > maxValue) {
+        maxValue = dataArray[i] ?? 0;
         maxIndex = i;
       }
     }
@@ -279,12 +302,12 @@ export class AudioProcessor {
     const threshold = mapRange(intensity, 0, 100, 0.1, 0.8);
     
     for (let i = 0; i < inputData.length; i++) {
-      const amplitude = Math.abs(inputData[i]);
+      const amplitude = Math.abs(inputData[i] ?? 0);
       
       if (amplitude < threshold) {
-        outputData[i] = inputData[i] * mapRange(amplitude, 0, threshold, 0, 0.3);
+        outputData[i] = (inputData[i] ?? 0) * mapRange(amplitude, 0, threshold, 0, 0.3);
       } else {
-        outputData[i] = inputData[i];
+        outputData[i] = inputData[i] ?? 0;
       }
     }
     
@@ -303,12 +326,12 @@ export class AudioProcessor {
       if (selectiveHearing) {
         const freq = (i / inputData.length) * 22050; // Assume 44.1kHz sample rate
         if (freq >= 300 && freq <= 3000) { // Voice range
-          outputData[i] = inputData[i] * transparencyGain * 1.2; // Boost voice
+          outputData[i] = (inputData[i] ?? 0) * transparencyGain * 1.2; // Boost voice
         } else {
-          outputData[i] = inputData[i] * transparencyGain * 0.6; // Reduce other sounds
+          outputData[i] = (inputData[i] ?? 0) * transparencyGain * 0.6; // Reduce other sounds
         }
       } else {
-        outputData[i] = inputData[i] * transparencyGain;
+        outputData[i] = (inputData[i] ?? 0) * transparencyGain;
       }
     }
     
@@ -401,7 +424,7 @@ export class AudioStreamController {
     
     let sum = 0;
     for (let i = 0; i < dataArray.length; i++) {
-      sum += dataArray[i];
+      sum += dataArray[i] ?? 0;
     }
     
     return sum / (dataArray.length * 255); // Normalize to 0-1
@@ -414,5 +437,62 @@ export class AudioStreamController {
   dispose(): void {
     this.gainNode.disconnect();
     this.analyser.disconnect();
+  }
+}
+
+// Re-export for compatibility with advanced-audio-processor imports
+export class AdvancedAudioProcessor extends AudioProcessor {
+  private ancSettings: ANCSettings;
+
+  constructor(config?: AdvancedProcessorConfig) {
+    super();
+    this.ancSettings = {
+      enabled: false,
+      intensity: 50,
+      adaptiveMode: true,
+      voiceFocusMode: false,
+      selectiveHearing: false,
+      transparencyMode: false,
+      transparencyLevel: 50,
+      environmentalAwareness: true,
+    };
+  }
+
+  getANCSettings(): ANCSettings {
+    return { ...this.ancSettings };
+  }
+
+  updateANCSettings(settings: Partial<ANCSettings>): void {
+    this.ancSettings = { ...this.ancSettings, ...settings };
+  }
+
+  // Add missing methods that were in the stub file
+  async destroy(): Promise<void> {
+    // Clean up resources
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      await this.audioContext.close();
+    }
+  }
+
+  async startProcessing(source?: any): Promise<void> {
+    await this.initialize();
+    // TODO: Implement actual processing logic
+    console.log('Advanced audio processing started with source:', source);
+  }
+
+  async stopProcessing(): Promise<void> {
+    // TODO: Implement stop processing logic
+    console.log('Advanced audio processing stopped');
+  }
+
+  setStreamVolume(streamId: string, volume: number): void {
+    // TODO: Implement volume control
+    console.log('Setting stream volume for', streamId, 'to:', volume);
+  }
+
+  findNextVoiceInstance(): { voiceStartTime: number } {
+    // TODO: Implement voice detection
+    console.log('Finding next voice instance');
+    return { voiceStartTime: 0 };
   }
 }

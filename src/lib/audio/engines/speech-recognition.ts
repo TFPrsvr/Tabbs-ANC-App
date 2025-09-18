@@ -238,16 +238,16 @@ export class SpeechRecognitionEngine {
           percentage: 20 + (i / chunks.length * 60),
           userMessage: `🎤 Transcribing chunk ${i + 1} of ${chunks.length}...`,
           captionsGenerated: captions.length,
-          currentSegment: `${this.formatTime(chunk.startTime)} - ${this.formatTime(chunk.endTime)}`
+          currentSegment: `${this.formatTime(chunk?.startTime ?? 0)} - ${this.formatTime(chunk?.endTime ?? 0)}`
         });
 
-        const transcription = await this.transcribeSegment(chunk.audioBuffer, settings);
+        const transcription = chunk?.audioBuffer ? await this.transcribeSegment(chunk.audioBuffer, settings) : null;
         
         if (transcription && transcription.text.trim()) {
           // Split long transcriptions into smaller caption segments
           const segmentCaptions = this.splitTranscriptionIntoCaptions(
             transcription,
-            chunk.startTime,
+            chunk?.startTime ?? 0,
             settings
           );
 
@@ -433,7 +433,7 @@ export class SpeechRecognitionEngine {
       const rightChannel = audioBuffer.getChannelData(1);
       
       for (let i = 0; i < audioBuffer.length; i++) {
-        monoData[i] = (leftChannel[i] + rightChannel[i]) / 2;
+        monoData[i] = ((leftChannel[i] ?? 0) + (rightChannel[i] ?? 0)) / 2;
       }
     }
     

@@ -182,7 +182,7 @@ export class VoiceDetectionEngine {
         
         for (let i = startSample; i < endSample && i < inputData.length; i++) {
           // Apply voice isolation filtering based on speaker characteristics
-          const sample = this.applyVoiceFiltering(inputData[i], i, profile, audioBuffer.sampleRate);
+          const sample = this.applyVoiceFiltering(inputData[i] ?? 0, i, profile, audioBuffer.sampleRate);
           outputData[i] = sample * (segment.isMuted ? 0 : segment.volume);
         }
       }
@@ -223,7 +223,7 @@ export class VoiceDetectionEngine {
       const rightChannel = audioBuffer.getChannelData(1);
       
       for (let i = 0; i < audioBuffer.length; i++) {
-        monoData[i] = (leftChannel[i] + rightChannel[i]) / 2;
+        monoData[i] = ((leftChannel[i] ?? 0) + (rightChannel[i] ?? 0)) / 2;
       }
     }
     
@@ -285,7 +285,7 @@ export class VoiceDetectionEngine {
     return workerProfiles.map((profile, index) => ({
       id: `speaker_${index + 1}`,
       name: profile.autoName || `Speaker ${index + 1}`,
-      color: this.speakerColors[index % this.speakerColors.length],
+      color: this.speakerColors[index % this.speakerColors.length] ?? '#3B82F6',
       confidence: profile.confidence,
       voiceprint: new Float32Array(profile.voiceprint),
       segments: profile.segments.map((seg: any) => ({

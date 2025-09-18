@@ -838,7 +838,10 @@ export class SocialMediaOptimizer {
     }
 
     const selected = platformTemplates[0]; // Use first available
-    return customizations ? { ...selected, ...customizations } : selected;
+    if (!selected) {
+      throw new Error(`No templates available for platform: ${platform}`);
+    }
+    return customizations ? { ...selected, ...customizations } as ContentTemplate : selected;
   }
 
   private async getAudioDuration(fileId: string): Promise<number> {
@@ -859,7 +862,7 @@ export class SocialMediaOptimizer {
       duration: targetDuration,
       bitrate: platform.audioSpecs.maxBitrate,
       size: targetDuration * platform.audioSpecs.maxBitrate * 1000 / 8, // Estimate
-      format: platform.audioSpecs.formats[0]
+      format: platform.audioSpecs.formats[0] || 'mp3'
     };
   }
 
@@ -874,7 +877,7 @@ export class SocialMediaOptimizer {
       duration: audioSegment.duration,
       resolution: platform.videoSpecs.resolution,
       size: audioSegment.duration * 1000000, // Estimate 1MB per second
-      format: platform.videoSpecs.formats[0]
+      format: platform.videoSpecs.formats[0] || 'mp4'
     };
   }
 
@@ -935,7 +938,7 @@ export class SocialMediaOptimizer {
   ): Promise<string> {
     // Select optimal posting time based on platform and predicted engagement
     const peakTimes = platform.optimization.peakEngagementTimes;
-    return peakTimes[0]; // Use first peak time
+    return peakTimes[0] || '12:00-14:00'; // Use first peak time or default
   }
 
   private async generateThumbnail(
@@ -1017,7 +1020,7 @@ export class SocialMediaOptimizer {
       'Game Changing Moment'
     ];
 
-    return titles[Math.floor(Math.random() * titles.length)];
+    return titles[Math.floor(Math.random() * titles.length)] || 'Generated Clip';
   }
 
   /**

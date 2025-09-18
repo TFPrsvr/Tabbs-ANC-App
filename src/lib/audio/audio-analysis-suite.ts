@@ -230,7 +230,7 @@ class AdvancedAudioAnalyzer {
   private mixToMono(left: Float32Array, right: Float32Array): Float32Array {
     const mono = new Float32Array(left.length);
     for (let i = 0; i < left.length; i++) {
-      mono[i] = (left[i] + right[i]) * 0.5;
+      mono[i] = ((left[i] ?? 0) + (right[i] ?? 0)) * 0.5;
     }
     return mono;
   }
@@ -238,7 +238,7 @@ class AdvancedAudioAnalyzer {
   private extractChannel(interleavedBuffer: Float32Array, channel: number, totalChannels: number): Float32Array {
     const channelData = new Float32Array(interleavedBuffer.length / totalChannels);
     for (let i = 0; i < channelData.length; i++) {
-      channelData[i] = interleavedBuffer[i * totalChannels + channel];
+      channelData[i] = interleavedBuffer[i * totalChannels + channel] ?? 0;
     }
     return channelData;
   }
@@ -353,7 +353,7 @@ class LoudnessIntegrator {
   private sumToMono(left: Float32Array, right: Float32Array): Float32Array {
     const mono = new Float32Array(left.length);
     for (let i = 0; i < left.length; i++) {
-      mono[i] = left[i] + right[i]; // Sum, not average for loudness
+      mono[i] = (left[i] ?? 0) + (right[i] ?? 0); // Sum, not average for loudness
     }
     return mono;
   }
@@ -364,32 +364,32 @@ class LoudnessIntegrator {
 
     // Pre-filter (high-frequency shelf)
     for (let i = 0; i < input.length; i++) {
-      const x = input[i];
+      const x = input[i] ?? 0;
 
       // High-frequency shelf at 1681 Hz
       const b0 = 1.53512485958697, b1 = -2.69169618940638, b2 = 1.19839281085285;
       const a1 = -1.69065929318241, a2 = 0.73248077421585;
 
-      const y = b0 * x + b1 * this.kFilterState[0].x1 + b2 * this.kFilterState[0].x2
-                      - a1 * this.kFilterState[0].y1 - a2 * this.kFilterState[0].y2;
+      const y = b0 * x + b1 * (this.kFilterState[0]?.x1 ?? 0) + b2 * (this.kFilterState[0]?.x2 ?? 0)
+                      - a1 * (this.kFilterState[0]?.y1 ?? 0) - a2 * (this.kFilterState[0]?.y2 ?? 0);
 
       // Update state
-      this.kFilterState[0].x2 = this.kFilterState[0].x1;
-      this.kFilterState[0].x1 = x;
-      this.kFilterState[0].y2 = this.kFilterState[0].y1;
-      this.kFilterState[0].y1 = y;
+      if (this.kFilterState[0]) { this.kFilterState[0].x2 = this.kFilterState[0].x1 ?? 0; }
+      if (this.kFilterState[0]) { this.kFilterState[0].x1 = x; }
+      if (this.kFilterState[0]) { this.kFilterState[0].y2 = this.kFilterState[0].y1 ?? 0; }
+      if (this.kFilterState[0]) { this.kFilterState[0].y1 = y; }
 
       // RLB filter (low-frequency roll-off)
       const rb0 = 1.0, rb1 = -2.0, rb2 = 1.0;
       const ra1 = -1.99004745483398, ra2 = 0.99007225036621;
 
-      const ry = rb0 * y + rb1 * this.kFilterState[1].x1 + rb2 * this.kFilterState[1].x2
-                        - ra1 * this.kFilterState[1].y1 - ra2 * this.kFilterState[1].y2;
+      const ry = rb0 * y + rb1 * (this.kFilterState[1]?.x1 ?? 0) + rb2 * (this.kFilterState[1]?.x2 ?? 0)
+                        - ra1 * (this.kFilterState[1]?.y1 ?? 0) - ra2 * (this.kFilterState[1]?.y2 ?? 0);
 
-      this.kFilterState[1].x2 = this.kFilterState[1].x1;
-      this.kFilterState[1].x1 = y;
-      this.kFilterState[1].y2 = this.kFilterState[1].y1;
-      this.kFilterState[1].y1 = ry;
+      if (this.kFilterState[1]) { this.kFilterState[1].x2 = this.kFilterState[1].x1 ?? 0; }
+      if (this.kFilterState[1]) { this.kFilterState[1].x1 = y; }
+      if (this.kFilterState[1]) { this.kFilterState[1].y2 = this.kFilterState[1].y1 ?? 0; }
+      if (this.kFilterState[1]) { this.kFilterState[1].y1 = ry; }
 
       output[i] = ry;
     }
@@ -426,7 +426,7 @@ class LoudnessIntegrator {
     let count = 0;
 
     for (let i = startIndex; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
       count++;
     }
 
@@ -446,7 +446,7 @@ class LoudnessIntegrator {
     for (let i = 0; i < data.length - 1; i++) {
       for (let j = 0; j < factor; j++) {
         const t = j / factor;
-        result[i * factor + j] = data[i] * (1 - t) + data[i + 1] * t;
+        result[i * factor + j] = (data[i] ?? 0) * (1 - t) + (data[i + 1] ?? 0) * t;
       }
     }
 
@@ -480,17 +480,17 @@ class RealTimeSpectrumAnalyzer {
 
     // Update peak hold
     for (let i = 0; i < spectrum.magnitudes.length; i++) {
-      if (spectrum.magnitudes[i] > this.peakHold[i]) {
-        this.peakHold[i] = spectrum.magnitudes[i];
+      if ((spectrum.magnitudes[i] ?? 0) > (this.peakHold[i] ?? 0)) {
+        this.peakHold[i] = spectrum.magnitudes[i] ?? 0;
       } else {
-        this.peakHold[i] *= 0.999; // Slow decay
+        this.peakHold[i] = (this.peakHold[i] ?? 0) * 0.999; // Slow decay
       }
     }
 
     // Update average spectrum
     for (let i = 0; i < spectrum.magnitudes.length; i++) {
-      this.averageSpectrum[i] = this.averageSpectrum[i] * (1 - this.averageAlpha) +
-                              spectrum.magnitudes[i] * this.averageAlpha;
+      this.averageSpectrum[i] = (this.averageSpectrum[i] ?? 0) * (1 - this.averageAlpha) +
+                              (spectrum.magnitudes[i] ?? 0) * this.averageAlpha;
     }
 
     return {
@@ -509,7 +509,7 @@ class RealTimeSpectrumAnalyzer {
 
     // Apply window
     for (let i = 0; i < paddedInput.length; i++) {
-      paddedInput[i] *= 0.5 * (1 - Math.cos(2 * Math.PI * i / (paddedInput.length - 1))); // Hanning
+      paddedInput[i] = (paddedInput[i] ?? 0) * 0.5 * (1 - Math.cos(2 * Math.PI * i / (paddedInput.length - 1))); // Hanning
     }
 
     // FFT (simplified)
@@ -575,11 +575,11 @@ class StereoAnalyzer {
     let leftSumSq = 0, rightSumSq = 0;
 
     for (let i = 0; i < length; i++) {
-      correlation += left[i] * right[i];
-      leftSum += left[i];
-      rightSum += right[i];
-      leftSumSq += left[i] * left[i];
-      rightSumSq += right[i] * right[i];
+      correlation += (left[i] ?? 0) * (right[i] ?? 0);
+      leftSum += (left[i] ?? 0);
+      rightSum += (right[i] ?? 0);
+      leftSumSq += (left[i] ?? 0) * (left[i] ?? 0);
+      rightSumSq += (right[i] ?? 0) * (right[i] ?? 0);
     }
 
     const leftMean = leftSum / length;
@@ -601,8 +601,8 @@ class StereoAnalyzer {
     const side = new Float32Array(left.length);
 
     for (let i = 0; i < left.length; i++) {
-      mid[i] = (left[i] + right[i]) / 2;
-      side[i] = (left[i] - right[i]) / 2;
+      mid[i] = ((left[i] ?? 0) + (right[i] ?? 0)) / 2;
+      side[i] = ((left[i] ?? 0) - (right[i] ?? 0)) / 2;
     }
 
     const midRMS = this.calculateRMS(mid);
@@ -620,7 +620,7 @@ class StereoAnalyzer {
     // Calculate how well the signal translates to mono
     const mono = new Float32Array(left.length);
     for (let i = 0; i < left.length; i++) {
-      mono[i] = (left[i] + right[i]) / 2;
+      mono[i] = ((left[i] ?? 0) + (right[i] ?? 0)) / 2;
     }
 
     const stereoRMS = Math.sqrt((this.calculateRMS(left) ** 2 + this.calculateRMS(right) ** 2) / 2);
@@ -632,7 +632,7 @@ class StereoAnalyzer {
   private calculateRMS(data: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
     }
     return Math.sqrt(sum / data.length);
   }
@@ -672,8 +672,8 @@ class DynamicsAnalyzer {
   private updateHistory(peak: number, rms: number): void {
     // Shift history and add new values
     for (let i = 0; i < this.historySize - 1; i++) {
-      this.peakHistory[i] = this.peakHistory[i + 1];
-      this.rmsHistory[i] = this.rmsHistory[i + 1];
+      this.peakHistory[i] = this.peakHistory[i + 1] ?? 0;
+      this.rmsHistory[i] = this.rmsHistory[i + 1] ?? 0;
     }
 
     this.peakHistory[this.historySize - 1] = peak;
@@ -683,10 +683,10 @@ class DynamicsAnalyzer {
   private calculateDynamicRange(): number {
     // PLR-based dynamic range
     const sortedPeaks = Array.from(this.peakHistory).sort((a, b) => b - a);
-    const percentile1 = sortedPeaks[Math.floor(sortedPeaks.length * 0.01)];
-    const percentile99 = sortedPeaks[Math.floor(sortedPeaks.length * 0.99)];
+    const percentile1 = sortedPeaks[Math.floor(sortedPeaks.length * 0.01)] ?? 0;
+    const percentile99 = sortedPeaks[Math.floor(sortedPeaks.length * 0.99)] ?? 0;
 
-    return percentile99 > 0 ? 20 * Math.log10(percentile1 / percentile99) : 0;
+    return (percentile99 ?? 0) > 0 ? 20 * Math.log10((percentile1 ?? 0) / (percentile99 ?? 0)) : 0;
   }
 
   private calculatePunchiness(input: Float32Array): number {
@@ -696,9 +696,9 @@ class DynamicsAnalyzer {
     let totalEnergy = 0;
 
     for (let i = 1; i < envelope.length; i++) {
-      const diff = Math.abs(envelope[i] - envelope[i - 1]);
+      const diff = Math.abs((envelope[i] ?? 0) - (envelope[i - 1] ?? 0));
       transientEnergy += diff;
-      totalEnergy += envelope[i];
+      totalEnergy += (envelope[i] ?? 0);
     }
 
     return totalEnergy > 0 ? transientEnergy / totalEnergy : 0;
@@ -719,7 +719,7 @@ class DynamicsAnalyzer {
     const release = 0.9999;
 
     for (let i = 0; i < input.length; i++) {
-      const inputLevel = Math.abs(input[i]);
+      const inputLevel = Math.abs(input[i] ?? 0);
       const rate = inputLevel > env ? attack : release;
       env = inputLevel + (env - inputLevel) * rate;
       envelope[i] = env;
@@ -737,7 +737,7 @@ class DynamicsAnalyzer {
   private calculateRMS(data: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
     }
     return Math.sqrt(sum / data.length);
   }

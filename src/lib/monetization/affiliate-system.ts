@@ -656,7 +656,12 @@ export class AffiliateSystem extends EventEmitter {
       }
     }
 
-    return program.commissionStructure[0];
+    const firstTier = program.commissionStructure[0];
+    return firstTier ?? {
+      tierName: 'starter',
+      minReferrals: 0,
+      subscriptionCommission: 10
+    };
   }
 
   private async checkTierUpgrade(affiliate: Affiliate): Promise<void> {
@@ -680,10 +685,12 @@ export class AffiliateSystem extends EventEmitter {
       if (!item[dateField]) return;
 
       const date = new Date(item[dateField]);
-      const dayKey = date.toISOString().split('T')[0];
+      const dayKey = date.toISOString().split('T')[0] ?? '';
+      if (!dayKey) return;
 
-      const value = valueField ? (item[valueField] || 0) : 1;
-      grouped.set(dayKey, (grouped.get(dayKey) || 0) + value);
+      const value = valueField ? (item[valueField as keyof typeof item] ?? 0) : 1;
+      const numericValue = typeof value === 'number' ? value : 0;
+      grouped.set(dayKey, (grouped.get(dayKey) || 0) + numericValue);
     });
 
     return Array.from(grouped.entries()).map(([dateStr, value]) => ({

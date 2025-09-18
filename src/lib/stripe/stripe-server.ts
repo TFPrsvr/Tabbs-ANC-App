@@ -250,6 +250,10 @@ export const updateSubscription = async (
       const subscription = await stripe.subscriptions.retrieve(params.subscriptionId);
       const subscriptionItem = subscription.items.data[0];
 
+      if (!subscriptionItem) {
+        throw new Error('No subscription items found');
+      }
+
       updateData.items = [
         {
           id: subscriptionItem.id,

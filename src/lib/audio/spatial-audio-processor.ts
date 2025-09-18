@@ -112,7 +112,7 @@ class SpatialAudioProcessor {
     const spatializedSources = new Map<string, BinauralProcessingResult>();
 
     // Process each audio source
-    for (const [sourceId, audioData] of audioSources) {
+    for (const [sourceId, audioData] of Array.from(audioSources.entries())) {
       const source = this.sources.get(sourceId);
       if (source) {
         const spatialResult = this.spatializeSource(audioData, source);
@@ -249,7 +249,7 @@ class SpatialAudioProcessor {
     const finalGain = source.gain * Math.max(0, Math.min(1, attenuation));
 
     for (let i = 0; i < audioData.length; i++) {
-      output[i] = audioData[i] * finalGain;
+      output[i] = (audioData[i] || 0) * finalGain;
     }
 
     return output;
@@ -285,7 +285,7 @@ class SpatialAudioProcessor {
     }
 
     for (let i = 0; i < audioData.length; i++) {
-      output[i] = audioData[i] * directivityGain;
+      output[i] = (audioData[i] || 0) * directivityGain;
     }
 
     return output;
@@ -323,18 +323,26 @@ class SpatialAudioProcessor {
     const rightChannel = new Float32Array(this.bufferSize);
 
     // Mix all spatialized sources
-    for (const result of sources.values()) {
+    for (const result of Array.from(sources.values())) {
       for (let i = 0; i < this.bufferSize; i++) {
-        leftChannel[i] += result.leftChannel[i];
-        rightChannel[i] += result.rightChannel[i];
+        const leftSample = result.leftChannel?.[i];
+        const rightSample = result.rightChannel?.[i];
+        const currentLeftValue = leftChannel[i];
+        if (currentLeftValue !== undefined) {
+          leftChannel[i] = currentLeftValue + (leftSample ?? 0);
+        }
+        const currentRightValue = rightChannel[i];
+        if (currentRightValue !== undefined) {
+          rightChannel[i] = currentRightValue + (rightSample ?? 0);
+        }
       }
     }
 
     // Interleave for stereo output
     const stereoOutput = new Float32Array(this.bufferSize * 2);
     for (let i = 0; i < this.bufferSize; i++) {
-      stereoOutput[i * 2] = leftChannel[i];
-      stereoOutput[i * 2 + 1] = rightChannel[i];
+      stereoOutput[i * 2] = leftChannel[i] || 0;
+      stereoOutput[i * 2 + 1] = rightChannel[i] || 0;
     }
 
     return stereoOutput;
@@ -345,12 +353,20 @@ class SpatialAudioProcessor {
     const rightChannel = new Float32Array(this.bufferSize);
 
     // Mix with binaural processing
-    for (const result of sources.values()) {
+    for (const result of Array.from(sources.values())) {
       const binauralResult = this.binaural.process(result.leftChannel, result.rightChannel, result.spatialMetrics);
 
       for (let i = 0; i < this.bufferSize; i++) {
-        leftChannel[i] += binauralResult.leftChannel[i];
-        rightChannel[i] += binauralResult.rightChannel[i];
+        const leftSample = binauralResult.leftChannel?.[i];
+        const rightSample = binauralResult.rightChannel?.[i];
+        const currentLeftValue = leftChannel[i];
+        if (currentLeftValue !== undefined) {
+          leftChannel[i] = currentLeftValue + (leftSample ?? 0);
+        }
+        const currentRightValue = rightChannel[i];
+        if (currentRightValue !== undefined) {
+          rightChannel[i] = currentRightValue + (rightSample ?? 0);
+        }
       }
     }
 
@@ -383,13 +399,21 @@ class SpatialAudioProcessor {
     const surroundChannels = Array(channelCount).fill(null).map(() => new Float32Array(this.bufferSize));
 
     // Pan sources to surround speakers
-    for (const result of sources.values()) {
+    for (const result of Array.from(sources.values())) {
       const panningGains = this.calculateSurroundPanning(result.spatialMetrics, channelCount);
 
       for (let ch = 0; ch < channelCount; ch++) {
-        const gain = panningGains[ch];
+        const gain = panningGains[ch] || 0;
         for (let i = 0; i < this.bufferSize; i++) {
-          surroundChannels[ch][i] += (result.leftChannel[i] + result.rightChannel[i]) * 0.5 * gain;
+          const leftValue = result.leftChannel?.[i] ?? 0;
+          const rightValue = result.rightChannel?.[i] ?? 0;
+          const channel = surroundChannels[ch];
+          if (channel) {
+            const currentChannelValue = channel[i];
+            if (currentChannelValue !== undefined) {
+              channel[i] = currentChannelValue + (leftValue + rightValue) * 0.5 * gain;
+            }
+          }
         }
       }
     }
@@ -411,14 +435,14 @@ class SpatialAudioProcessor {
     if (channelCount === 6) { // 5.1
       const speakers = [-30, 30, 0, 0, -110, 110]; // L, R, C, LFE, Ls, Rs
       for (let i = 0; i < speakers.length; i++) {
-        const speakerAngle = speakers[i] * Math.PI / 180;
+        const speakerAngle = (speakers[i] ?? 0) * Math.PI / 180;
         const angleDiff = Math.abs(azimuth - speakerAngle);
         gains[i] = Math.max(0, Math.cos(angleDiff));
       }
     } else if (channelCount === 8) { // 7.1
       const speakers = [-30, 30, 0, 0, -90, 90, -150, 150]; // L, R, C, LFE, Ls, Rs, Lb, Rb
       for (let i = 0; i < speakers.length; i++) {
-        const speakerAngle = speakers[i] * Math.PI / 180;
+        const speakerAngle = (speakers[i] ?? 0) * Math.PI / 180;
         const angleDiff = Math.abs(azimuth - speakerAngle);
         gains[i] = Math.max(0, Math.cos(angleDiff));
       }
@@ -428,7 +452,10 @@ class SpatialAudioProcessor {
     const totalGain = gains.reduce((sum, gain) => sum + gain, 0);
     if (totalGain > 0) {
       for (let i = 0; i < gains.length; i++) {
-        gains[i] /= totalGain;
+        const currentGain = gains[i];
+        if (currentGain !== undefined) {
+          gains[i] = currentGain / totalGain;
+        }
       }
     }
 
@@ -508,13 +535,18 @@ class HRTFDatabase {
     const delayInt = Math.floor(Math.abs(delay));
     const mainPeak = Math.min(delayInt + 10, length - 1);
 
-    ir[mainPeak] = gain;
+    if (ir[mainPeak] !== undefined) {
+      ir[mainPeak] = gain;
+    }
 
     // Add some frequency-dependent shaping
     for (let i = 1; i < length; i++) {
       const freq = i / length * this.sampleRate / 2;
       const shaping = this.calculateFrequencyShaping(freq, azimuth, elevation, ear);
-      ir[i] *= shaping;
+      const currentIrValue = ir[i];
+      if (currentIrValue !== undefined) {
+        ir[i] = currentIrValue * shaping;
+      }
     }
 
     return ir;
@@ -549,7 +581,14 @@ class HRTFDatabase {
     const nearestElevation = Math.round(elevation / 15) * 15;
     const key = `${nearestAzimuth}_${nearestElevation}`;
 
-    const hrtf = this.impulseResponses.get(key) || this.impulseResponses.get('0_0')!;
+    const hrtf = this.impulseResponses.get(key) || this.impulseResponses.get('0_0');
+    if (!hrtf) {
+      // Fallback if no HRTF found
+      return {
+        leftChannel: new Float32Array(audioData.length),
+        rightChannel: new Float32Array(audioData.length)
+      };
+    }
 
     // Convolve with HRTF
     const leftChannel = this.convolve(audioData, hrtf.left);
@@ -565,7 +604,12 @@ class HRTFDatabase {
     for (let i = 0; i < signal.length; i++) {
       for (let j = 0; j < impulse.length; j++) {
         if (i + j < outputLength) {
-          output[i + j] += signal[i] * impulse[j];
+          const signalValue = signal[i] ?? 0;
+          const impulseValue = impulse[j] ?? 0;
+          const outputIndex = i + j;
+          if (output[outputIndex] !== undefined) {
+            output[outputIndex] += signalValue * impulseValue;
+          }
         }
       }
     }
@@ -598,7 +642,10 @@ class ConvolutionReverb {
       const sampleIndex = Math.floor(delay * this.sampleRate);
 
       if (sampleIndex < length) {
-        impulse[sampleIndex] += amplitude;
+        const currentValue = impulse[sampleIndex];
+        if (currentValue !== undefined) {
+          impulse[sampleIndex] = currentValue + amplitude;
+        }
       }
     }
 
@@ -609,7 +656,10 @@ class ConvolutionReverb {
     for (let i = Math.floor(0.08 * this.sampleRate); i < length; i++) {
       const noise = (Math.random() - 0.5) * 2;
       const decay = Math.exp(decayRate * i);
-      impulse[i] += noise * decay * 0.1;
+      const currentImpulseValue = impulse[i];
+      if (currentImpulseValue !== undefined) {
+        impulse[i] = currentImpulseValue + noise * decay * 0.1;
+      }
     }
 
     return impulse;
@@ -651,7 +701,7 @@ class ConvolutionReverb {
 
     for (const time of reflectionTimes) {
       const sampleIndex = Math.floor(time * this.sampleRate);
-      if (sampleIndex < impulse.length) {
+      if (sampleIndex < impulse.length && impulse[sampleIndex] !== undefined) {
         impulse[sampleIndex] += 0.5 * (1 - room.absorption.mid);
       }
     }
@@ -666,7 +716,10 @@ class ConvolutionReverb {
       const decay = Math.exp(decayRate * i);
       const diffusion = room.diffusion;
 
-      impulse[i] += noise * decay * diffusion * 0.2;
+      const currentValue = impulse[i];
+      if (currentValue !== undefined) {
+        impulse[i] = currentValue + noise * decay * diffusion * 0.2;
+      }
     }
   }
 
@@ -691,7 +744,9 @@ class ConvolutionReverb {
 
     // Direct sound
     for (let i = 0; i < input.length; i++) {
-      output[i] = input[i];
+      if (output[i] !== undefined) {
+        output[i] = input[i] ?? 0;
+      }
     }
 
     // Add reverb
@@ -699,9 +754,14 @@ class ConvolutionReverb {
     for (let i = 0; i < input.length; i++) {
       let reverbSample = 0;
       for (let j = 0; j < reverbLength && i - j >= 0; j++) {
-        reverbSample += input[i - j] * this.impulseResponse[j];
+        const inputValue = input[i - j] || 0;
+        const impulseValue = this.impulseResponse[j] || 0;
+        reverbSample += inputValue * impulseValue;
       }
-      output[i] += reverbSample * reverbGain;
+      const currentOutputValue = output[i];
+      if (currentOutputValue !== undefined) {
+        output[i] = currentOutputValue + reverbSample * reverbGain;
+      }
     }
 
     return output;
@@ -720,24 +780,35 @@ class AmbisonicsDecoder {
   }
 
   public encode(sources: Map<string, BinauralProcessingResult>): Float32Array[] {
+    const firstSource = sources.values().next().value;
+    const bufferLength = firstSource?.leftChannel.length || 512;
     const ambisonicChannels = Array(this.channelCount).fill(null)
-      .map(() => new Float32Array(sources.values().next().value?.leftChannel.length || 512));
+      .map(() => new Float32Array(bufferLength));
 
     // Encode sources to Ambisonics
-    for (const result of sources.values()) {
+    for (const result of Array.from(sources.values())) {
       const { azimuth, elevation } = result.spatialMetrics;
       const encodingCoeffs = this.calculateEncodingCoefficients(azimuth, elevation);
 
       const monoSource = new Float32Array(result.leftChannel.length);
       for (let i = 0; i < monoSource.length; i++) {
-        monoSource[i] = (result.leftChannel[i] + result.rightChannel[i]) * 0.5;
+        const leftValue = result.leftChannel?.[i] ?? 0;
+        const rightValue = result.rightChannel?.[i] ?? 0;
+        monoSource[i] = (leftValue + rightValue) * 0.5;
       }
 
       // Apply encoding coefficients
       for (let ch = 0; ch < this.channelCount; ch++) {
-        const coeff = encodingCoeffs[ch];
+        const coeff = encodingCoeffs[ch] || 0;
         for (let i = 0; i < monoSource.length; i++) {
-          ambisonicChannels[ch][i] += monoSource[i] * coeff;
+          const monoSample = monoSource[i] ?? 0;
+          const channel = ambisonicChannels[ch];
+          if (channel) {
+            const currentChannelValue = channel[i];
+            if (currentChannelValue !== undefined) {
+              channel[i] = currentChannelValue + monoSample * coeff;
+            }
+          }
         }
       }
     }
@@ -802,8 +873,10 @@ class BinauralProcessor {
 
     // Apply crossfeed for better externalization
     for (let i = 0; i < leftChannel.length; i++) {
-      output.leftChannel[i] = leftChannel[i] + rightChannel[i] * this.crossfeedGain;
-      output.rightChannel[i] = rightChannel[i] + leftChannel[i] * this.crossfeedGain;
+      const leftValue = leftChannel[i] || 0;
+      const rightValue = rightChannel[i] || 0;
+      output.leftChannel[i] = leftValue + rightValue * this.crossfeedGain;
+      output.rightChannel[i] = rightValue + leftValue * this.crossfeedGain;
     }
 
     return output;

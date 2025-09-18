@@ -12,7 +12,7 @@ import {
   Radio, Zap, Eye, EyeOff, MessageSquare, Search,
   Filter, Waves, BarChart3, Target, Shield, Focus
 } from 'lucide-react';
-import { AdvancedAudioProcessor, ANCSettings } from '@/lib/audio/advanced-audio-processor';
+import { AdvancedAudioProcessor, ANCSettings } from '@/lib/audio/audio-processor';
 import { cn } from '@/lib/utils';
 
 interface AudioFile {

@@ -347,6 +347,8 @@ export class RealTimeCollaborationEngine extends EventEmitter {
     if (participantIndex === -1) return;
 
     const participant = session.participants[participantIndex];
+    if (!participant) return;
+
     participant.status = 'offline';
     participant.lastSeen = new Date();
 
@@ -601,6 +603,10 @@ export class RealTimeCollaborationEngine extends EventEmitter {
     const latestOp = conflict.operations
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())[0];
 
+    if (!latestOp) {
+      throw new Error('No operations found in conflict');
+    }
+
     await this.executeOperation(latestOp);
 
     conflict.status = 'resolved';
@@ -778,6 +784,9 @@ export class RealTimeCollaborationEngine extends EventEmitter {
     if (editors.length > 0) {
       // Transfer ownership to first editor
       const newOwner = editors[0];
+      if (!newOwner) {
+        throw new Error('No suitable replacement owner found');
+      }
       newOwner.role = 'owner';
       newOwner.permissions = this.getOwnerPermissions();
       session.owner = newOwner.userId;
@@ -1025,7 +1034,8 @@ export class RealTimeCollaborationEngine extends EventEmitter {
     ];
 
     const hash = userId.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
-    return colors[hash % colors.length];
+    const selectedColor = colors[hash % colors.length];
+    return selectedColor || '#FF6B6B';
   }
 
   private hasOperationPermission(

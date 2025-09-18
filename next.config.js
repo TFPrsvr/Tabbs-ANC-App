@@ -188,7 +188,6 @@ const nextConfig = {
     },
     resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.wasm'],
     // Enhanced module resolution for faster builds
-    moduleIdStrategy: 'deterministic',
   },
 
   // Webpack configuration (fallback for production builds)
@@ -351,6 +350,9 @@ const nextConfig = {
 
   // Output optimization
   output: 'standalone',
+
+  // Fix workspace root warning
+  outputFileTracingRoot: __dirname,
   
   // Server external packages configuration
   serverExternalPackages: [

@@ -249,23 +249,23 @@ export class OfflineAudioManager {
       if (spectralCentroid > 1000 && spectralCentroid < 4000 && energy > 0.01) {
         // Likely vocals (human speech frequency range)
         for (let j = 0; j < windowSize && i + j < length; j++) {
-          vocalsData[i + j] = channelData[i + j];
-          musicData[i + j] = channelData[i + j] * 0.3; // Reduce music
-          backgroundData[i + j] = channelData[i + j] * 0.1; // Reduce background
+          vocalsData[i + j] = channelData[i + j] ?? 0;
+          musicData[i + j] = (channelData[i + j] ?? 0) * 0.3; // Reduce music
+          backgroundData[i + j] = (channelData[i + j] ?? 0) * 0.1; // Reduce background
         }
       } else if (spectralCentroid < 1000 || energy < 0.005) {
         // Likely background/ambient
         for (let j = 0; j < windowSize && i + j < length; j++) {
-          vocalsData[i + j] = channelData[i + j] * 0.1; // Reduce vocals
-          musicData[i + j] = channelData[i + j] * 0.5; // Some music
-          backgroundData[i + j] = channelData[i + j]; // Keep background
+          vocalsData[i + j] = (channelData[i + j] ?? 0) * 0.1; // Reduce vocals
+          musicData[i + j] = (channelData[i + j] ?? 0) * 0.5; // Some music
+          backgroundData[i + j] = channelData[i + j] ?? 0; // Keep background
         }
       } else {
         // Likely music/instruments
         for (let j = 0; j < windowSize && i + j < length; j++) {
-          vocalsData[i + j] = channelData[i + j] * 0.2; // Reduce vocals
-          musicData[i + j] = channelData[i + j]; // Keep music
-          backgroundData[i + j] = channelData[i + j] * 0.3; // Some background
+          vocalsData[i + j] = (channelData[i + j] ?? 0) * 0.2; // Reduce vocals
+          musicData[i + j] = channelData[i + j] ?? 0; // Keep music
+          backgroundData[i + j] = (channelData[i + j] ?? 0) * 0.3; // Some background
         }
       }
     }
@@ -379,7 +379,7 @@ export class OfflineAudioManager {
   private calculateRMSEnergy(buffer: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < buffer.length; i++) {
-      sum += buffer[i] * buffer[i];
+      sum += (buffer[i] ?? 0) * (buffer[i] ?? 0);
     }
     return Math.sqrt(sum / buffer.length);
   }
@@ -390,7 +390,7 @@ export class OfflineAudioManager {
     let magnitudeSum = 0;
     
     for (let i = 0; i < buffer.length; i++) {
-      const magnitude = Math.abs(buffer[i]);
+      const magnitude = Math.abs(buffer[i] ?? 0);
       const frequency = (i * sampleRate) / (2 * buffer.length);
       weightedSum += frequency * magnitude;
       magnitudeSum += magnitude;
@@ -474,7 +474,7 @@ export class OfflineAudioManager {
     const filesToRemove = Math.ceil(files.length * 0.25);
     
     for (let i = 0; i < filesToRemove; i++) {
-      await this.deleteAudioFile(files[i].id);
+      await this.deleteAudioFile(files[i]?.id ?? '');
     }
     
     console.log(`🗑️ Cleaned up ${filesToRemove} old files`);

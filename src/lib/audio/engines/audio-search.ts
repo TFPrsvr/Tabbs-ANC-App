@@ -624,8 +624,8 @@ function extractNameFromQuery(query: string): string {
   const nameIndicators = ['speaker', 'person', 'voice', 'find', 'show'];
   
   for (let i = 0; i < words.length; i++) {
-    if (nameIndicators.includes(words[i]) && i + 1 < words.length) {
-      return words[i + 1];
+    if (nameIndicators.includes(words[i] ?? '') && i + 1 < words.length) {
+      return words[i + 1] ?? '';
     }
   }
   
@@ -634,5 +634,5 @@ function extractNameFromQuery(query: string): string {
 
 function extractQuotedText(query: string): string | null {
   const match = query.match(/"([^"]*)"/);
-  return match ? match[1] : null;
+  return match ? match[1] ?? null : null;
 }

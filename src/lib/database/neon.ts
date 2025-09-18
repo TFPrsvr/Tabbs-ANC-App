@@ -342,7 +342,7 @@ export class NeonDatabaseService {
       `;
 
       if (result.length > 0) {
-        return result[0].can_upload;
+        return result[0]?.can_upload ?? false;
       }
       return false;
     } catch (error) {

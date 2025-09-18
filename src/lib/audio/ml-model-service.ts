@@ -496,7 +496,7 @@ export class MLModelService {
 
     while (pos < length) {
       for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
-        sample = Math.max(-1, Math.min(1, channels[i][offset]));
+        sample = Math.max(-1, Math.min(1, channels[i]?.[offset] ?? 0));
         sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
         view.setInt16(pos, sample, true);
         pos += 2;
@@ -557,7 +557,7 @@ export class MLModelService {
   private calculateRMS(data: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
     }
     return Math.sqrt(sum / data.length);
   }
@@ -565,7 +565,7 @@ export class MLModelService {
   private calculatePeak(data: Float32Array): number {
     let peak = 0;
     for (let i = 0; i < data.length; i++) {
-      const abs = Math.abs(data[i]);
+      const abs = Math.abs(data[i] ?? 0);
       if (abs > peak) peak = abs;
     }
     return peak;
@@ -582,7 +582,7 @@ export class MLModelService {
 
     for (let i = 0; i < fftSize / 2; i++) {
       const frequency = (i * sampleRate) / fftSize;
-      const magnitude = Math.abs(fftData[i]) + Math.abs(fftData[fftSize - 1 - i]);
+      const magnitude = Math.abs(fftData[i] ?? 0) + Math.abs(fftData[fftSize - 1 - i] ?? 0);
 
       weightedSum += frequency * magnitude;
       magnitudeSum += magnitude;

@@ -259,7 +259,7 @@ export class AISourceSeparationEngine {
     const createBuffer = (channelData: Float32Array[], name: string, confidence: number) => {
       const buffer = this.audioContext!.createBuffer(
         channelData.length,
-        channelData[0].length,
+        channelData[0]?.length ?? 0,
         this.audioContext!.sampleRate
       );
       

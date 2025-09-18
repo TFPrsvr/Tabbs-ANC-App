@@ -650,7 +650,7 @@ class AdvancedDSPProcessor {
       absoluteThreshold = Math.pow(10, absoluteThreshold / 20);
 
       // Masking threshold is at least the absolute threshold
-      thresholds[i] = Math.max(absoluteThreshold, magnitudes[i] * 0.01);
+      thresholds[i] = Math.max(absoluteThreshold, (magnitudes[i] ?? 0) * 0.01);
     }
 
     return thresholds;
@@ -663,9 +663,9 @@ class AdvancedDSPProcessor {
     let count = 0;
 
     for (let i = 1; i < magnitudes.length; i++) {
-      if (magnitudes[i] > 0) {
-        geometricMean *= magnitudes[i];
-        arithmeticMean += magnitudes[i];
+      if ((magnitudes[i] ?? 0) > 0) {
+        geometricMean *= magnitudes[i] ?? 0;
+        arithmeticMean += magnitudes[i] ?? 0;
         count++;
       }
     }
@@ -683,7 +683,7 @@ class AdvancedDSPProcessor {
     let roughness = 0;
 
     for (let i = 0; i < barkSpectrum.length - 1; i++) {
-      const diff = Math.abs(barkSpectrum[i + 1] - barkSpectrum[i]);
+      const diff = Math.abs((barkSpectrum[i + 1] ?? 0) - (barkSpectrum[i] ?? 0));
       roughness += diff * Math.exp(-0.25 * i); // Weight by frequency
     }
 
@@ -696,8 +696,8 @@ class AdvancedDSPProcessor {
 
     for (let i = 0; i < barkSpectrum.length; i++) {
       const weight = Math.pow(i / barkSpectrum.length, 4); // Higher frequencies weighted more
-      sharpness += barkSpectrum[i] * weight;
-      totalEnergy += barkSpectrum[i];
+      sharpness += (barkSpectrum[i] ?? 0) * weight;
+      totalEnergy += barkSpectrum[i] ?? 0;
     }
 
     return totalEnergy > 0 ? sharpness / totalEnergy : 0;
@@ -745,11 +745,11 @@ class AdvancedDSPProcessor {
     let rightSumSq = 0;
 
     for (let i = 0; i < minLength; i++) {
-      correlation += left[i] * right[i];
-      leftSum += left[i];
-      rightSum += right[i];
-      leftSumSq += left[i] * left[i];
-      rightSumSq += right[i] * right[i];
+      correlation += (left[i] ?? 0) * (right[i] ?? 0);
+      leftSum += left[i] ?? 0;
+      rightSum += right[i] ?? 0;
+      leftSumSq += (left[i] ?? 0) * (left[i] ?? 0);
+      rightSumSq += (right[i] ?? 0) * (right[i] ?? 0);
     }
 
     const leftMean = leftSum / minLength;
@@ -770,7 +770,7 @@ class AdvancedDSPProcessor {
     let count = 0;
 
     for (let i = 1; i < leftSpectrum.phases.length; i++) {
-      const phaseDiff = Math.abs(leftSpectrum.phases[i] - rightSpectrum.phases[i]);
+      const phaseDiff = Math.abs((leftSpectrum.phases[i] ?? 0) - (rightSpectrum.phases[i] ?? 0));
       const normalizedDiff = Math.min(phaseDiff, 2 * Math.PI - phaseDiff);
       coherence += 1 - normalizedDiff / Math.PI;
       count++;
@@ -784,8 +784,8 @@ class AdvancedDSPProcessor {
     const side = new Float32Array(left.length);
 
     for (let i = 0; i < left.length; i++) {
-      mid[i] = (left[i] + right[i]) / 2;
-      side[i] = (left[i] - right[i]) / 2;
+      mid[i] = ((left[i] ?? 0) + (right[i] ?? 0)) / 2;
+      side[i] = ((left[i] ?? 0) - (right[i] ?? 0)) / 2;
     }
 
     const midEnergy = this.calculateRMS(mid);
@@ -800,8 +800,8 @@ class AdvancedDSPProcessor {
     let sideEnergy = 0;
 
     for (let i = 0; i < Math.min(left.length, right.length); i++) {
-      const mid = (left[i] + right[i]) / 2;
-      const side = (left[i] - right[i]) / 2;
+      const mid = ((left[i] ?? 0) + (right[i] ?? 0)) / 2;
+      const side = ((left[i] ?? 0) - (right[i] ?? 0)) / 2;
 
       totalEnergy += mid * mid + side * side;
       sideEnergy += side * side;
@@ -852,7 +852,7 @@ class AdvancedDSPProcessor {
     for (let i = 0; i < data.length - 1; i++) {
       for (let j = 0; j < factor; j++) {
         const t = j / factor;
-        upsampled[i * factor + j] = data[i] * (1 - t) + data[i + 1] * t;
+        upsampled[i * factor + j] = (data[i] ?? 0) * (1 - t) + (data[i + 1] ?? 0) * t;
       }
     }
 
@@ -862,7 +862,7 @@ class AdvancedDSPProcessor {
   private calculateRMS(data: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data[i] * data[i];
+      sum += (data[i] ?? 0) * (data[i] ?? 0);
     }
     return Math.sqrt(sum / data.length);
   }
@@ -902,7 +902,7 @@ class AdvancedDSPProcessor {
     const percentile1 = sortedLevels[Math.floor(sortedLevels.length * 0.01)];
     const percentile99 = sortedLevels[Math.floor(sortedLevels.length * 0.99)];
 
-    return 20 * Math.log10(percentile1 / (percentile99 + 1e-10));
+    return 20 * Math.log10((percentile1 ?? 0) / ((percentile99 ?? 0) + 1e-10));
   }
 
   private calculateLoudnessRange(audioData: Float32Array): number {
@@ -924,7 +924,7 @@ class AdvancedDSPProcessor {
     const percentile10 = loudnessValues[Math.floor(loudnessValues.length * 0.1)];
     const percentile95 = loudnessValues[Math.floor(loudnessValues.length * 0.95)];
 
-    return percentile95 - percentile10;
+    return (percentile95 ?? 0) - (percentile10 ?? 0);
   }
 
   private estimateFundamentalFrequency(magnitudes: Float32Array, frequencies: Float32Array): number {
@@ -938,7 +938,7 @@ class AdvancedDSPProcessor {
     // Multiply by downsampled versions
     for (let h = 2; h <= maxHarmonics; h++) {
       for (let i = 0; i < Math.floor(magnitudes.length / h); i++) {
-        hps[i] *= magnitudes[i * h];
+        hps[i] = (hps[i] ?? 0) * (magnitudes[i * h] ?? 0);
       }
     }
 
@@ -947,13 +947,13 @@ class AdvancedDSPProcessor {
     let maxVal = 0;
 
     for (let i = 1; i < hps.length / 2; i++) {
-      if (hps[i] > maxVal) {
-        maxVal = hps[i];
+      if ((hps[i] ?? 0) > maxVal) {
+        maxVal = hps[i] ?? 0;
         maxIdx = i;
       }
     }
 
-    return frequencies[maxIdx];
+    return frequencies[maxIdx] ?? 0;
   }
 
   private extractHarmonics(
@@ -978,16 +978,16 @@ class AdvancedDSPProcessor {
 
         for (let i = Math.max(0, targetIdx - searchRange);
              i <= Math.min(magnitudes.length - 1, targetIdx + searchRange); i++) {
-          if (magnitudes[i] > peakMag) {
-            peakMag = magnitudes[i];
+          if ((magnitudes[i] ?? 0) > (peakMag ?? 0)) {
+            peakMag = magnitudes[i] ?? 0;
             peakIdx = i;
           }
         }
 
         harmonics.push({
-          frequency: frequencies[peakIdx],
-          magnitude: peakMag,
-          phase: phases[peakIdx],
+          frequency: frequencies[peakIdx] ?? 0,
+          magnitude: peakMag ?? 0,
+          phase: phases[peakIdx] ?? 0,
           harmonic: h
         });
       }

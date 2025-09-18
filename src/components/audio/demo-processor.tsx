@@ -87,6 +87,17 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
     setIsPlaying(!isPlaying);
     if (!isPlaying) {
       setDemoProgress(0);
+      // Start demo audio processing simulation
+      const interval = setInterval(() => {
+        setDemoProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setIsPlaying(false);
+            return 100;
+          }
+          return prev + 2;
+        });
+      }, 100);
     }
   };
 

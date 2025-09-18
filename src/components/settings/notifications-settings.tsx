@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -143,6 +144,52 @@ export function NotificationsSettings() {
 
   const getActiveChannelsCount = (settings: NotificationCategory['settings']) => {
     return Object.values(settings).filter(Boolean).length;
+  };
+
+  // Test notifications
+  const handleTestNotifications = async () => {
+    toast.info('🔔 Sending test notifications...');
+
+    // Simulate different notification types
+    setTimeout(() => {
+      if (globalNotifications) {
+        toast.success('✅ Email notification sent!');
+      }
+    }, 1000);
+
+    setTimeout(() => {
+      if (globalNotifications) {
+        toast.info('📱 Push notification sent!');
+      }
+    }, 2000);
+
+    setTimeout(() => {
+      if (globalNotifications) {
+        toast.info('🔔 In-app notification displayed!');
+      }
+    }, 3000);
+
+    if (!globalNotifications) {
+      toast.warning('Notifications are disabled. Enable them to receive test notifications.');
+    }
+  };
+
+  // Save notification preferences
+  const handleSavePreferences = () => {
+    try {
+      const notificationSettings = {
+        globalNotifications,
+        quietHours,
+        notificationFrequency,
+        categories
+      };
+
+      localStorage.setItem('anc-notification-settings', JSON.stringify(notificationSettings));
+      toast.success('Notification preferences saved successfully!');
+    } catch (error) {
+      console.error('Error saving notification preferences:', error);
+      toast.error('Failed to save notification preferences');
+    }
   };
 
   return (
@@ -412,8 +459,8 @@ export function NotificationsSettings() {
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-3">
-        <Button variant="outline">Test Notifications</Button>
-        <Button>Save Preferences</Button>
+        <Button variant="outline" onClick={handleTestNotifications}>Test Notifications</Button>
+        <Button onClick={handleSavePreferences}>Save Preferences</Button>
       </div>
     </div>
   );

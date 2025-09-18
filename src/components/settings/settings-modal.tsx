@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +18,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ children }: SettingsModalProps) {
-  const [audioSettings, setAudioSettings] = useState({
+  const defaultAudioSettings = {
     outputGain: [0.8],
     inputGain: [0.7],
     sampleRate: '48000',
@@ -26,22 +27,87 @@ export function SettingsModal({ children }: SettingsModalProps) {
     enableSpatialAudio: false,
     voiceSeparation: true,
     realTimeProcessing: true
-  });
+  };
 
-  const [displaySettings, setDisplaySettings] = useState({
+  const defaultDisplaySettings = {
     theme: 'system',
     visualizations: true,
     animations: true,
     highContrast: false,
     colorBlindMode: false
-  });
+  };
 
-  const [privacySettings, setPrivacySettings] = useState({
+  const defaultPrivacySettings = {
     telemetry: false,
     analytics: true,
     crashReports: true,
     personalizedAds: false
-  });
+  };
+
+  const [audioSettings, setAudioSettings] = useState(defaultAudioSettings);
+  const [displaySettings, setDisplaySettings] = useState(defaultDisplaySettings);
+  const [privacySettings, setPrivacySettings] = useState(defaultPrivacySettings);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedAudioSettings = localStorage.getItem('anc-audio-settings');
+      const savedDisplaySettings = localStorage.getItem('anc-display-settings');
+      const savedPrivacySettings = localStorage.getItem('anc-privacy-settings');
+
+      if (savedAudioSettings) {
+        setAudioSettings({ ...defaultAudioSettings, ...JSON.parse(savedAudioSettings) });
+      }
+      if (savedDisplaySettings) {
+        setDisplaySettings({ ...defaultDisplaySettings, ...JSON.parse(savedDisplaySettings) });
+      }
+      if (savedPrivacySettings) {
+        setPrivacySettings({ ...defaultPrivacySettings, ...JSON.parse(savedPrivacySettings) });
+      }
+    } catch (error) {
+      console.error('Error loading settings from localStorage:', error);
+      toast.error('Failed to load saved settings');
+    }
+  }, []);
+
+  // Save settings to localStorage
+  const handleSaveSettings = async () => {
+    try {
+      localStorage.setItem('anc-audio-settings', JSON.stringify(audioSettings));
+      localStorage.setItem('anc-display-settings', JSON.stringify(displaySettings));
+      localStorage.setItem('anc-privacy-settings', JSON.stringify(privacySettings));
+
+      // Apply theme setting immediately
+      if (displaySettings.theme !== 'system') {
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(displaySettings.theme);
+      } else {
+        document.documentElement.classList.remove('light', 'dark');
+      }
+
+      toast.success('Settings saved successfully!');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast.error('Failed to save settings');
+    }
+  };
+
+  // Reset to default settings
+  const handleResetToDefaults = () => {
+    setAudioSettings(defaultAudioSettings);
+    setDisplaySettings(defaultDisplaySettings);
+    setPrivacySettings(defaultPrivacySettings);
+
+    // Clear localStorage
+    localStorage.removeItem('anc-audio-settings');
+    localStorage.removeItem('anc-display-settings');
+    localStorage.removeItem('anc-privacy-settings');
+
+    // Reset theme
+    document.documentElement.classList.remove('light', 'dark');
+
+    toast.success('Settings reset to defaults');
+  };
 
   return (
     <Dialog>
@@ -369,8 +435,8 @@ export function SettingsModal({ children }: SettingsModalProps) {
         </Tabs>
 
         <div className="flex justify-end gap-3 pt-4 border-t">
-          <Button variant="outline">Reset to Defaults</Button>
-          <Button>Save Settings</Button>
+          <Button variant="outline" onClick={handleResetToDefaults}>Reset to Defaults</Button>
+          <Button onClick={handleSaveSettings}>Save Settings</Button>
         </div>
       </DialogContent>
     </Dialog>

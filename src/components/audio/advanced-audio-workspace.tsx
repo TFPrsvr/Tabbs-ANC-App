@@ -24,6 +24,7 @@ import {
 } from '@/lib/audio/engines/speech-recognition';
 import { cn } from '@/lib/utils';
 import { AudioSearchInterface } from './audio-search-interface';
+import { useAudioProcessor } from '@/hooks/useAudioProcessor';
 import { 
   Wand2, Users, MessageSquare, Download, Play, Pause, 
   Volume2, VolumeX, Settings, RotateCcw, CheckCircle,

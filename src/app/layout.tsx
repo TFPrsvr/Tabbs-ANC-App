@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import { ServiceWorkerProvider } from '@/components/ui/service-worker-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -50,20 +51,22 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
         <body className={`${inter.className} antialiased`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ServiceWorkerProvider>
-              <div className="min-h-screen bg-background">
-                {children}
-              </div>
-              <Toaster />
-              <SpeedInsights />
-            </ServiceWorkerProvider>
-          </ThemeProvider>
+          <ErrorBoundary component="RootLayout">
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ServiceWorkerProvider>
+                <div className="min-h-screen bg-background">
+                  {children}
+                </div>
+                <Toaster />
+                <SpeedInsights />
+              </ServiceWorkerProvider>
+            </ThemeProvider>
+          </ErrorBoundary>
         </body>
       </html>
     </ClerkProvider>

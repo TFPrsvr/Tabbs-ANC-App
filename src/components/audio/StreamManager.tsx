@@ -95,7 +95,7 @@ export function StreamManager({
               <div className="w-16">
                 <AudioSlider
                   value={[stream.isMuted ? 0 : stream.volume]}
-                  onValueChange={(value) => onStreamVolumeChange(stream.id, value[0])}
+                  onValueChange={(value) => onStreamVolumeChange(stream.id, value[0] || 0)}
                   max={100}
                   step={1}
                   disabled={!stream.isActive || stream.isMuted}

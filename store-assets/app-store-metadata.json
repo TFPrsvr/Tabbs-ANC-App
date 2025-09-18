@@ -1,0 +1,102 @@
+{
+  "appStore": {
+    "appName": "ANC Audio Pro",
+    "subtitle": "AI Audio Processing & Enhancement",
+    "description": {
+      "short": "Advanced AI-powered audio processing with smart separation, voice recognition, and professional effects. Transform any audio with military-grade noise cancellation and real-time enhancement.",
+      "full": "ANC Audio Pro revolutionizes audio processing with cutting-edge AI technology. Whether you're a content creator, podcaster, musician, or audio professional, our app provides:\n\n🎯 SMART AUDIO SEPARATION\n• Isolate vocals from music instantly\n• Remove background noise with precision\n• Separate instruments and sound layers\n• Real-time audio stream processing\n\n🔊 PROFESSIONAL EFFECTS\n• Military-grade noise cancellation\n• Advanced spatial audio processing\n• Professional EQ and dynamics\n• Custom audio enhancement presets\n\n🤖 AI-POWERED FEATURES\n• Automatic speech recognition\n• Voice detection and analysis\n• Smart audio search and indexing\n• Intelligent audio optimization\n\n✨ INTUITIVE INTERFACE\n• Drag-and-drop audio processing\n• Real-time waveform visualization\n• Touch-optimized controls\n• Professional workspace layout\n\n🔒 PRIVACY FIRST\n• Local processing when possible\n• Military-grade encryption\n• No permanent data storage\n• Complete privacy protection\n\n📱 CROSS-PLATFORM\n• Works on all devices\n• Offline functionality\n• Cloud sync capabilities\n• Progressive Web App technology\n\nPerfect for podcasters, musicians, content creators, audio engineers, and anyone who wants professional-quality audio processing at their fingertips."
+    },
+    "keywords": [
+      "audio processing",
+      "noise cancellation",
+      "AI audio",
+      "voice separation",
+      "audio enhancement",
+      "podcast editing",
+      "music production",
+      "speech recognition",
+      "audio effects",
+      "sound editing"
+    ],
+    "category": "PRODUCTIVITY",
+    "contentRating": "4+",
+    "website": "https://ancaudiopro.com",
+    "supportURL": "https://ancaudiopro.com/support",
+    "privacyURL": "https://ancaudiopro.com/privacy-policy.html",
+    "version": "1.0.0",
+    "whatsNew": "🚀 Initial Release\n\n• Advanced AI audio processing engine\n• Real-time noise cancellation\n• Smart voice separation\n• Professional effects suite\n• Cross-platform compatibility\n• Military-grade security\n• Intuitive touch interface\n• Offline processing capabilities\n\nExperience the future of audio processing!"
+  },
+  "playStore": {
+    "appName": "ANC Audio Pro: AI Audio Processing",
+    "shortDescription": "Advanced AI-powered audio processing with smart separation, voice recognition, and professional effects.",
+    "fullDescription": "Transform any audio with ANC Audio Pro - the most advanced AI-powered audio processing app available.\n\n🎯 SMART AUDIO SEPARATION\nInstantly isolate vocals from music, remove background noise with precision, and separate instruments with our cutting-edge AI technology.\n\n🔊 PROFESSIONAL EFFECTS\nAccess military-grade noise cancellation, advanced spatial audio processing, and professional EQ tools that rival desktop software.\n\n🤖 AI-POWERED FEATURES\n• Automatic speech recognition\n• Voice detection and analysis\n• Smart audio search capabilities\n• Intelligent optimization\n\n✨ INTUITIVE DESIGN\nDrag-and-drop processing, real-time visualization, and touch-optimized controls make professional audio editing accessible to everyone.\n\n🔒 PRIVACY FIRST\nYour audio stays private with local processing, military-grade encryption, and no permanent data storage.\n\n📱 WORKS EVERYWHERE\nProgressive Web App technology ensures smooth performance across all devices with offline capabilities.\n\nPerfect for:\n• Podcasters and content creators\n• Musicians and audio engineers\n• Students and educators\n• Business professionals\n• Anyone wanting better audio quality\n\nDownload now and experience the future of audio processing!",
+    "category": "PRODUCTIVITY",
+    "contentRating": "Everyone",
+    "tags": [
+      "audio",
+      "AI",
+      "productivity",
+      "music",
+      "podcast",
+      "editing",
+      "noise-cancellation",
+      "voice",
+      "professional",
+      "enhancement"
+    ]
+  },
+  "screenshots": {
+    "required": {
+      "phone": {
+        "sizes": ["1080x1920", "1080x2340", "1170x2532"],
+        "count": 8,
+        "descriptions": [
+          "Main Dashboard - Audio Upload and Processing",
+          "AI-Powered Audio Separation Interface",
+          "Professional Waveform Visualization",
+          "Advanced Noise Cancellation Controls",
+          "Real-time Audio Effects Processing",
+          "Voice Recognition and Speech-to-Text",
+          "Audio Library and Search Interface",
+          "Settings and Privacy Controls"
+        ]
+      },
+      "tablet": {
+        "sizes": ["2048x2732", "2224x1668", "2388x1668"],
+        "count": 6,
+        "descriptions": [
+          "Professional Audio Workspace Layout",
+          "Advanced Audio Processing Dashboard",
+          "Multi-track Audio Editing Interface",
+          "AI Effects and Enhancement Controls",
+          "Audio Analysis and Visualization",
+          "Project Management and Export Options"
+        ]
+      }
+    },
+    "optional": {
+      "desktop": {
+        "sizes": ["1920x1080", "2560x1440"],
+        "count": 4,
+        "descriptions": [
+          "Full Professional Workspace",
+          "Advanced Audio Processing Suite",
+          "Multi-window Audio Interface",
+          "Professional Effects Dashboard"
+        ]
+      }
+    }
+  },
+  "appIcon": {
+    "sizes": {
+      "required": ["512x512", "1024x1024"],
+      "additional": ["16x16", "32x32", "48x48", "64x64", "96x96", "128x128", "256x256"]
+    },
+    "format": "PNG with transparency",
+    "guidelines": "Clean, modern design representing audio/sound waves with AI elements"
+  },
+  "featureGraphic": {
+    "size": "1024x500",
+    "description": "Horizontal banner showcasing app features and AI audio processing capabilities"
+  }
+}

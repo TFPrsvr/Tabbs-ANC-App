@@ -58,7 +58,7 @@ export function AudioProgress({
       <div className="space-y-1">
         <AudioSlider
           value={[currentTime]}
-          onValueChange={(value) => onSeek(value[0])}
+          onValueChange={(value) => onSeek(value[0] || 0)}
           max={duration}
           step={0.1}
           disabled={isLoading || duration === 0}

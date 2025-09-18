@@ -30,10 +30,10 @@ export class AudioProcessor {
   protected audioContext: AudioContext | null = null;
   private sourceNode: AudioBufferSourceNode | null = null;
   private audioBuffer: AudioBuffer | null = null;
-  private analysers: AnalyserNode[] = [];
+  protected analysers: AnalyserNode[] = [];
   private filters: BiquadFilterNode[] = [];
-  private gainNodes: GainNode[] = [];
-  private isProcessing: boolean = false;
+  protected gainNodes: GainNode[] = [];
+  protected isProcessing: boolean = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -443,9 +443,25 @@ export class AudioStreamController {
 // Re-export for compatibility with advanced-audio-processor imports
 export class AdvancedAudioProcessor extends AudioProcessor {
   private ancSettings: ANCSettings;
+  private config: AdvancedProcessorConfig;
+  private streamVolumes: Map<string, number> = new Map();
+  private activeStreams: Set<string> = new Set();
+  private voiceInstances: Array<{ startTime: number; endTime: number; confidence: number }> = [];
 
   constructor(config?: AdvancedProcessorConfig) {
     super();
+    this.config = {
+      sampleRate: 44100,
+      bufferSize: 4096,
+      channels: 2,
+      enableRealTimeProcessing: true,
+      voiceDetectionSensitivity: 0.7,
+      separationQuality: 'high',
+      enableClosedCaptions: false,
+      deviceType: 'headphones',
+      ...config
+    };
+
     this.ancSettings = {
       enabled: false,
       intensity: 50,
@@ -476,23 +492,166 @@ export class AdvancedAudioProcessor extends AudioProcessor {
 
   async startProcessing(source?: any): Promise<void> {
     await this.initialize();
-    // TODO: Implement actual processing logic
-    console.log('Advanced audio processing started with source:', source);
+
+    if (source) {
+      // Start real-time processing with the source
+      this.activeStreams.add(source.id || 'default');
+
+      if (this.config.enableRealTimeProcessing) {
+        await this.initializeRealTimeProcessing(source);
+      }
+    }
+
+    this.isProcessing = true;
+    console.log('Advanced audio processing started with source:', source?.id || 'default');
   }
 
   async stopProcessing(): Promise<void> {
-    // TODO: Implement stop processing logic
+    this.isProcessing = false;
+    this.activeStreams.clear();
+
+    // Stop any active audio streams
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      const destination = this.audioContext.destination;
+      destination.disconnect();
+    }
+
     console.log('Advanced audio processing stopped');
   }
 
   setStreamVolume(streamId: string, volume: number): void {
-    // TODO: Implement volume control
-    console.log('Setting stream volume for', streamId, 'to:', volume);
+    // Clamp volume between 0 and 1
+    const normalizedVolume = Math.max(0, Math.min(1, volume / 100));
+    this.streamVolumes.set(streamId, normalizedVolume);
+
+    // Apply volume to active gain nodes if available
+    if (this.gainNodes.length > 0) {
+      this.gainNodes.forEach(gainNode => {
+        if (gainNode && gainNode.gain) {
+          gainNode.gain.setValueAtTime(normalizedVolume, this.audioContext?.currentTime || 0);
+        }
+      });
+    }
+
+    console.log(`Stream ${streamId} volume set to: ${normalizedVolume}`);
   }
 
   findNextVoiceInstance(): { voiceStartTime: number } {
-    // TODO: Implement voice detection
-    console.log('Finding next voice instance');
-    return { voiceStartTime: 0 };
+    if (this.voiceInstances.length === 0) {
+      return { voiceStartTime: 0 };
+    }
+
+    // Find the next voice instance after current time
+    const currentTime = this.audioContext?.currentTime || 0;
+    const nextInstance = this.voiceInstances.find(
+      instance => instance.startTime > currentTime && instance.confidence > this.config.voiceDetectionSensitivity!
+    );
+
+    return {
+      voiceStartTime: nextInstance ? nextInstance.startTime : (this.voiceInstances[0]?.startTime ?? 0)
+    };
+  }
+
+  // New method for real-time processing initialization
+  private async initializeRealTimeProcessing(source: any): Promise<void> {
+    if (!this.audioContext) return;
+
+    try {
+      // Create analyser for voice detection
+      const analyser = this.audioContext.createAnalyser();
+      analyser.fftSize = this.config.bufferSize || 4096;
+      analyser.smoothingTimeConstant = 0.8;
+
+      // Create gain node for volume control
+      const gainNode = this.audioContext.createGain();
+      gainNode.gain.value = this.streamVolumes.get(source.id) || 1;
+
+      // Store references
+      this.analysers.push(analyser);
+      this.gainNodes.push(gainNode);
+
+      // Start voice detection if enabled
+      if (this.ancSettings.voiceFocusMode) {
+        this.startVoiceDetection(analyser);
+      }
+
+    } catch (error) {
+      console.error('Failed to initialize real-time processing:', error);
+    }
+  }
+
+  // Voice detection implementation
+  private startVoiceDetection(analyser: AnalyserNode): void {
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    const detectVoice = () => {
+      if (!this.isProcessing) return;
+
+      analyser.getByteFrequencyData(dataArray);
+
+      // Voice frequency range (300Hz - 3000Hz)
+      const voiceRangeStart = Math.floor((300 / (this.config.sampleRate! / 2)) * bufferLength);
+      const voiceRangeEnd = Math.floor((3000 / (this.config.sampleRate! / 2)) * bufferLength);
+
+      let voiceEnergy = 0;
+      let totalEnergy = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const value = dataArray[i] || 0;
+        totalEnergy += value;
+
+        if (i >= voiceRangeStart && i <= voiceRangeEnd) {
+          voiceEnergy += value;
+        }
+      }
+
+      const voiceRatio = totalEnergy > 0 ? voiceEnergy / totalEnergy : 0;
+      const confidence = voiceRatio > 0.3 ? voiceRatio : 0;
+
+      if (confidence > this.config.voiceDetectionSensitivity!) {
+        const currentTime = this.audioContext?.currentTime || 0;
+        this.voiceInstances.push({
+          startTime: currentTime,
+          endTime: currentTime + 0.1, // 100ms window
+          confidence
+        });
+
+        // Keep only recent voice instances (last 60 seconds)
+        this.voiceInstances = this.voiceInstances.filter(
+          instance => currentTime - instance.startTime < 60
+        );
+      }
+
+      // Continue monitoring
+      requestAnimationFrame(detectVoice);
+    };
+
+    detectVoice();
+  }
+
+  // Enhanced ANC processing
+  async processWithANC(audioData: Float32Array): Promise<Float32Array> {
+    if (!this.ancSettings.enabled) {
+      return audioData;
+    }
+
+    let processedData = audioData;
+
+    // Apply noise reduction
+    if (this.ancSettings.intensity > 0) {
+      processedData = await this.applyNoiseReduction(processedData, this.ancSettings.intensity);
+    }
+
+    // Apply transparency mode if enabled
+    if (this.ancSettings.transparencyMode) {
+      processedData = await this.applyTransparencyMode(
+        processedData,
+        this.ancSettings.transparencyLevel,
+        this.ancSettings.selectiveHearing
+      );
+    }
+
+    return processedData;
   }
 }

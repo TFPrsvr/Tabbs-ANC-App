@@ -120,11 +120,11 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Demo Controls */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-between gap-6 max-w-2xl mx-auto">
             <Button
               onClick={handleDemoPlay}
               size="lg"
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
               {isPlaying ? (
                 <>
@@ -138,7 +138,7 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
                 </>
               )}
             </Button>
-            <Button onClick={onUploadClick} variant="outline" size="lg">
+            <Button onClick={onUploadClick} variant="outline" size="lg" className="flex-1">
               <Upload className="w-5 h-5 mr-2" />
               📁 Upload Real File
             </Button>
@@ -202,11 +202,12 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
           return (
             <Card
               key={index}
-              className={`transition-all duration-500 ${
+              className={`transition-all duration-500 cursor-pointer ${
                 isActive
                   ? 'ring-2 ring-purple-400 shadow-lg scale-105'
-                  : 'hover:shadow-md'
+                  : 'hover:shadow-md hover:scale-102'
               }`}
+              onClick={() => setActiveFeature(index)}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
@@ -238,28 +239,28 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
       </div>
 
       {/* Quick Stats */}
-      <Card>
+      <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            📈 Processing Capabilities
+          <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+            <TrendingUp className="w-5 h-5 text-blue-600" />
+            📊 Processing Capabilities
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-purple-200">
               <div className="text-2xl font-bold text-purple-600">44.1kHz</div>
               <div className="text-xs text-muted-foreground">Sample Rate</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-blue-200">
               <div className="text-2xl font-bold text-blue-600">24-bit</div>
               <div className="text-xs text-muted-foreground">Bit Depth</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-green-200">
               <div className="text-2xl font-bold text-green-600">&lt;5ms</div>
               <div className="text-xs text-muted-foreground">Latency</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-orange-200">
               <div className="text-2xl font-bold text-orange-600">99.2%</div>
               <div className="text-xs text-muted-foreground">Accuracy</div>
             </div>
@@ -268,21 +269,21 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
       </Card>
 
       {/* Call to Action */}
-      <Card className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <Card className="bg-gradient-to-br from-rose-200 via-pink-100 to-orange-200 dark:from-rose-300/20 dark:via-pink-200/20 dark:to-orange-300/20 border-rose-300">
         <CardContent className="pt-6 text-center">
-          <Zap className="w-12 h-12 mx-auto mb-4 opacity-90" />
-          <h3 className="text-xl font-bold mb-2">Ready to Process Your Audio?</h3>
-          <p className="mb-6 opacity-90">
+          <div className="text-6xl mb-4">🚀</div>
+          <h3 className="text-xl font-bold mb-2 text-rose-800 dark:text-rose-100">Ready to Process Your Audio?</h3>
+          <p className="mb-6 text-rose-700 dark:text-rose-200">
             Upload your audio files to experience the full power of AI-driven audio processing
           </p>
           <Button
             onClick={onUploadClick}
             size="lg"
             variant="secondary"
-            className="bg-white text-purple-600 hover:bg-gray-100 shadow-lg border-2 border-purple-200 font-semibold"
+            className="bg-white text-rose-700 hover:bg-rose-50 shadow-lg border-2 border-rose-300 font-semibold transition-colors"
           >
-            <Upload className="w-5 h-5 mr-2" />
-            📁 Upload Audio File
+            <Upload className="w-5 h-5 mr-2 text-rose-700" />
+            <span className="text-rose-700 font-semibold">📁 Upload Audio File</span>
           </Button>
         </CardContent>
       </Card>

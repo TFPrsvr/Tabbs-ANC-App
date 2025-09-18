@@ -161,8 +161,8 @@ export class SubscriptionManager extends EventEmitter {
           supportLevel: 'email'
         },
         pricing: {
-          monthly: 19.99,
-          yearly: 199.99,
+          monthly: 9.99,
+          yearly: 99.99,
           currency: 'USD'
         },
         trialDays: 14,
@@ -193,8 +193,8 @@ export class SubscriptionManager extends EventEmitter {
           supportLevel: 'priority'
         },
         pricing: {
-          monthly: 49.99,
-          yearly: 499.99,
+          monthly: 19.99,
+          yearly: 199.99,
           currency: 'USD'
         },
         trialDays: 30
@@ -224,8 +224,8 @@ export class SubscriptionManager extends EventEmitter {
           supportLevel: 'dedicated'
         },
         pricing: {
-          monthly: 199.99,
-          yearly: 1999.99,
+          monthly: 49.99,
+          yearly: 499.99,
           currency: 'USD'
         },
         trialDays: 30

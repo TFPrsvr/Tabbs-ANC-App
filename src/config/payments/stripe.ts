@@ -29,7 +29,7 @@ export const stripePlans = [
   {
     id: 'premium',
     name: 'Premium',
-    price: 9.99,
+    price: 4.99,
     currency: 'usd',
     interval: 'month' as const,
     stripePriceId: 'price_XXXXXXXXXXXXX', // Replace with actual Price ID from Stripe
@@ -50,7 +50,7 @@ export const stripePlans = [
   {
     id: 'pro',
     name: 'Professional',
-    price: 29.99,
+    price: 9.99,
     currency: 'usd',
     interval: 'month' as const,
     stripePriceId: 'price_YYYYYYYYYYYYY', // Replace with actual Price ID from Stripe

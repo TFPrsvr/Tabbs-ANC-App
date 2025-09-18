@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@clerk/nextjs';
+import { useUserSubscription } from '@/lib/auth/clerk';
 import { AudioUpload } from '@/components/audio/audio-upload';
 import { AdvancedAudioWorkspace } from '@/components/audio/advanced-audio-workspace';
 import { MobileDashboard } from '@/components/mobile/mobile-dashboard';
@@ -17,6 +18,7 @@ import { Upload, Settings, User, Wand2, History, Video, Music } from 'lucide-rea
 
 export default function Dashboard() {
   const { userId } = useAuth();
+  const { getUserPlan } = useUserSubscription();
   const [audioFiles, setAudioFiles] = useState<AudioFile[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentFile, setCurrentFile] = useState<File | null>(null);
@@ -24,6 +26,8 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('processor');
   const [isMobile, setIsMobile] = useState(false);
   const [uploadMode, setUploadMode] = useState<'audio' | 'video'>('audio');
+  const [userPlan, setUserPlan] = useState<any>(null);
+  const [isLoadingPlan, setIsLoadingPlan] = useState(true);
 
   // Detect mobile device
   useEffect(() => {
@@ -59,8 +63,21 @@ export default function Dashboard() {
   useEffect(() => {
     if (userId) {
       loadUserAudioFiles();
+      loadUserPlan();
     }
   }, [userId, loadUserAudioFiles]);
+
+  const loadUserPlan = async () => {
+    try {
+      setIsLoadingPlan(true);
+      const plan = await getUserPlan();
+      setUserPlan(plan);
+    } catch (error) {
+      console.error('Error loading user plan:', error);
+    } finally {
+      setIsLoadingPlan(false);
+    }
+  };
 
   const handleAudioReady = useCallback((audioFile: File, audioBuffer: AudioBuffer) => {
     setCurrentFile(audioFile);
@@ -116,8 +133,7 @@ export default function Dashboard() {
               🎵 ANC Audio Pro
             </h1>
             <p className="text-muted-foreground max-w-md">
-              Advanced AI-powered audio processing with smart separation,<br />
-              voice recognition, and auto captions
+              Advanced AI-powered audio processing with smart separation, voice recognition, and auto captions
             </p>
           </div>
           
@@ -139,7 +155,7 @@ export default function Dashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 gap-2">
             <TabsTrigger value="processor" className="flex items-center gap-2">
               <Wand2 className="w-4 h-4" />
               🔊 Process

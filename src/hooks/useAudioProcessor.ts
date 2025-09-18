@@ -120,7 +120,7 @@ export function useAudioProcessor() {
     let sumAmplitude = 0;
 
     for (let i = 0; i < channelData.length; i++) {
-      const amplitude = Math.abs(channelData[i]);
+      const amplitude = Math.abs(channelData[i] || 0);
       if (amplitude > peakAmplitude) {
         peakAmplitude = amplitude;
       }
@@ -162,7 +162,7 @@ export function useAudioProcessor() {
 
       // Apply a simple noise gate
       for (let i = 0; i < inputData.length; i++) {
-        const sample = inputData[i];
+        const sample = inputData[i] || 0;
         // Reduce low-amplitude noise
         outputData[i] = Math.abs(sample) > 0.01 ? sample * 0.9 : sample * 0.3;
       }
@@ -187,7 +187,7 @@ export function useAudioProcessor() {
 
     // Simple frequency-based separation simulation
     for (let i = 0; i < inputData.length; i++) {
-      const sample = inputData[i];
+      const sample = inputData[i] || 0;
       const frequency = (i / inputData.length) * (buffer.sampleRate / 2);
 
       if (frequency >= 300 && frequency <= 3400) {
@@ -227,7 +227,7 @@ export function useAudioProcessor() {
 
       for (let i = 0; i < inputData.length; i++) {
         // Apply output gain
-        outputData[i] = inputData[i] * options.outputGain;
+        outputData[i] = (inputData[i] || 0) * options.outputGain;
       }
     }
 
@@ -270,7 +270,7 @@ export function useAudioProcessor() {
     let offset = 44;
     for (let i = 0; i < length; i++) {
       for (let channel = 0; channel < numberOfChannels; channel++) {
-        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i] || 0));
         view.setInt16(offset, sample * 0x7FFF, true);
         offset += 2;
       }

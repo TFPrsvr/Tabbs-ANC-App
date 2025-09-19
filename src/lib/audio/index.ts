@@ -23,6 +23,34 @@ export {
   type ProcessingResult
 } from './professional-effects';
 
+// Professional Mastering Tools
+export {
+  ProfessionalMastering,
+  MasteringPresets,
+  type MasteringConfig,
+  type MasteringResult,
+  type StereoImagingConfig,
+  type FrequencyConfig,
+  type DynamicsConfig,
+  type SaturationConfig,
+  type SpectralAnalysis,
+  type QualityMetrics
+} from './professional-mastering';
+
+// Multi-Format Audio Codec Support
+export {
+  MultiFormatCodec,
+  CodecPresets,
+  type AudioFormat,
+  type CodecInfo,
+  type AudioMetadata,
+  type AudioInfo,
+  type ConversionOptions,
+  type ConversionProgress,
+  type ConversionResult,
+  type QualityMetrics as CodecQualityMetrics
+} from './multi-format-codec';
+
 // Advanced Audio Analysis Suite
 export {
   AdvancedAudioAnalyzer,

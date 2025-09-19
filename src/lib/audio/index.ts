@@ -410,5 +410,313 @@ export const AudioScienceConstants = {
   }
 };
 
+// Advanced Audio Processing Tools
+export {
+  AudioFormatConverter,
+  type AudioFormat,
+  type ConversionOptions,
+  type ConversionResult,
+  type ConversionProgress
+} from './audio-format-converter';
+
+export {
+  RealTimeAudioProcessor,
+  type StreamingConfig,
+  type ProcessingChain,
+  type StreamMetrics,
+  type AudioStreamProcessor,
+  type StreamingPreset
+} from './real-time-processor';
+
+export {
+  AIAudioEnhancer,
+  type AIModel,
+  type EnhancementTask,
+  type AIEnhancementResult,
+  type ModelConfig
+} from './ai-audio-enhancer';
+
+export {
+  PluginManager,
+  AudioPlugin,
+  ReverbPlugin,
+  CompressorPlugin,
+  type PluginManifest,
+  type PluginParameter,
+  type PluginPreset,
+  type PluginState,
+  type AudioBuffer,
+  type ProcessingContext,
+  type PluginHost
+} from './plugin-architecture';
+
+// Import classes for internal use
+import { AudioFormatConverter } from './audio-format-converter';
+import { RealTimeAudioProcessor } from './real-time-processor';
+import { AIAudioEnhancer } from './ai-audio-enhancer';
+import { PluginManager, ReverbPlugin, CompressorPlugin } from './plugin-architecture';
+import type { AudioFormat, ConversionOptions, ConversionResult, ConversionProgress } from './audio-format-converter';
+import type { StreamMetrics, StreamingConfig } from './real-time-processor';
+import type { EnhancementTask, AIEnhancementResult, AIModel } from './ai-audio-enhancer';
+import type { AudioPlugin, AudioBuffer, PluginHost } from './plugin-architecture';
+
+// Audio Enhancement Suite - Complete Professional Package
+export class AudioEnhancementSuite {
+  private formatConverter: AudioFormatConverter;
+  private realTimeProcessor: RealTimeAudioProcessor;
+  private aiEnhancer: AIAudioEnhancer;
+  private pluginManager: PluginManager;
+
+  constructor() {
+    this.formatConverter = new AudioFormatConverter();
+
+    // Initialize with professional streaming config
+    this.realTimeProcessor = new RealTimeAudioProcessor({
+      sampleRate: 48000,
+      bufferSize: 256,
+      channels: 2,
+      bitDepth: 24,
+      latencyMode: 'low',
+      enableProcessing: true,
+      autoGainControl: true,
+      noiseGate: true,
+      compressionEnabled: true
+    });
+
+    this.aiEnhancer = new AIAudioEnhancer();
+
+    // Plugin host implementation
+    const pluginHost: PluginHost = {
+      getSampleRate: () => 48000,
+      getBlockSize: () => 256,
+      getContext: () => ({
+        sampleRate: 48000,
+        blockSize: 256,
+        timestamp: performance.now(),
+        tempo: 120,
+        timeSignature: [4, 4],
+        isPlaying: false,
+        transport: {
+          position: 0,
+          bar: 0,
+          beat: 0,
+          tick: 0
+        }
+      }),
+      requestParameterChange: (pluginId, parameterId, value) => {
+        console.log(`Parameter change request: ${pluginId}.${parameterId} = ${value}`);
+      },
+      sendMidiEvent: (event) => {
+        console.log('MIDI event:', event);
+      },
+      reportLatency: (pluginId, latency) => {
+        console.log(`Plugin ${pluginId} latency: ${latency}ms`);
+      },
+      log: (level, message) => {
+        console[level](message);
+      }
+    };
+
+    this.pluginManager = new PluginManager(pluginHost);
+  }
+
+  public async initialize(): Promise<void> {
+    await Promise.all([
+      this.aiEnhancer.initialize(),
+      this.loadDefaultPlugins()
+    ]);
+  }
+
+  private async loadDefaultPlugins(): Promise<void> {
+    // Load default reverb plugin
+    const reverb = new ReverbPlugin();
+    await this.pluginManager.loadPlugin(reverb);
+
+    // Load default compressor plugin
+    const compressor = new CompressorPlugin();
+    await this.pluginManager.loadPlugin(compressor);
+  }
+
+  // Format Conversion
+  public async convertAudio(
+    inputBuffer: ArrayBuffer,
+    inputFormat: AudioFormat,
+    outputOptions: ConversionOptions,
+    progressCallback?: (progress: ConversionProgress) => void
+  ): Promise<ConversionResult> {
+    return this.formatConverter.convertAudio(inputBuffer, inputFormat, outputOptions, progressCallback);
+  }
+
+  // Real-time Processing
+  public async startRealTimeProcessing(): Promise<void> {
+    return this.realTimeProcessor.start();
+  }
+
+  public stopRealTimeProcessing(): void {
+    this.realTimeProcessor.stop();
+  }
+
+  public getRealTimeMetrics(): StreamMetrics {
+    return this.realTimeProcessor.getMetrics();
+  }
+
+  // AI Enhancement
+  public async enhanceWithAI(
+    audioData: Float32Array[],
+    enhancementType: EnhancementTask['type'],
+    parameters?: Record<string, any>,
+    progressCallback?: (progress: number) => void
+  ): Promise<AIEnhancementResult> {
+    return this.aiEnhancer.enhanceAudio(audioData, enhancementType, parameters, progressCallback);
+  }
+
+  // Plugin Management
+  public async loadPlugin(plugin: AudioPlugin): Promise<void> {
+    return this.pluginManager.loadPlugin(plugin);
+  }
+
+  public processWithPlugins(audioBuffer: AudioBuffer): AudioBuffer {
+    const context = this.pluginManager['host'].getContext();
+    return this.pluginManager.processAudioChain(audioBuffer, context);
+  }
+
+  public getLoadedPlugins(): AudioPlugin[] {
+    return this.pluginManager.getLoadedPlugins();
+  }
+
+  // Utility Methods
+  public getSupportedFormats(): AudioFormat[] {
+    return this.formatConverter.getSupportedFormats();
+  }
+
+  public getAvailableAIModels(): AIModel[] {
+    return this.aiEnhancer.getAvailableModels();
+  }
+
+  public getSystemCapabilities(): {
+    maxSampleRate: number;
+    maxChannels: number;
+    supportedBitDepths: number[];
+    aiAcceleration: boolean;
+    realtimeCapable: boolean;
+  } {
+    return {
+      maxSampleRate: 192000,
+      maxChannels: 8,
+      supportedBitDepths: [16, 24, 32],
+      aiAcceleration: true,
+      realtimeCapable: true
+    };
+  }
+
+  public destroy(): void {
+    this.realTimeProcessor.stop();
+    this.pluginManager.destroy();
+    this.aiEnhancer.cleanup();
+  }
+}
+
+// Professional Audio Presets
+export const AudioPresets = {
+  // Format conversion presets
+  CONVERSION_PRESETS: {
+    CD_QUALITY: {
+      format: {
+        container: 'wav' as const,
+        sampleRate: 44100,
+        bitDepth: 16 as const,
+        channels: 2 as const
+      },
+      normalize: true,
+      dither: true
+    },
+    HIGH_RES: {
+      format: {
+        container: 'flac' as const,
+        sampleRate: 96000,
+        bitDepth: 24 as const,
+        channels: 2 as const,
+        quality: 'lossless' as const
+      },
+      normalize: false,
+      resampleQuality: 'sinc' as const
+    },
+    STREAMING: {
+      format: {
+        container: 'mp3' as const,
+        sampleRate: 48000,
+        bitDepth: 16 as const,
+        channels: 2 as const,
+        bitrate: 320
+      },
+      loudnessNormalization: -14, // Spotify standard
+      normalize: true
+    }
+  },
+
+  // Real-time processing presets
+  STREAMING_PRESETS: {
+    PODCAST: {
+      sampleRate: 48000,
+      bufferSize: 256 as const,
+      channels: 1 as const,
+      bitDepth: 24 as const,
+      latencyMode: 'low' as const,
+      enableProcessing: true,
+      autoGainControl: true,
+      noiseGate: true,
+      compressionEnabled: true
+    },
+    MUSIC_PRODUCTION: {
+      sampleRate: 96000,
+      bufferSize: 512 as const,
+      channels: 2 as const,
+      bitDepth: 32 as const,
+      latencyMode: 'high-quality' as const,
+      enableProcessing: true,
+      autoGainControl: false,
+      noiseGate: false,
+      compressionEnabled: false
+    },
+    GAMING: {
+      sampleRate: 48000,
+      bufferSize: 64 as const,
+      channels: 2 as const,
+      bitDepth: 16 as const,
+      latencyMode: 'ultra-low' as const,
+      enableProcessing: true,
+      autoGainControl: true,
+      noiseGate: true,
+      compressionEnabled: true
+    }
+  },
+
+  // AI enhancement presets
+  AI_PRESETS: {
+    VOICE_CLEANUP: {
+      type: 'noise_reduction' as const,
+      strength: 0.8,
+      preserveCharacter: true
+    },
+    MUSIC_RESTORATION: {
+      type: 'restoration' as const,
+      enhanceHarmonics: true,
+      restoreDynamics: true,
+      removeNoise: 0.6
+    },
+    VOCAL_ISOLATION: {
+      type: 'vocal_isolation' as const,
+      extractVocals: true,
+      preserveStereo: true
+    },
+    AUTO_MASTER: {
+      type: 'auto_mastering' as const,
+      targetLUFS: -14,
+      enhanceBass: true,
+      brighttenHighs: true
+    }
+  }
+};
+
 // All exports are available individually above
 export default AudioScienceUtils;

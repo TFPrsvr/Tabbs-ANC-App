@@ -99,6 +99,40 @@ export {
   type StereoData
 } from './audio-visualization';
 
+// Batch Audio Processing
+export {
+  BatchAudioProcessor,
+  OperationTemplates,
+  type BatchJob,
+  type BatchFile,
+  type BatchOperation,
+  type BatchSettings,
+  type BatchResult,
+  type BatchProgress,
+  type OperationType,
+  type OperationParameters,
+  type ProcessingQueue,
+  type QualityMetrics as BatchQualityMetrics
+} from './batch-processor';
+
+// Advanced Spectral Analysis Tools
+export {
+  AdvancedSpectralAnalyzer,
+  SpectralAnalysisUtils,
+  SpectralAnalysisPresets,
+  type SpectralAnalysisConfig,
+  type SpectralFrame,
+  type SpectralFeatures,
+  type ChromaFeatures,
+  type MelFeatures,
+  type TemporalFeatures,
+  type HarmonicFeatures,
+  type PsychoacousticFeatures,
+  type SpectralContours,
+  type AdvancedMetrics,
+  type WindowType
+} from './spectral-analysis';
+
 // Advanced Audio Analysis Suite
 export {
   AdvancedAudioAnalyzer,
@@ -110,6 +144,45 @@ export {
   type HarmonicAnalysis as HarmonicAnalyzerType,
   type PsychoacousticAnalysis as PsychoacousticAnalyzerType
 } from './audio-analysis-suite';
+
+// Audio Project Management System
+export {
+  AudioProjectManager,
+  ProjectTemplates,
+  type AudioProject,
+  type ProjectTrack,
+  type ProjectClip,
+  type ProjectSettings,
+  type ProjectTemplate,
+  type ProjectMetadata,
+  type ProjectHistory,
+  type ProjectBackup,
+  type TrackParameters,
+  type ClipParameters,
+  type TimelineMarker,
+  type TimelineRegion,
+  type ProjectExport,
+  type ProjectSearchResult,
+  type ProjectStatistics,
+  type CollaborationSettings,
+  type ProjectRole,
+  type ProjectPermissions
+} from './project-management';
+
+// Cloud Audio Processing Integration
+export {
+  CloudAudioProcessor,
+  CloudAudioSync,
+  type CloudProviderConfig,
+  type CloudProcessingJob,
+  type CloudProcessingType,
+  type CloudProcessingResult,
+  type CloudStorageConfig,
+  type CloudJobQueue,
+  type CloudUsageMetrics,
+  type CloudSyncConfig,
+  type CloudCollaborationSession
+} from './cloud-audio-processing';
 
 // Spatial Audio Processing
 export {

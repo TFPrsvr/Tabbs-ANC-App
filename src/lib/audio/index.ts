@@ -51,6 +51,54 @@ export {
   type QualityMetrics as CodecQualityMetrics
 } from './multi-format-codec';
 
+// Real-Time Audio Collaboration
+export {
+  RealTimeCollaborationManager,
+  CollaborationPresets,
+  type CollaborationSession,
+  type Participant,
+  type AudioProject,
+  type Track,
+  type AudioClip,
+  type SessionSettings,
+  type RealTimeEvent,
+  type AudioStream,
+  type ConflictEvent,
+  type RTCConnection
+} from './real-time-collaboration';
+
+// Cross-Platform Audio Optimization
+export {
+  CrossPlatformOptimizer,
+  PlatformPresets,
+  type PlatformInfo,
+  type OptimizationConfig,
+  type PerformanceProfile,
+  type AudioCapabilities,
+  type BenchmarkResult,
+  type PerformanceMetrics,
+  type FormatOptimization
+} from './cross-platform-optimizer';
+
+// Audio Visualization Components
+export {
+  AudioVisualizationController,
+  WaveformVisualizer,
+  SpectrumVisualizer,
+  VectorScopeVisualizer,
+  BaseVisualizer,
+  VisualizationThemes,
+  DefaultConfigs,
+  type VisualizationConfig,
+  type WaveformConfig,
+  type SpectrumConfig,
+  type VectorScopeConfig,
+  type VisualizationTheme,
+  type WaveformData,
+  type SpectrumData,
+  type StereoData
+} from './audio-visualization';
+
 // Advanced Audio Analysis Suite
 export {
   AdvancedAudioAnalyzer,

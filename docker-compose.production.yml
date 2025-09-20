@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  anc-audio-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: anc-audio-production
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - PORT=3000
+    env_file:
+      - .env.production
+    volumes:
+      - audio_cache:/app/.next/cache
+      - app_logs:/app/logs
+    networks:
+      - anc-audio-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    security_opt:
+      - no-new-privileges:true
+    user: "1001:1001"
+
+  # Reverse proxy for SSL termination and load balancing
+  nginx:
+    image: nginx:alpine
+    container_name: anc-audio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      anc-audio-app:
+        condition: service_healthy
+    networks:
+      - anc-audio-network
+    command: >
+      sh -c "nginx -g 'daemon off;'"
+
+  # Redis for caching and session storage
+  redis:
+    image: redis:7-alpine
+    container_name: anc-audio-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/etc/redis/redis.conf:ro
+    networks:
+      - anc-audio-network
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: anc-audio-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - anc-audio-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: anc-audio-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - anc-audio-network
+    depends_on:
+      - prometheus
+
+volumes:
+  audio_cache:
+    driver: local
+  app_logs:
+    driver: local
+  nginx_cache:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  anc-audio-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

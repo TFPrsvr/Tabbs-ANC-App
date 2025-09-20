@@ -818,3 +818,51 @@ public/                      # PWA Assets
 
 **Implementation Priority: Best/Easiest → Most Complex**
 This order ensures each phase builds upon and makes the next phases easier to implement while providing immediate value to users.
+
+## 🔧 **AUTOMATED GIT WORKFLOW**
+
+### **Special Command: `gh` (EXACT MATCH ONLY)**
+
+**TRIGGER**: When user types exactly `gh` with NO other characters, spaces, or content
+
+**AUTOMATED WORKFLOW SEQUENCE**:
+1. **Save & Commit Current Work**
+   - `git add .`
+   - `git commit -m "feat: save current progress"`
+
+2. **Switch to Main Branch**
+   - `git checkout main`
+
+3. **Pull Latest from Main**
+   - `git pull origin main`
+
+4. **Merge Feature Branch to Main**
+   - `git merge [previous-feature-branch]`
+
+5. **Create New Feature Branch from Main**
+   - `git checkout -b feature/[timestamp-or-description]`
+
+6. **Confirm Never Working on Main**
+   - Always work on feature branches
+   - Only pull/push to/from main branch
+   - Main branch is for integration only
+
+### **Branch Naming Conventions**
+- Feature branches: `feature/[description]` or `feature/[date-description]`
+- Use descriptive, lowercase names with hyphens
+- Examples: `feature/audio-ai-improvements`, `feature/mobile-optimization`
+
+### **Commit Message Standards**
+- Format: `type(scope): description`
+- Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+- Keep descriptions concise but informative
+- No external references or attribution
+
+### **IMPORTANT SAFETY RULES**
+- ⚠️ **ONLY trigger on exact match `gh`** - no other text or characters
+- ⚠️ **Never work directly on main branch** - always create feature branches
+- ⚠️ **Always pull before merge** - ensure main is up to date
+- ⚠️ **Preserve commit history** - use merge instead of rebase for clarity
+- ⚠️ **Clean commit messages** - no external references or attribution
+
+**This workflow ensures clean git history, proper branch management, and safe collaborative development.**

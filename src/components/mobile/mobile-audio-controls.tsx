@@ -144,8 +144,8 @@ export function MobileAudioControls({
   const volumePercentage = (isDraggingVolume ? tempVolume : volume) * 100;
 
   return (
-    <Card className={cn("w-full max-w-md mx-auto", className)}>
-      <CardContent className="p-4 space-y-4">
+    <Card className={cn("w-full max-w-md mx-auto no-select", className)}>
+      <CardContent className="p-4 space-y-4 audio-controls">
         {/* Progress Bar */}
         <div className="space-y-2">
           <div 

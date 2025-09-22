@@ -1,14 +1,14 @@
 {
-  "name": "ANC Audio Pro - AI Audio Processing",
+  "name": "ANC Audio Pro - Professional Audio Suite",
   "short_name": "ANC Audio Pro",
-  "description": "Advanced AI-powered audio processing with smart separation, voice recognition, and auto captions",
-  "start_url": "/dashboard",
+  "description": "Professional audio processing and production suite with AI-powered analysis, real-time effects, and comprehensive testing capabilities.",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#7c3aed",
+  "theme_color": "#1f2937",
   "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["productivity", "utilities", "music"],
+  "categories": ["music", "multimedia", "productivity", "utilities"],
   "lang": "en-US",
   "icons": [
     {
@@ -62,53 +62,52 @@
   ],
   "shortcuts": [
     {
-      "name": "Upload Audio",
-      "short_name": "Upload",
-      "description": "Quickly upload and process audio files",
-      "url": "/dashboard?tab=upload",
-      "icons": [{ "src": "/icons/upload-shortcut.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+      "name": "New Project",
+      "short_name": "New",
+      "description": "Create a new audio project",
+      "url": "/project/new",
+      "icons": [{ "src": "/icons/shortcut-new.svg", "sizes": "96x96", "type": "image/svg+xml" }]
     },
     {
-      "name": "AI Processor",
-      "short_name": "Process",
-      "description": "Access advanced AI audio processing",
-      "url": "/dashboard?tab=processor",
-      "icons": [{ "src": "/icons/process-shortcut.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+      "name": "AI Analysis",
+      "short_name": "Analyze",
+      "description": "Run AI audio analysis",
+      "url": "/analyze",
+      "icons": [{ "src": "/icons/shortcut-ai.svg", "sizes": "96x96", "type": "image/svg+xml" }]
     },
     {
-      "name": "Search Audio",
-      "short_name": "Search",
-      "description": "Search through your audio content",
-      "url": "/dashboard?tab=search",
-      "icons": [{ "src": "/icons/search-shortcut.svg", "sizes": "96x96", "type": "image/svg+xml" }]
+      "name": "Audio Test",
+      "short_name": "Test",
+      "description": "Run audio quality tests",
+      "url": "/test",
+      "icons": [{ "src": "/icons/shortcut-test.svg", "sizes": "96x96", "type": "image/svg+xml" }]
     }
   ],
   "share_target": {
-    "action": "/dashboard?share=true",
+    "action": "/share",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
       "files": [
         {
           "name": "audio",
-          "accept": ["audio/*", "video/*"]
+          "accept": ["audio/*", ".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a"]
         }
       ]
     }
   },
   "file_handlers": [
     {
-      "action": "/dashboard?handler=audio",
+      "action": "/open",
       "accept": {
-        "audio/*": [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac"],
-        "video/*": [".mp4", ".webm", ".avi", ".mov", ".mkv"]
+        "audio/*": [".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a"]
       }
     }
   ],
   "protocol_handlers": [
     {
       "protocol": "web+ancaudio",
-      "url": "/dashboard?audio=%s"
+      "url": "/protocol?url=%s"
     }
   ],
   "prefer_related_applications": false,

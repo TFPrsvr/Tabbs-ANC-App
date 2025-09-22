@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANC Audio Pro - Offline Mode</title>
+    <link rel="icon" href="/icons/icon-72x72.svg" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .features {
+            text-align: left;
+            margin: 1.5rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .feature:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #7c3aed;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .status.online {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        .pulse-dot.online {
+            background: #22c55e;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+                border-radius: 16px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: auto;
+            }
+        }
+
+        /* Safe area insets for mobile devices */
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+                padding-top: max(1rem, env(safe-area-inset-top));
+                padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="icon">🎵</span>
+        <h1>ANC Audio Pro</h1>
+        <p class="subtitle">Offline Mode Active</p>
+
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">📁</span>
+                <span>Upload and process audio files locally</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🎛️</span>
+                <span>Basic audio effects and filters</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">📊</span>
+                <span>Audio analysis and visualization</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💾</span>
+                <span>Local storage and cache</span>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="location.reload()">
+                🔄 Try Again
+            </button>
+            <button class="btn btn-secondary" onclick="goToApp()">
+                📱 Open App
+            </button>
+        </div>
+
+        <div class="status" id="connectionStatus">
+            <div class="pulse-dot" id="statusDot"></div>
+            <span id="statusText">No internet connection</span>
+        </div>
+    </div>
+
+    <script>
+        // Check connection status
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            if (navigator.onLine) {
+                statusElement.classList.add('online');
+                statusDot.classList.add('online');
+                statusText.textContent = 'Connection restored';
+
+                // Auto-reload after a short delay when connection is restored
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                statusElement.classList.remove('online');
+                statusDot.classList.remove('online');
+                statusText.textContent = 'No internet connection';
+            }
+        }
+
+        // Listen for connection changes
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // Initial status check
+        updateConnectionStatus();
+
+        // Go to app function
+        function goToApp() {
+            if ('serviceWorker' in navigator) {
+                // Try to navigate to the main app
+                window.location.href = '/';
+            } else {
+                // Fallback for browsers without service worker support
+                alert('Your browser does not support offline functionality. Please check your internet connection and try again.');
+            }
+        }
+
+        // Register service worker if not already registered
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Simple analytics for offline usage
+        if (navigator.onLine) {
+            // Track offline page view when connection is available
+            fetch('/api/analytics/offline-view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                })
+            }).catch(() => {
+                // Silently fail - we're in offline mode anyway
+            });
+        }
+    </script>
+</body>
+</html>

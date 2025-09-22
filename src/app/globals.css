@@ -73,30 +73,80 @@ body {
   }
 }
 
+@media (max-width: 480px) {
+  body {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+}
+
+/* Touch-friendly sizing for mobile inputs */
 input, textarea, select, button {
-  max-width: min(20vw, 300px);
+  max-width: min(16vw, 280px);
+  min-height: 44px; /* Apple's recommended touch target size */
+  touch-action: manipulation; /* Prevents zoom on double tap */
 }
 
 @media (max-width: 768px) {
   input, textarea, select, button {
-    max-width: min(80vw, 300px);
+    max-width: min(85vw, 320px);
+    min-height: 48px; /* Larger touch targets on mobile */
   }
 }
 
+@media (max-width: 480px) {
+  input, textarea, select, button {
+    max-width: min(90vw, 280px);
+    min-height: 50px;
+  }
+}
+
+/* Enhanced button styling with mobile-first approach */
 button {
   border-radius: clamp(10px, 2.5vw, 15px);
   background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
   transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px hsl(var(--primary) / 0.3);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
 }
 
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px hsl(var(--primary) / 0.2);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Touch-specific interactions */
+@media (hover: none) and (pointer: coarse) {
+  button:hover {
+    transform: none;
+    box-shadow: 0 4px 8px hsl(var(--primary) / 0.3);
+  }
+
+  button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* Mobile-optimized audio visualizer */
 .audio-visualizer {
-  background: linear-gradient(45deg, 
-    hsl(var(--primary)) 0%, 
+  background: linear-gradient(45deg,
+    hsl(var(--primary)) 0%,
     hsl(var(--primary) / 0.8) 25%,
     hsl(var(--secondary)) 50%,
     hsl(var(--primary) / 0.8) 75%,
@@ -104,4 +154,123 @@ button:hover {
   );
   background-size: 400% 400%;
   animation: wave 3s ease-in-out infinite;
+  touch-action: pan-y; /* Allow vertical scrolling but prevent horizontal pan */
+}
+
+/* Mobile responsiveness utilities */
+.container {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+}
+
+/* Touch-friendly audio controls */
+.audio-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+@media (max-width: 768px) {
+  .audio-controls {
+    gap: 0.75rem;
+    min-height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .audio-controls {
+    gap: 0.5rem;
+    min-height: 80px;
+    flex-direction: column;
+  }
+}
+
+/* Slider and range inputs for mobile */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: hsl(var(--muted));
+  outline: none;
+  min-height: 44px; /* Touch target includes padding */
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  box-shadow: 0 2px 4px hsl(var(--primary) / 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px hsl(var(--primary) / 0.3);
+}
+
+@media (max-width: 768px) {
+  input[type="range"]::-webkit-slider-thumb,
+  input[type="range"]::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Prevent text selection on touch devices for UI elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scrolling for mobile */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Animation for wave effect */
+@keyframes wave {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }

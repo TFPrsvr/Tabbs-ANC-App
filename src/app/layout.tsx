@@ -12,11 +12,18 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ANC Audio Pro - AI Audio Processing",
-  description: "Advanced AI-powered audio processing with smart separation, voice recognition, and auto captions",
+  description: "Professional audio processing and production suite with AI-powered analysis, real-time effects, and comprehensive testing capabilities.",
   manifest: '/manifest.json',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'ANC Audio Pro',
     startupImage: [
       {
@@ -24,21 +31,40 @@ export const metadata: Metadata = {
         media: '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)',
       },
       {
-        url: '/icons/splash-750x1334.png', 
+        url: '/icons/splash-750x1334.png',
         media: '(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)',
+      },
+      {
+        url: '/icons/splash-828x1792.png',
+        media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)',
       },
       {
         url: '/icons/splash-1242x2208.png',
         media: '(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)',
       },
+      {
+        url: '/icons/splash-1242x2688.png',
+        media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)',
+      },
+      {
+        url: '/icons/splash-1125x2436.png',
+        media: '(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)',
+      },
     ],
+  },
+  formatDetection: {
+    telephone: false,
+    address: false,
+    email: false,
   },
   other: {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
+    'apple-touch-fullscreen': 'yes',
     'msapplication-TileColor': '#7c3aed',
     'msapplication-config': '/browserconfig.xml',
+    'theme-color': '#1f2937',
   },
 };
 

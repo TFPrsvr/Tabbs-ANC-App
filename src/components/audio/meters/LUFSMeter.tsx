@@ -99,7 +99,7 @@ export const LUFSMeter: React.FC<LUFSMeterProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [compliance, setCompliance] = useState(true);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   const standardConfig = lufsStandards[standard];
 

@@ -4,7 +4,7 @@ import React, { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface AudioButtonProps {
-  onClick: () => void;
+  onClick: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: () => void;
   onMouseUp?: () => void;
   children?: React.ReactNode;
@@ -129,15 +129,20 @@ export const AudioButton: React.FC<AudioButtonProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
   }, [disabled, loading, onMouseDown, onMouseUp, triggerHapticFeedback]);
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || loading) return;
-    onClick();
+    onClick(event);
   }, [disabled, loading, onClick]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
-      handleClick();
+      // Create a synthetic mouse event for keyboard activation
+      const syntheticEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+      }) as any as React.MouseEvent<HTMLButtonElement>;
+      handleClick(syntheticEvent);
     }
   }, [handleClick]);
 

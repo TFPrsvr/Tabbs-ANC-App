@@ -65,7 +65,7 @@ export const VUMeter: React.FC<VUMeterProps> = ({
   const [smoothedLevel, setSmoothedLevel] = useState(level);
   const [peakLevel, setPeakLevel] = useState(peak || level);
   const [peakTime, setPeakTime] = useState(0);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
   const lastUpdateRef = useRef(0);
 
   // Ballistics constants

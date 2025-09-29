@@ -45,7 +45,7 @@ export const EffectPanel: React.FC<EffectPanelProps> = ({
       const section = getParameterSection(param.name, param.id);
       if (sections[section]) {
         sections[section].push(param);
-      } else {
+      } else if (sections.main) {
         sections.main.push(param);
       }
     });

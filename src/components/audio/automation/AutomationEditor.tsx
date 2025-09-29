@@ -77,7 +77,7 @@ export const AutomationEditor: React.FC<AutomationEditorProps> = ({
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   const automationModes: { mode: AutomationMode; label: string; color: string }[] = [
     { mode: 'read', label: 'Read', color: '#10b981' },

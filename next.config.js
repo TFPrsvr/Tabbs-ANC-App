@@ -351,10 +351,11 @@ const nextConfig = {
   // Output optimization
   output: process.env.CAPACITOR_BUILD === 'true' ? 'export' : 'standalone',
   trailingSlash: process.env.CAPACITOR_BUILD === 'true',
-  images: {
-    ...config.images,
-    unoptimized: process.env.CAPACITOR_BUILD === 'true'
-  },
+  ...(process.env.CAPACITOR_BUILD === 'true' && {
+    images: {
+      unoptimized: true
+    }
+  }),
 
   // Fix workspace root warning
   outputFileTracingRoot: __dirname,

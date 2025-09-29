@@ -217,7 +217,7 @@ export const EffectRack: React.FC<EffectRackProps> = ({
                 {/* Power button */}
                 <AudioButton
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e?.stopPropagation();
                     onEffectToggle(slot.id, !slot.effect!.enabled);
                   }}
                   variant="led"
@@ -229,7 +229,7 @@ export const EffectRack: React.FC<EffectRackProps> = ({
                 {/* Bypass button */}
                 <AudioButton
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e?.stopPropagation();
                     onEffectBypass(slot.id, !slot.effect!.bypassed);
                   }}
                   variant="toggle"
@@ -242,7 +242,7 @@ export const EffectRack: React.FC<EffectRackProps> = ({
                 {/* Remove button */}
                 <AudioButton
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e?.stopPropagation();
                     onSlotChange(slot.id, null);
                     setSelectedSlot(null);
                   }}

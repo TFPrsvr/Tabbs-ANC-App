@@ -27,15 +27,26 @@ export function MasteringPanel({
 
   const updateNested = useCallback((path: string, value: any) => {
     const newSettings = { ...settings };
-    const keys = path.split('.');
+    const keys = path.split('.').filter(Boolean);
+
+    if (keys.length === 0) return;
+
     let current: any = newSettings;
 
     for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]];
+      const key = keys[i];
+      if (key && current[key] !== undefined) {
+        current = current[key];
+      } else {
+        return; // Invalid path, return without changes
+      }
     }
 
-    current[keys[keys.length - 1]] = value;
-    onChange(newSettings);
+    const lastKey = keys[keys.length - 1];
+    if (lastKey && current !== undefined) {
+      current[lastKey] = value;
+      onChange(newSettings);
+    }
   }, [settings, onChange]);
 
   return (

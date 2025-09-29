@@ -58,7 +58,7 @@ export const SpectrumAnalyzer: React.FC<SpectrumAnalyzerProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [frequencyBins, setFrequencyBins] = useState<FrequencyBin[]>([]);
   const [waterfallHistory, setWaterfallHistory] = useState<Float32Array[]>([]);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
   const lastUpdateRef = useRef<number>(0);
 
   // Generate frequency bins

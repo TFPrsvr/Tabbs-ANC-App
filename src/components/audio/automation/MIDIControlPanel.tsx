@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Settings, Plus, Minus, Edit, Trash2, Play, Pause, Activity,
   Sliders, Gamepad2, Volume2, RotateCcw, Link, Unlink, Zap,
-  Mic, Speaker, Music, Target, Record, Square
+  Mic, Speaker, Music, Target, Disc, Square
 } from 'lucide-react';
 import { AutomationSystem, MIDIController, ControllerAssignment, ControllerType, AssignmentMode, ControllerCurve } from '../../../lib/audio/automation-system';
 

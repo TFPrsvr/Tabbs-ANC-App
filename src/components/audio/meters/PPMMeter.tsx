@@ -102,7 +102,7 @@ export const PPMMeter: React.FC<PPMMeterProps> = ({
   const [peakLevel, setPeakLevel] = useState(peak || level);
   const [peakTime, setPeakTime] = useState(0);
   const [overloadDetected, setOverloadDetected] = useState(false);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
   const lastUpdateRef = useRef(0);
 
   const standard = ppmStandards[variant];

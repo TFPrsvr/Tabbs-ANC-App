@@ -38,7 +38,7 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
     velocity: { x: 0, y: 0 }
   });
 
-  const gestureTimeoutRef = useRef<NodeJS.Timeout>();
+  const gestureTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastTouchTime = useRef<number>(0);
   const initialDistance = useRef<number>(0);
   const lastPosition = useRef<{ x: number; y: number }>({ x: 0, y: 0 });

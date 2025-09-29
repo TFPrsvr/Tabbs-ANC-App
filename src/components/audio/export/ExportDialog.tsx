@@ -146,14 +146,25 @@ export function ExportDialog({
   const updateNested = useCallback((path: string, value: any) => {
     setSettings(prev => {
       const newSettings = { ...prev };
-      const keys = path.split('.');
+      const keys = path.split('.').filter(Boolean);
+
+      if (keys.length === 0) return newSettings;
+
       let current: any = newSettings;
 
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+        const key = keys[i];
+        if (key && current[key] !== undefined) {
+          current = current[key];
+        } else {
+          return newSettings; // Invalid path, return unchanged
+        }
       }
 
-      current[keys[keys.length - 1]] = value;
+      const lastKey = keys[keys.length - 1];
+      if (lastKey && current !== undefined) {
+        current[lastKey] = value;
+      }
       return newSettings;
     });
   }, []);

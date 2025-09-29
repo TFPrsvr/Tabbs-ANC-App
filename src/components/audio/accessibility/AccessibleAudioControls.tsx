@@ -505,7 +505,10 @@ export const useKeyboardNavigation = (items: string[], onSelect: (item: string) 
       case 'Enter':
       case ' ':
         e.preventDefault();
-        onSelect(items[focusedIndex]);
+        const selectedItem = items[focusedIndex];
+        if (selectedItem !== undefined) {
+          onSelect(selectedItem);
+        }
         break;
       case 'Home':
         e.preventDefault();

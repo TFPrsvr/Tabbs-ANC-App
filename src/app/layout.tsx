@@ -61,11 +61,10 @@ export const metadata: Metadata = {
     'mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',
-    'apple-touch-fullscreen': 'yes',
     'msapplication-TileColor': '#7c3aed',
     'msapplication-config': '/browserconfig.xml',
     'theme-color': '#1f2937',
-  },
+  } as Record<string, string>,
 };
 
 export default function RootLayout({

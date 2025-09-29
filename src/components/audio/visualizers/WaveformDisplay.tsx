@@ -72,7 +72,7 @@ export const WaveformDisplay: React.FC<WaveformDisplayProps> = ({
   const [selectionStart, setSelectionStart] = useState<number | null>(null);
   const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
-  const animationFrameRef = useRef<number>();
+  const animationFrameRef = useRef<number | null>(null);
 
   const channels = audioData?.length || 1;
   const effectiveHeight = variant === 'stereo' && channels > 1

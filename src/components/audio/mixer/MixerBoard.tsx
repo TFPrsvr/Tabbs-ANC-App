@@ -126,13 +126,13 @@ export const MixerBoard: React.FC<MixerBoardProps> = ({
 
   const handleChannelEQChange = useCallback((channelId: number) => (band: 'high' | 'mid' | 'low', value: number) => {
     const changes: Partial<ChannelConfig> = {};
-    changes[`${band}EQ` as keyof ChannelConfig] = value;
+    (changes as any)[`${band}EQ`] = value;
     onChannelChange(channelId, changes);
   }, [onChannelChange]);
 
   const handleChannelAuxSendChange = useCallback((channelId: number) => (aux: 1 | 2 | 3 | 4, value: number) => {
     const changes: Partial<ChannelConfig> = {};
-    changes[`aux${aux}Send` as keyof ChannelConfig] = value;
+    (changes as any)[`aux${aux}Send`] = value;
     onChannelChange(channelId, changes);
   }, [onChannelChange]);
 
@@ -274,11 +274,12 @@ export const MixerBoard: React.FC<MixerBoardProps> = ({
                     const auxKey = `aux${auxNum}` as keyof MasterSection;
                     const auxSection = masterSection[auxKey];
                     onMasterChange({
-                      [auxKey]: { ...auxSection, muted: !auxSection.muted }
+                      [auxKey]: { ...auxSection, muted: !('muted' in auxSection ? auxSection.muted : false) }
                     });
                   }}
                   variant="toggle"
-                  active={masterSection[`aux${auxNum}` as keyof MasterSection].muted}
+                  active={'muted' in masterSection[`aux${auxNum}` as keyof MasterSection] ?
+                    (masterSection[`aux${auxNum}` as keyof MasterSection] as any).muted : false}
                   size="sm"
                 >
                   M

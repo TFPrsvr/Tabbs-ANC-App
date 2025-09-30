@@ -58,8 +58,8 @@ class FFTProcessor {
   private windowSize: number;
   private fftSize: number;
   private window: Float32Array;
-  private cosTable: Float32Array;
-  private sinTable: Float32Array;
+  private cosTable: Float32Array = new Float32Array(0);
+  private sinTable: Float32Array = new Float32Array(0);
 
   constructor(windowSize: number) {
     this.windowSize = windowSize;
@@ -113,7 +113,7 @@ class FFTProcessor {
 
     // Conjugate for inverse
     for (let i = 0; i < imagCopy.length; i++) {
-      imagCopy[i] = -imagCopy[i];
+      imagCopy[i] = -(imagCopy[i] ?? 0);
     }
 
     this.fft(realCopy, imagCopy);
@@ -123,7 +123,7 @@ class FFTProcessor {
     const scale = 1 / this.fftSize;
 
     for (let i = 0; i < this.windowSize; i++) {
-      result[i] = realCopy[i] * scale;
+      result[i] = (realCopy[i] ?? 0) * scale;
     }
 
     return result;
@@ -251,10 +251,10 @@ class WienerFilterAlgorithm {
 
         // A priori SNR estimation using decision-directed approach
         const posteriorSNR = Math.max(signalPower / (noisePower + 1e-10) - 1, 0);
-        priorSNR[i] = this.smoothingFactor * priorSNR[i] + (1 - this.smoothingFactor) * posteriorSNR;
+        priorSNR[i] = this.smoothingFactor * (priorSNR[i] ?? 0) + (1 - this.smoothingFactor) * posteriorSNR;
 
         // Wiener filter gain
-        const gain = priorSNR[i] / (1 + priorSNR[i]);
+        const gain = (priorSNR[i] ?? 0) / (1 + (priorSNR[i] ?? 0));
 
         // Apply strength parameter
         const adjustedGain = 1 - config.strength * (1 - gain);
@@ -377,7 +377,7 @@ class WaveletDenoisingAlgorithm {
       }
 
       // Ensure minimum level
-      output[i] = Math.max(output[i], 0.05 * signal);
+      output[i] = Math.max(output[i] ?? 0, 0.05 * signal);
     }
 
     return output;
@@ -532,15 +532,15 @@ export class AdvancedNoiseReduction {
       // Overlap-add
       const startIdx = i * hopSize;
       for (let j = 0; j < timeFrame.length && startIdx + j < output.length; j++) {
-        output[startIdx + j] += timeFrame[j] ?? 0;
-        overlap[startIdx + j] += 1;
+        output[startIdx + j] = (output[startIdx + j] ?? 0) + (timeFrame[j] ?? 0);
+        overlap[startIdx + j] = (overlap[startIdx + j] ?? 0) + 1;
       }
     }
 
     // Normalize by overlap
     for (let i = 0; i < output.length; i++) {
-      if (overlap[i] > 0) {
-        output[i] /= overlap[i];
+      if ((overlap[i] ?? 0) > 0) {
+        output[i] = (output[i] ?? 0) / (overlap[i] ?? 0);
       }
     }
 
@@ -559,7 +559,7 @@ export class AdvancedNoiseReduction {
     // Average noise spectrum
     for (const frame of noiseFrames) {
       for (let i = 0; i < spectrumLength; i++) {
-        spectralFingerprint[i] += (frame.magnitude[i] ?? 0) / noiseFrames.length;
+        spectralFingerprint[i] = (spectralFingerprint[i] ?? 0) + (frame.magnitude[i] ?? 0) / noiseFrames.length;
       }
     }
 

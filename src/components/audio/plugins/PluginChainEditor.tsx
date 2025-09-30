@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Plus, Minus, ArrowUp, ArrowDown, Settings, Play, Pause, Volume2,
   VolumeX, Eye, EyeOff, RotateCcw, Save, Upload, Download, Copy,
-  Trash2, Move, DragHandleDots2Icon as Grip
+  Trash2, Move, GripVertical as Grip
 } from 'lucide-react';
 import { PluginSystem, PluginChain, PluginInstance, AudioPlugin } from '../../../lib/audio/plugin-system';
 
@@ -112,7 +112,7 @@ export const PluginChainEditor: React.FC<PluginChainEditorProps> = ({
 
       // Copy parameter values
       Object.keys(instance.parameterValues).forEach(paramId => {
-        pluginSystem.setParameterValue(newInstance.id, paramId, instance.parameterValues[paramId]);
+        pluginSystem.setParameterValue(newInstance.id, paramId, instance.parameterValues[paramId] ?? 0);
       });
 
       await pluginSystem.addToChain(localChain.id, newInstance.id, instance.position + 1);
@@ -136,7 +136,9 @@ export const PluginChainEditor: React.FC<PluginChainEditorProps> = ({
 
     const plugins = [...localChain.plugins];
     const [movedPlugin] = plugins.splice(fromIndex, 1);
-    plugins.splice(toIndex, 0, movedPlugin);
+    if (movedPlugin) {
+      plugins.splice(toIndex, 0, movedPlugin);
+    }
 
     // Update positions
     const updatedPlugins = plugins.map((plugin, index) => ({
@@ -149,7 +151,7 @@ export const PluginChainEditor: React.FC<PluginChainEditorProps> = ({
 
     // Update plugin system
     for (let i = 0; i < updatedPlugins.length; i++) {
-      await pluginSystem.addToChain(localChain.id, updatedPlugins[i].id, i);
+      await pluginSystem.addToChain(localChain.id, updatedPlugins[i]?.id ?? '', i);
     }
   }, [pluginSystem, localChain, handleChainChange]);
 
@@ -327,7 +329,7 @@ export const PluginChainEditor: React.FC<PluginChainEditorProps> = ({
                 className={`relative ${isDraggedOver ? 'border-t-2 border-blue-500' : ''}`}
               >
                 <div
-                  ref={(el) => (dropZoneRefs.current[index] = el)}
+                  ref={(el) => { if (dropZoneRefs.current) dropZoneRefs.current[index] = el; }}
                   draggable
                   onDragStart={(e) => handleDragStart(e, index)}
                   onDragOver={(e) => handleDragOver(e, index)}

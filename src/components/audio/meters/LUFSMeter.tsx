@@ -110,7 +110,7 @@ export const LUFSMeter: React.FC<LUFSMeterProps> = ({
       standardConfig.target + standardConfig.tolerance
     ];
 
-    const lufsCompliant = integratedLUFS >= targetRange[0] && integratedLUFS <= targetRange[1];
+    const lufsCompliant = integratedLUFS >= (targetRange[0] ?? 0) && integratedLUFS <= (targetRange[1] ?? 0);
     const peakCompliant = truePeak <= standardConfig.maxTruePeak;
     const rangeCompliant = range <= standardConfig.maxRange;
 

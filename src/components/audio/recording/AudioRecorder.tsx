@@ -75,7 +75,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     let max = 0;
 
     for (let i = 0; i < dataArray.length; i++) {
-      const level = dataArray[i] / 255;
+      const level = (dataArray[i] ?? 0) / 255;
       sum += level * level;
       max = Math.max(max, level);
     }

@@ -215,11 +215,13 @@ class EQProcessor implements AudioStreamProcessor {
     // Simplified EQ processing without Web Audio API for real-time use
     // In practice, this would use optimized biquad filter implementations
     return input.map(channel => {
-      let processed = new Float32Array(channel);
+      let processed = new Float32Array(channel.length);
+      processed.set(channel);
 
       // Apply simple shelving filters
-      processed = this.applyLowShelf(processed, 100, this.parameters.lowGain, sampleRate);
-      processed = this.applyHighShelf(processed, 10000, this.parameters.highGain, sampleRate);
+      const lowShelfed = this.applyLowShelf(processed, 100, this.parameters.lowGain, sampleRate);
+      const highShelfed = this.applyHighShelf(lowShelfed, 10000, this.parameters.highGain, sampleRate);
+      processed.set(highShelfed);
 
       return processed;
     });

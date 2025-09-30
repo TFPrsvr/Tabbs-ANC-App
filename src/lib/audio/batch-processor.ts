@@ -235,8 +235,8 @@ export class BatchAudioProcessor extends EventEmitter {
       })),
       operations: operations.map((op, index) => ({
         id: this.generateId(),
-        order: index,
-        ...op
+        ...op,
+        order: index
       })),
       settings: {
         outputDirectory: './output',
@@ -658,7 +658,13 @@ export class BatchAudioProcessor extends EventEmitter {
     const config = {
       algorithm: operation.parameters.algorithm || 'spectral_subtraction',
       strength: operation.parameters.strength || 0.5,
-      preserveCharacter: operation.parameters.preserveCharacter || true,
+      preserveTransients: operation.parameters.preserveTransients || true,
+      adaptiveMode: operation.parameters.adaptiveMode || false,
+      realTimeMode: operation.parameters.realTimeMode || false,
+      frameSize: operation.parameters.frameSize || 1024,
+      hopSize: operation.parameters.hopSize || 512,
+      smoothingFactor: operation.parameters.smoothingFactor || 0.8,
+      noiseLearningDuration: operation.parameters.noiseLearningDuration || 1.0,
       ...operation.parameters
     };
 
@@ -676,6 +682,48 @@ export class BatchAudioProcessor extends EventEmitter {
       targetLUFS: operation.parameters.targetLUFS || -14,
       truePeakLimit: operation.parameters.truePeakLimit || -1,
       dynamicRange: operation.parameters.dynamicRange || 12,
+      stereoImaging: operation.parameters.stereoImaging || {
+        width: 100,
+        bassMonoFreq: 120,
+        correlation: 0.5
+      },
+      frequency: operation.parameters.frequency || {
+        lowShelf: { frequency: 80, gain: 0, q: 0.7, enabled: false },
+        lowMid: { frequency: 250, gain: 0, q: 1.0, enabled: false },
+        highMid: { frequency: 4000, gain: 0, q: 1.0, enabled: false },
+        highShelf: { frequency: 10000, gain: 0, q: 0.7, enabled: false },
+        tiltEQ: 0
+      },
+      dynamics: operation.parameters.dynamics || {
+        compressor: {
+          threshold: -18,
+          ratio: 4,
+          attack: 0.003,
+          release: 0.1,
+          knee: 2,
+          makeup: 0,
+          enabled: false
+        },
+        limiter: {
+          ceiling: -0.1,
+          release: 0.05,
+          lookahead: 5,
+          isr: 4,
+          enabled: true
+        },
+        multiband: {
+          enabled: false,
+          bands: [],
+          crossovers: [250, 2000]
+        }
+      },
+      saturation: operation.parameters.saturation || {
+        type: 'analog',
+        drive: 0,
+        harmonics: 0,
+        character: 0,
+        enabled: false
+      },
       ...operation.parameters
     };
 
@@ -754,14 +802,14 @@ export class BatchAudioProcessor extends EventEmitter {
       // Fade in
       for (let i = 0; i < Math.min(fadeInSamples, result.length); i++) {
         const gain = i / fadeInSamples;
-        result[i] *= gain;
+        result[i] = (result[i] ?? 0) * gain;
       }
 
       // Fade out
       const startFadeOut = Math.max(0, result.length - fadeOutSamples);
       for (let i = startFadeOut; i < result.length; i++) {
         const gain = (result.length - i) / fadeOutSamples;
-        result[i] *= gain;
+        result[i] = (result[i] ?? 0) * gain;
       }
 
       return result;

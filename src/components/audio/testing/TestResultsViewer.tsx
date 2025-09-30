@@ -2,14 +2,21 @@
 
 import React, { useState } from 'react';
 import {
-  ValidationReport,
-  TestResult,
-  QualityMetrics,
-  Issue
+  AudioValidationReport,
+  AudioTestResult,
+  QualityMetrics
 } from '@/lib/audio/testing/audio-test-suite';
 
+// Define Issue interface since it's not exported
+interface Issue {
+  severity: 'info' | 'warning' | 'error' | 'critical';
+  title: string;
+  description: string;
+  suggestion?: string;
+}
+
 export interface TestResultsViewerProps {
-  report: ValidationReport;
+  report: AudioValidationReport;
   onExportReport?: () => void;
   onRetryTest?: (testType: string) => void;
 }
@@ -37,10 +44,12 @@ export function TestResultsViewer({
   const [expandedResult, setExpandedResult] = useState<string | null>(null);
 
   const getOverallScore = (): number => {
-    const scores = report.results
-      .filter(result => result.score !== undefined)
-      .map(result => result.score as number);
-    return scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+    // Use the overall score from quality metrics if available
+    if (report.summary?.qualityMetrics?.overallScore !== undefined) {
+      return report.summary.qualityMetrics.overallScore;
+    }
+    // Calculate pass rate as fallback
+    return (report.testsPassed / report.testsRun) * 100;
   };
 
   const getScoreColor = (score: number): string => {
@@ -49,8 +58,8 @@ export function TestResultsViewer({
     return 'text-red-600';
   };
 
-  const getStatusColor = (passed: boolean): string => {
-    return passed ? 'text-green-600' : 'text-red-600';
+  const getStatusColor = (status: string): string => {
+    return status === 'passed' ? 'text-green-600' : 'text-red-600';
   };
 
   const formatDuration = (ms: number): string => {
@@ -66,19 +75,44 @@ export function TestResultsViewer({
       info: []
     };
 
-    report.issues?.forEach(issue => {
-      grouped[issue.severity].push(issue);
+    // Create issues from failed tests since issues are not in the interface
+    const issues = report.results
+      .filter((r: AudioTestResult) => r.status === 'failed')
+      .map((result: AudioTestResult) => ({
+        severity: 'error' as const,
+        title: result.testName.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        description: result.message,
+        suggestion: getTestSuggestion(result.testName)
+      }));
+
+    issues.forEach((issue: Issue) => {
+      grouped[issue.severity]?.push(issue);
     });
 
     return grouped;
   };
 
+  const getTestSuggestion = (testName: string): string => {
+    switch (testName) {
+      case 'clipping-detection':
+        return 'Reduce input levels or apply limiting to prevent clipping.';
+      case 'dynamic-range':
+        return 'Reduce compression to improve dynamic range.';
+      case 'noise-analysis':
+        return 'Apply noise reduction or use better recording environment.';
+      case 'loudness-analysis':
+        return 'Adjust overall level to meet loudness standards.';
+      case 'file-validation':
+        return 'Ensure audio format meets specifications.';
+      default:
+        return 'Review test results and adjust audio processing accordingly.';
+    }
+  };
+
   const overallScore = getOverallScore();
-  const passedTests = report.results.filter(r => r.passed).length;
-  const totalTests = report.results.length;
-  const completionTime = report.endTime && report.startTime
-    ? report.endTime.getTime() - report.startTime.getTime()
-    : 0;
+  const passedTests = report.testsPassed;
+  const totalTests = report.testsRun;
+  const completionTime = report.duration;
 
   return (
     <div className="bg-white rounded-lg shadow-lg">
@@ -87,7 +121,7 @@ export function TestResultsViewer({
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Test Results</h2>
             <p className="text-gray-600">
-              Completed on {report.endTime?.toLocaleString() || 'Unknown'}
+              Completed in {formatDuration(completionTime)}
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -127,9 +161,9 @@ export function TestResultsViewer({
             >
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
-              {tab.id === 'issues' && report.issues && report.issues.length > 0 && (
+              {tab.id === 'issues' && report.testsFailed > 0 && (
                 <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
-                  {report.issues.length}
+                  {report.testsFailed}
                 </span>
               )}
             </button>
@@ -168,13 +202,13 @@ export function TestResultsViewer({
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Test Status</h3>
                 <div className="space-y-2">
-                  {report.results.slice(0, 5).map((result, index) => (
+                  {report.results.slice(0, 5).map((result: AudioTestResult, index: number) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-sm text-gray-700">
-                        {result.testType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        {result.testName.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                       </span>
-                      <span className={`text-sm font-medium ${getStatusColor(result.passed)}`}>
-                        {result.passed ? '✅ Passed' : '❌ Failed'}
+                      <span className={`text-sm font-medium ${getStatusColor(result.status)}`}>
+                        {result.status === 'passed' ? '✅ Passed' : '❌ Failed'}
                       </span>
                     </div>
                   ))}
@@ -189,7 +223,7 @@ export function TestResultsViewer({
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Top Issues</h3>
                 <div className="space-y-2">
-                  {report.issues?.slice(0, 3).map((issue, index) => (
+                  {Object.values(groupIssuesBySeverity()).flat().slice(0, 3).map((issue: Issue, index: number) => (
                     <div key={index} className="flex items-start space-x-2">
                       <span className="text-lg">{SEVERITY_ICONS[issue.severity]}</span>
                       <div>
@@ -212,37 +246,33 @@ export function TestResultsViewer({
         {selectedTab === 'details' && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-900">Detailed Test Results</h3>
-            {report.results.map((result, index) => (
+            {report.results.map((result: AudioTestResult, index: number) => (
               <div
                 key={index}
                 className={`border rounded-lg ${
-                  result.passed ? 'border-green-200' : 'border-red-200'
+                  result.status === 'passed' ? 'border-green-200' : 'border-red-200'
                 }`}
               >
                 <div
                   className="p-4 cursor-pointer hover:bg-gray-50"
                   onClick={() => setExpandedResult(
-                    expandedResult === result.testType ? null : result.testType
+                    expandedResult === result.testName ? null : result.testName
                   )}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <span className={`text-lg ${result.passed ? '✅' : '❌'}`}>
-                        {result.passed ? '✅' : '❌'}
+                      <span className={`text-lg ${result.status === 'passed' ? '✅' : '❌'}`}>
+                        {result.status === 'passed' ? '✅' : '❌'}
                       </span>
                       <div>
                         <h4 className="font-medium text-gray-900">
-                          {result.testType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {result.testName.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                         </h4>
                         <p className="text-sm text-gray-600">{result.message}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      {result.score !== undefined && (
-                        <span className={`text-sm font-medium ${getScoreColor(result.score)}`}>
-                          {result.score.toFixed(1)}%
-                        </span>
-                      )}
+                      {/* Score not available in AudioTestResult interface */}
                       {result.duration && (
                         <span className="text-sm text-gray-500">
                           {formatDuration(result.duration)}
@@ -252,7 +282,7 @@ export function TestResultsViewer({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            onRetryTest(result.testType);
+                            onRetryTest(result.testName);
                           }}
                           className="px-3 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
                         >
@@ -261,7 +291,7 @@ export function TestResultsViewer({
                       )}
                       <svg
                         className={`w-5 h-5 text-gray-400 transition-transform ${
-                          expandedResult === result.testType ? 'rotate-180' : ''
+                          expandedResult === result.testName ? 'rotate-180' : ''
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -273,7 +303,7 @@ export function TestResultsViewer({
                   </div>
                 </div>
 
-                {expandedResult === result.testType && result.details && (
+                {expandedResult === result.testName && result.details && (
                   <div className="border-t border-gray-200 p-4 bg-gray-50">
                     <h5 className="text-sm font-medium text-gray-900 mb-2">Details</h5>
                     <pre className="text-xs text-gray-600 bg-white p-3 rounded border overflow-auto">
@@ -290,9 +320,9 @@ export function TestResultsViewer({
         {selectedTab === 'metrics' && (
           <div className="space-y-6">
             <h3 className="text-lg font-medium text-gray-900">Quality Metrics</h3>
-            {report.qualityMetrics ? (
+            {report.summary?.qualityMetrics ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Object.entries(report.qualityMetrics).map(([key, value]) => (
+                {Object.entries(report.summary.qualityMetrics).map(([key, value]) => (
                   <div key={key} className="bg-gray-50 p-4 rounded-lg">
                     <div className="text-sm font-medium text-gray-700 mb-1">
                       {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
@@ -317,7 +347,7 @@ export function TestResultsViewer({
           <div className="space-y-6">
             <h3 className="text-lg font-medium text-gray-900">Issues & Recommendations</h3>
 
-            {report.issues && report.issues.length > 0 ? (
+            {Object.values(groupIssuesBySeverity()).flat().length > 0 ? (
               <div className="space-y-4">
                 {Object.entries(groupIssuesBySeverity()).map(([severity, issues]) => {
                   if (issues.length === 0) return null;
@@ -329,7 +359,7 @@ export function TestResultsViewer({
                         <span className="capitalize">{severity} Issues ({issues.length})</span>
                       </h4>
                       <div className="space-y-2">
-                        {issues.map((issue, index) => (
+                        {issues.map((issue: Issue, index: number) => (
                           <div
                             key={index}
                             className={`p-4 rounded-lg border ${SEVERITY_COLORS[severity as keyof typeof SEVERITY_COLORS]}`}
@@ -356,11 +386,11 @@ export function TestResultsViewer({
             )}
 
             {/* Recommendations */}
-            {report.recommendations && report.recommendations.length > 0 && (
+            {report.summary?.recommendations && report.summary.recommendations.length > 0 && (
               <div>
                 <h4 className="text-md font-medium text-gray-800 mb-3">General Recommendations</h4>
                 <div className="space-y-2">
-                  {report.recommendations.map((rec, index) => (
+                  {report.summary.recommendations.map((rec: string, index: number) => (
                     <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-sm text-blue-800">{rec}</p>
                     </div>

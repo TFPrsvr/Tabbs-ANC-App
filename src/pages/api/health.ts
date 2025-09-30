@@ -133,7 +133,7 @@ function getMemoryUsage() {
 function getPerformanceMetrics() {
   if (typeof process !== 'undefined') {
     return {
-      loadAverage: process.loadavg ? process.loadavg() : [0, 0, 0],
+      loadAverage: (process as any).loadavg ? (process as any).loadavg() : [0, 0, 0],
       cpuUsage: process.cpuUsage ? process.cpuUsage().user / 1000000 : 0 // Convert to seconds
     }
   }

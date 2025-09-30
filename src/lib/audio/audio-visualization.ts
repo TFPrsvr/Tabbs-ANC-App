@@ -636,20 +636,20 @@ export class SpectrumVisualizer extends BaseVisualizer {
   private updateFrequencyData(): void {
     if (!this.analyser) return;
 
-    this.analyser.getFloatFrequencyData(this.frequencyData);
+    this.analyser.getFloatFrequencyData(this.frequencyData as Float32Array<ArrayBuffer>);
 
     // Apply smoothing
     for (let i = 0; i < this.frequencyData.length; i++) {
-      this.smoothedData[i] = this.smoothedData[i] * 0.8 + this.frequencyData[i]! * 0.2;
+      this.smoothedData[i] = (this.smoothedData[i] ?? 0) * 0.8 + (this.frequencyData[i] ?? 0) * 0.2;
     }
 
     // Update peaks
     if (this.spectrumConfig.peakHold) {
       for (let i = 0; i < this.frequencyData.length; i++) {
-        if (this.frequencyData[i]! > this.peakData[i]!) {
-          this.peakData[i] = this.frequencyData[i]!;
+        if ((this.frequencyData[i] ?? 0) > (this.peakData[i] ?? 0)) {
+          this.peakData[i] = this.frequencyData[i] ?? 0;
         } else {
-          this.peakData[i] *= this.spectrumConfig.peakDecay;
+          this.peakData[i] = (this.peakData[i] ?? 0) * this.spectrumConfig.peakDecay;
         }
       }
     }
@@ -1018,7 +1018,17 @@ export class AudioVisualizationController extends EventEmitter {
   private waveformVisualizer: WaveformVisualizer | null = null;
   private spectrumVisualizer: SpectrumVisualizer | null = null;
   private vectorScopeVisualizer: VectorScopeVisualizer | null = null;
-  private currentTheme: VisualizationTheme = VisualizationThemes.dark;
+  private currentTheme: VisualizationTheme = VisualizationThemes.dark ?? {
+    name: 'Default Dark',
+    backgroundColor: '#1a1a1a',
+    gridColor: '#333333',
+    textColor: '#ffffff',
+    primaryColor: '#4a9eff',
+    secondaryColor: '#ff6b6b',
+    accentColor: '#4ecdc4',
+    waveformColors: ['#4a9eff', '#ff6b6b', '#4ecdc4', '#45b7d1'],
+    spectrumColors: ['#4a9eff', '#45b7d1', '#4ecdc4', '#96ceb4']
+  };
   private audioContext: AudioContext | null = null;
 
   constructor() {

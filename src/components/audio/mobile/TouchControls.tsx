@@ -57,26 +57,26 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
   }, [enableHaptics]);
 
   // Calculate distance between two touch points
-  const getTouchDistance = useCallback((touches: TouchList): number => {
+  const getTouchDistance = useCallback((touches: React.TouchList): number => {
     if (touches.length < 2) return 0;
 
     const touch1 = touches[0];
     const touch2 = touches[1];
 
     return Math.sqrt(
-      Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
+      Math.pow((touch2?.clientX ?? 0) - (touch1?.clientX ?? 0), 2) +
+      Math.pow((touch2?.clientY ?? 0) - (touch1?.clientY ?? 0), 2)
     );
   }, []);
 
   // Get center point of multiple touches
-  const getTouchCenter = useCallback((touches: TouchList): { x: number; y: number } => {
+  const getTouchCenter = useCallback((touches: React.TouchList): { x: number; y: number } => {
     let x = 0;
     let y = 0;
 
     for (let i = 0; i < touches.length; i++) {
-      x += touches[i].clientX;
-      y += touches[i].clientY;
+      x += touches[i]?.clientX ?? 0;
+      y += touches[i]?.clientY ?? 0;
     }
 
     return {
@@ -128,7 +128,7 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
 
     if (touches.length === 1) {
       const touch = touches[0];
-      const position = { x: touch.clientX, y: touch.clientY };
+      const position = { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 };
 
       setGestureState({
         isActive: true,
@@ -185,7 +185,7 @@ export const TouchControls: React.FC<TouchControlsProps> = ({
 
     if (touches.length === 1 && gestureState.type !== 'longPress') {
       const touch = touches[0];
-      const currentPosition = { x: touch.clientX, y: touch.clientY };
+      const currentPosition = { x: touch?.clientX ?? 0, y: touch?.clientY ?? 0 };
 
       const deltaX = currentPosition.x - gestureState.startPosition.x;
       const deltaY = currentPosition.y - gestureState.startPosition.y;
@@ -379,7 +379,7 @@ export const TouchKnob: React.FC<TouchKnobProps> = ({
     e.preventDefault();
     const touch = e.touches[0];
     setIsDragging(true);
-    setStartY(touch.clientY);
+    setStartY(touch?.clientY ?? 0);
     setStartValue(value);
 
     if ('vibrate' in navigator) {
@@ -392,7 +392,7 @@ export const TouchKnob: React.FC<TouchKnobProps> = ({
 
     e.preventDefault();
     const touch = e.touches[0];
-    const deltaY = startY - touch.clientY; // Inverted for natural feel
+    const deltaY = startY - (touch?.clientY ?? 0); // Inverted for natural feel
     const range = max - min;
     const pixelsPerValue = 200 / range; // 200 pixels for full range
     const deltaValue = (deltaY / pixelsPerValue) * sensitivity;
@@ -516,9 +516,9 @@ export const TouchFader: React.FC<TouchFaderProps> = ({
 
     let position: number;
     if (orientation === 'vertical') {
-      position = (rect.bottom - touch.clientY) / rect.height;
+      position = (rect.bottom - (touch?.clientY ?? 0)) / rect.height;
     } else {
-      position = (touch.clientX - rect.left) / rect.width;
+      position = ((touch?.clientX ?? 0) - rect.left) / rect.width;
     }
 
     position = Math.max(0, Math.min(1, position));

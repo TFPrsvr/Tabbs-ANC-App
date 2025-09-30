@@ -794,7 +794,10 @@ export class AudioProjectManager extends EventEmitter {
       project.tracks.splice(position, 0, track);
       // Update order of subsequent tracks
       for (let i = position + 1; i < project.tracks.length; i++) {
-        project.tracks[i].order = i;
+        const track = project.tracks[i];
+        if (track) {
+          track.order = i;
+        }
       }
     } else {
       project.tracks.push(track);
@@ -829,15 +832,18 @@ export class AudioProjectManager extends EventEmitter {
 
     // Update order of subsequent tracks
     for (let i = trackIndex; i < project.tracks.length; i++) {
-      project.tracks[i].order = i;
+      const track = project.tracks[i];
+      if (track) {
+        track.order = i;
+      }
     }
 
     project.modifiedAt = new Date();
 
     this.addToHistory(projectId, {
       action: 'track_deleted',
-      description: `Track "${track.name}" deleted`,
-      data: { trackId, trackName: track.name }
+      description: `Track "${track?.name ?? 'Unknown'}" deleted`,
+      data: { trackId, trackName: track?.name ?? 'Unknown' }
     });
 
     this.emit('trackDeleted', { projectId, trackId, track });
@@ -948,8 +954,8 @@ export class AudioProjectManager extends EventEmitter {
 
     this.addToHistory(projectId, {
       action: 'clip_deleted',
-      description: `Clip "${clip.name}" deleted from track "${track.name}"`,
-      data: { trackId, clipId, clipName: clip.name }
+      description: `Clip "${clip?.name ?? 'Unknown'}" deleted from track "${track?.name ?? 'Unknown'}"`,
+      data: { trackId, clipId, clipName: clip?.name ?? 'Unknown' }
     });
 
     this.emit('clipDeleted', { projectId, trackId, clipId, clip });
@@ -1480,7 +1486,7 @@ export class AudioProjectManager extends EventEmitter {
       '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7',
       '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce', '#85c1e9'
     ];
-    return colors[Math.floor(Math.random() * colors.length)];
+    return colors[Math.floor(Math.random() * colors.length)] ?? '#ff6b6b';
   }
 
   private async processExport(projectId: string, exportId: string): Promise<void> {

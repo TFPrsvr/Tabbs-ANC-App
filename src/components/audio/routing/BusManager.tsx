@@ -198,6 +198,9 @@ export const BusManager: React.FC<BusManagerProps> = ({
           }
           grouped[groupName].push(bus);
         } else {
+          if (!grouped['Ungrouped']) {
+            grouped['Ungrouped'] = [];
+          }
           grouped['Ungrouped'].push(bus);
         }
       });

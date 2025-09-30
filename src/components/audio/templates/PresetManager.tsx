@@ -57,7 +57,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
     const allCollections = templateManager.getAllPresetCollections();
     setCollections(allCollections);
     if (allCollections.length > 0 && !selectedCollection) {
-      setSelectedCollection(allCollections[0]);
+      setSelectedCollection(allCollections[0] || null);
     }
   }, [templateManager, selectedCollection]);
 

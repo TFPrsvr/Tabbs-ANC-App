@@ -4,8 +4,8 @@ import React, { useState, useCallback, useRef } from 'react';
 import {
   AudioTestSuite,
   TestType,
-  TestResult,
-  ValidationReport,
+  AudioTestResult,
+  AudioValidationReport,
   TestConfiguration,
   QualityMetrics
 } from '@/lib/audio/testing/audio-test-suite';
@@ -14,7 +14,7 @@ export interface AudioTestSuiteProps {
   audioBuffer?: AudioBuffer;
   audioContext?: AudioContext;
   file?: File;
-  onTestComplete?: (report: ValidationReport) => void;
+  onTestComplete?: (report: AudioValidationReport) => void;
   onTestProgress?: (progress: number, currentTest: string) => void;
 }
 
@@ -31,7 +31,7 @@ const TEST_TYPE_ICONS: Record<TestType, string> = {
   'silence-detection': '🤫',
   'frequency-analysis': '📈',
   'compatibility-check': '✅',
-  'format-validation': '🎯'
+  'performance-test': '🎯'
 };
 
 const TEST_TYPE_DESCRIPTIONS: Record<TestType, string> = {
@@ -47,7 +47,7 @@ const TEST_TYPE_DESCRIPTIONS: Record<TestType, string> = {
   'silence-detection': 'Detects silence at beginning and end',
   'frequency-analysis': 'Analyzes frequency response and balance',
   'compatibility-check': 'Checks compatibility with various platforms',
-  'format-validation': 'Validates audio format specifications'
+  'performance-test': 'Tests audio processing performance'
 };
 
 const SEVERITY_COLORS = {
@@ -67,7 +67,7 @@ export function AudioTestSuiteComponent({
   const [isRunning, setIsRunning] = useState(false);
   const [currentTest, setCurrentTest] = useState<string>('');
   const [progress, setProgress] = useState(0);
-  const [report, setReport] = useState<ValidationReport | null>(null);
+  const [report, setReport] = useState<AudioValidationReport | null>(null);
   const [selectedTests, setSelectedTests] = useState<TestType[]>([
     'file-validation',
     'audio-properties',
@@ -79,16 +79,17 @@ export function AudioTestSuiteComponent({
   const [configuration, setConfiguration] = useState<TestConfiguration>({
     enabledTests: selectedTests,
     qualityThresholds: {
-      minSampleRate: 44100,
-      maxClippingPercentage: 0.1,
+      maxClippingPercent: 0.1,
       minDynamicRange: 6,
       maxNoiseFloor: -60,
-      minSNR: 40,
-      targetLUFS: -23,
-      maxTruePeak: -1
+      minQualityScore: 70,
+      maxSilenceDuration: 5,
+      targetLoudness: -23
     },
-    strictMode: false,
-    includeSuggestions: true
+    performanceChecks: true,
+    compatibilityChecks: true,
+    generateReport: true,
+    verbose: false
   });
 
   const testSuiteRef = useRef<AudioTestSuite | null>(null);
@@ -109,10 +110,6 @@ export function AudioTestSuiteComponent({
       }
 
       const testSuite = testSuiteRef.current;
-      const config = {
-        ...configuration,
-        enabledTests: selectedTests
-      };
 
       const progressCallback = (prog: number, test: string) => {
         setProgress(prog);
@@ -120,12 +117,17 @@ export function AudioTestSuiteComponent({
         onTestProgress?.(prog, test);
       };
 
-      const validationReport = await testSuite.runValidation(
+      const validationReport = await testSuite.validateAudio(
         audioBuffer,
-        audioContext,
-        config,
-        progressCallback
+        file?.name || 'audio-buffer',
+        `audio-${Date.now()}`
       );
+
+      // Simulate progress updates
+      for (let i = 0; i <= 100; i += 10) {
+        progressCallback(i, i < 100 ? 'Running tests...' : 'Complete');
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
 
       setReport(validationReport);
       onTestComplete?.(validationReport);
@@ -146,14 +148,14 @@ export function AudioTestSuiteComponent({
     );
   };
 
-  const getOverallScore = (report: ValidationReport): number => {
+  const getOverallScore = (report: AudioValidationReport): number => {
     if (!report.results || report.results.length === 0) return 0;
-
-    const scores = report.results
-      .filter(result => result.score !== undefined)
-      .map(result => result.score as number);
-
-    return scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+    // Use the overall score from quality metrics if available
+    if (report.summary?.qualityMetrics?.overallScore !== undefined) {
+      return report.summary.qualityMetrics.overallScore;
+    }
+    // Calculate pass rate as fallback
+    return (report.testsPassed / report.testsRun) * 100;
   };
 
   const getScoreColor = (score: number): string => {
@@ -175,7 +177,7 @@ export function AudioTestSuiteComponent({
     'silence-detection',
     'frequency-analysis',
     'compatibility-check',
-    'format-validation'
+    'performance-test'
   ];
 
   return (
@@ -244,41 +246,41 @@ export function AudioTestSuiteComponent({
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={configuration.strictMode}
+                  checked={configuration.verbose}
                   onChange={(e) => setConfiguration(prev => ({
                     ...prev,
-                    strictMode: e.target.checked
+                    verbose: e.target.checked
                   }))}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">Strict Mode</span>
+                <span className="text-sm text-gray-700">Verbose Mode</span>
               </label>
 
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={configuration.includeSuggestions}
+                  checked={configuration.performanceChecks}
                   onChange={(e) => setConfiguration(prev => ({
                     ...prev,
-                    includeSuggestions: e.target.checked
+                    performanceChecks: e.target.checked
                   }))}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">Include Suggestions</span>
+                <span className="text-sm text-gray-700">Performance Checks</span>
               </label>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Target LUFS
+                  Target Loudness (LUFS)
                 </label>
                 <input
                   type="number"
-                  value={configuration.qualityThresholds.targetLUFS}
+                  value={configuration.qualityThresholds.targetLoudness || -23}
                   onChange={(e) => setConfiguration(prev => ({
                     ...prev,
                     qualityThresholds: {
                       ...prev.qualityThresholds,
-                      targetLUFS: parseFloat(e.target.value)
+                      targetLoudness: parseFloat(e.target.value)
                     }
                   }))}
                   className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -292,12 +294,12 @@ export function AudioTestSuiteComponent({
                 </label>
                 <input
                   type="number"
-                  value={configuration.qualityThresholds.maxClippingPercentage}
+                  value={configuration.qualityThresholds.maxClippingPercent}
                   onChange={(e) => setConfiguration(prev => ({
                     ...prev,
                     qualityThresholds: {
                       ...prev.qualityThresholds,
-                      maxClippingPercentage: parseFloat(e.target.value)
+                      maxClippingPercent: parseFloat(e.target.value)
                     }
                   }))}
                   className="w-full px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -341,18 +343,18 @@ export function AudioTestSuiteComponent({
               <h3 className="text-lg font-medium text-gray-900 mb-3">Test Summary</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{report.results.length}</div>
+                  <div className="text-2xl font-bold text-blue-600">{report.testsRun}</div>
                   <div className="text-sm text-gray-600">Tests Run</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
-                    {report.results.filter(r => r.passed).length}
+                    {report.testsPassed}
                   </div>
                   <div className="text-sm text-gray-600">Passed</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-600">
-                    {report.results.filter(r => !r.passed).length}
+                    {report.testsFailed}
                   </div>
                   <div className="text-sm text-gray-600">Failed</div>
                 </div>
@@ -373,29 +375,28 @@ export function AudioTestSuiteComponent({
                   <div
                     key={index}
                     className={`border rounded-lg p-4 ${
-                      result.passed ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50'
+                      result.status === 'passed' ? 'border-green-300 bg-green-50' :
+                      result.status === 'warning' ? 'border-yellow-300 bg-yellow-50' :
+                      'border-red-300 bg-red-50'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3 flex-1">
                         <div className="text-2xl">
-                          {TEST_TYPE_ICONS[result.testType]}
+                          {TEST_TYPE_ICONS[result.testName as TestType] || '🔧'}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="font-medium text-gray-900">
-                              {result.testType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              {result.testName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                             </h4>
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              result.passed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                              result.status === 'passed' ? 'bg-green-100 text-green-800' :
+                              result.status === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
                             }`}>
-                              {result.passed ? 'Passed' : 'Failed'}
+                              {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
                             </span>
-                            {result.score !== undefined && (
-                              <span className={`text-sm font-medium ${getScoreColor(result.score)}`}>
-                                {result.score.toFixed(1)}%
-                              </span>
-                            )}
                           </div>
                           <p className="text-sm text-gray-600 mb-2">{result.message}</p>
 
@@ -415,28 +416,23 @@ export function AudioTestSuiteComponent({
               </div>
             </div>
 
-            {/* Issues */}
-            {report.issues && report.issues.length > 0 && (
+            {/* Failed Tests */}
+            {report.results.some(r => r.status === 'failed') && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Issues Found</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Failed Tests</h3>
                 <div className="space-y-2">
-                  {report.issues.map((issue, index) => (
+                  {report.results.filter(r => r.status === 'failed').map((result, index) => (
                     <div
                       key={index}
-                      className={`p-3 rounded-lg border ${SEVERITY_COLORS[issue.severity]}`}
+                      className="p-3 rounded-lg border border-red-300 bg-red-50"
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <h4 className="font-medium">{issue.title}</h4>
-                          <p className="text-sm mt-1">{issue.description}</p>
-                          {issue.suggestion && (
-                            <p className="text-sm mt-2 italic">
-                              <strong>Suggestion:</strong> {issue.suggestion}
-                            </p>
-                          )}
+                          <h4 className="font-medium text-red-800">{result.testName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                          <p className="text-sm mt-1 text-red-700">{result.message}</p>
                         </div>
-                        <span className="text-xs font-medium uppercase">
-                          {issue.severity}
+                        <span className="text-xs font-medium uppercase text-red-600">
+                          Failed
                         </span>
                       </div>
                     </div>
@@ -446,11 +442,11 @@ export function AudioTestSuiteComponent({
             )}
 
             {/* Recommendations */}
-            {report.recommendations && report.recommendations.length > 0 && (
+            {report.summary?.recommendations && report.summary.recommendations.length > 0 && (
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Recommendations</h3>
                 <div className="space-y-2">
-                  {report.recommendations.map((rec, index) => (
+                  {report.summary.recommendations.map((rec, index) => (
                     <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-sm text-blue-800">{rec}</p>
                     </div>

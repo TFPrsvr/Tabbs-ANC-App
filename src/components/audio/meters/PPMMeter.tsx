@@ -109,9 +109,9 @@ export const PPMMeter: React.FC<PPMMeterProps> = ({
 
   // Convert dB to percentage for display
   const dbToPercent = useCallback((db: number): number => {
-    const minDb = standard.scale[0];
-    const maxDb = standard.scale[standard.scale.length - 1];
-    return Math.max(0, Math.min(100, ((db - minDb) / (maxDb - minDb)) * 100));
+    const minDb = standard.scale[0] ?? -60;
+    const maxDb = standard.scale[standard.scale.length - 1] ?? 0;
+    return Math.max(0, Math.min(100, ((db - (minDb ?? -60)) / ((maxDb ?? 0) - (minDb ?? -60))) * 100));
   }, [standard]);
 
   // PPM ballistics - fast attack, slow release
@@ -328,9 +328,9 @@ export const PPMMeter: React.FC<PPMMeterProps> = ({
     if (!isLit) return '#222';
 
     // Convert back to dB for threshold checking
-    const minDb = standard.scale[0];
-    const maxDb = standard.scale[standard.scale.length - 1];
-    const segmentDb = minDb + (segmentLevel / 100) * (maxDb - minDb);
+    const minDb = standard.scale[0] ?? -60;
+    const maxDb = standard.scale[standard.scale.length - 1] ?? 0;
+    const segmentDb = (minDb ?? -60) + (segmentLevel / 100) * ((maxDb ?? 0) - (minDb ?? -60));
 
     // Color coding based on standard
     switch (variant) {

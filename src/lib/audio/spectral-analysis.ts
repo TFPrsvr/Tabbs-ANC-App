@@ -147,11 +147,11 @@ export interface AdvancedMetrics {
 // FFT processor with advanced windowing
 class AdvancedFFTProcessor {
   private fftSize: number;
-  private windowFunction: Float32Array;
+  private windowFunction!: Float32Array;
   private windowType: WindowType;
-  private cosTable: Float32Array;
-  private sinTable: Float32Array;
-  private bitReverseIndices: number[];
+  private cosTable!: Float32Array;
+  private sinTable!: Float32Array;
+  private bitReverseIndices!: number[];
 
   constructor(fftSize: number, windowType: WindowType = 'hann') {
     this.fftSize = fftSize;
@@ -256,7 +256,7 @@ class AdvancedFFTProcessor {
     // Apply window function
     const windowedSignal = new Float32Array(this.fftSize);
     for (let i = 0; i < this.fftSize; i++) {
-      windowedSignal[i] = signal[i] * this.windowFunction[i];
+      windowedSignal[i] = (signal[i] ?? 0) * (this.windowFunction[i] ?? 0);
     }
 
     // Prepare complex arrays
@@ -274,9 +274,9 @@ class AdvancedFFTProcessor {
 
     for (let i = 0; i <= this.fftSize / 2; i++) {
       frequencies[i] = i; // Will be scaled by sample rate later
-      magnitudes[i] = Math.sqrt(real[i] * real[i] + imag[i] * imag[i]);
-      phases[i] = Math.atan2(imag[i], real[i]);
-      powerSpectrum[i] = magnitudes[i] * magnitudes[i];
+      magnitudes[i] = Math.sqrt((real[i] ?? 0) * (real[i] ?? 0) + (imag[i] ?? 0) * (imag[i] ?? 0));
+      phases[i] = Math.atan2(imag[i] ?? 0, real[i] ?? 0);
+      powerSpectrum[i] = (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
     }
 
     return {
@@ -292,10 +292,10 @@ class AdvancedFFTProcessor {
   private fft(real: Float32Array, imag: Float32Array): void {
     // Bit-reverse permutation
     for (let i = 0; i < this.fftSize; i++) {
-      const j = this.bitReverseIndices[i];
+      const j = this.bitReverseIndices[i] ?? 0;
       if (i < j) {
-        [real[i], real[j]] = [real[j], real[i]];
-        [imag[i], imag[j]] = [imag[j], imag[i]];
+        [real[i], real[j]] = [real[j] ?? 0, real[i] ?? 0];
+        [imag[i], imag[j]] = [imag[j] ?? 0, imag[i] ?? 0];
       }
     }
 
@@ -308,16 +308,16 @@ class AdvancedFFTProcessor {
           const v = i + j + length / 2;
           const twiddle = j * step;
 
-          const cos = this.cosTable[twiddle];
-          const sin = this.sinTable[twiddle];
+          const cos = this.cosTable[twiddle] ?? 0;
+          const sin = this.sinTable[twiddle] ?? 0;
 
-          const tempReal = real[v] * cos - imag[v] * sin;
-          const tempImag = real[v] * sin + imag[v] * cos;
+          const tempReal = (real[v] ?? 0) * cos - (imag[v] ?? 0) * sin;
+          const tempImag = (real[v] ?? 0) * sin + (imag[v] ?? 0) * cos;
 
-          real[v] = real[u] - tempReal;
-          imag[v] = imag[u] - tempImag;
-          real[u] += tempReal;
-          imag[u] += tempImag;
+          real[v] = (real[u] ?? 0) - tempReal;
+          imag[v] = (imag[u] ?? 0) - tempImag;
+          real[u] = (real[u] ?? 0) + tempReal;
+          imag[u] = (imag[u] ?? 0) + tempImag;
         }
       }
     }
@@ -388,8 +388,8 @@ class SpectralFeatureExtractor {
     let denominator = 0;
 
     for (let i = 0; i < frequencies.length; i++) {
-      numerator += frequencies[i] * magnitudes[i];
-      denominator += magnitudes[i];
+      numerator += (frequencies[i] ?? 0) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -401,9 +401,9 @@ class SpectralFeatureExtractor {
     let denominator = 0;
 
     for (let i = 0; i < frequencies.length; i++) {
-      const deviation = frequencies[i] - centroid;
-      numerator += deviation * deviation * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = (frequencies[i] ?? 0) - centroid;
+      numerator += deviation * deviation * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? Math.sqrt(numerator / denominator) : 0;
@@ -419,9 +419,9 @@ class SpectralFeatureExtractor {
     let denominator = 0;
 
     for (let i = 0; i < frequencies.length; i++) {
-      const deviation = (frequencies[i] - centroid) / spread;
-      numerator += Math.pow(deviation, 3) * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = ((frequencies[i] ?? 0) - centroid) / spread;
+      numerator += Math.pow(deviation, 3) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -437,9 +437,9 @@ class SpectralFeatureExtractor {
     let denominator = 0;
 
     for (let i = 0; i < frequencies.length; i++) {
-      const deviation = (frequencies[i] - centroid) / spread;
-      numerator += Math.pow(deviation, 4) * magnitudes[i];
-      denominator += magnitudes[i];
+      const deviation = ((frequencies[i] ?? 0) - centroid) / spread;
+      numerator += Math.pow(deviation, 4) * (magnitudes[i] ?? 0);
+      denominator += (magnitudes[i] ?? 0);
     }
 
     return denominator > 0 ? (numerator / denominator) - 3 : 0; // Excess kurtosis
@@ -448,20 +448,20 @@ class SpectralFeatureExtractor {
   private calculateSpectralRolloff(frequencies: Float32Array, magnitudes: Float32Array): number {
     let totalEnergy = 0;
     for (let i = 0; i < magnitudes.length; i++) {
-      totalEnergy += magnitudes[i] * magnitudes[i];
+      totalEnergy += (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
     }
 
     const threshold = totalEnergy * 0.85; // 85% rolloff
     let cumulativeEnergy = 0;
 
     for (let i = 0; i < magnitudes.length; i++) {
-      cumulativeEnergy += magnitudes[i] * magnitudes[i];
+      cumulativeEnergy += (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       if (cumulativeEnergy >= threshold) {
-        return frequencies[i];
+        return frequencies[i] ?? 0;
       }
     }
 
-    return frequencies[frequencies.length - 1];
+    return frequencies[frequencies.length - 1] ?? 0;
   }
 
   private calculateSpectralFlatness(magnitudes: Float32Array): number {
@@ -470,9 +470,9 @@ class SpectralFeatureExtractor {
     let count = 0;
 
     for (let i = 1; i < magnitudes.length; i++) { // Skip DC component
-      if (magnitudes[i] > 0) {
-        geometricMean += Math.log(magnitudes[i]);
-        arithmeticMean += magnitudes[i];
+      if ((magnitudes[i] ?? 0) > 0) {
+        geometricMean += Math.log(magnitudes[i] ?? 0);
+        arithmeticMean += (magnitudes[i] ?? 0);
         count++;
       }
     }
@@ -487,7 +487,7 @@ class SpectralFeatureExtractor {
 
   private calculateSpectralCrest(magnitudes: Float32Array): number {
     const peak = Math.max(...magnitudes);
-    const mean = magnitudes.reduce((sum, mag) => sum + mag, 0) / magnitudes.length;
+    const mean = magnitudes.reduce((sum, mag) => sum + (mag ?? 0), 0) / magnitudes.length;
     return mean > 0 ? peak / mean : 0;
   }
 
@@ -497,8 +497,8 @@ class SpectralFeatureExtractor {
     let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
 
     for (let i = 0; i < n; i++) {
-      const x = frequencies[i];
-      const y = Math.log(magnitudes[i] + 1e-10); // Log magnitude
+      const x = frequencies[i] ?? 0;
+      const y = Math.log((magnitudes[i] ?? 0) + 1e-10); // Log magnitude
 
       sumX += x;
       sumY += y;
@@ -515,7 +515,7 @@ class SpectralFeatureExtractor {
     const minLength = Math.min(current.length, previous.length);
 
     for (let i = 0; i < minLength; i++) {
-      const diff = current[i] - previous[i];
+      const diff = (current[i] ?? 0) - (previous[i] ?? 0);
       flux += diff * diff;
     }
 
@@ -531,15 +531,15 @@ class SpectralFeatureExtractor {
     let totalEnergy = 0;
 
     for (let i = 0; i < frequencies.length; i++) {
-      const energy = magnitudes[i] * magnitudes[i];
+      const energy = (magnitudes[i] ?? 0) * (magnitudes[i] ?? 0);
       totalEnergy += energy;
 
       // Check if frequency is close to a harmonic
-      const harmonic = Math.round(frequencies[i] / fundamental);
+      const harmonic = Math.round((frequencies[i] ?? 0) / fundamental);
       const expectedFreq = harmonic * fundamental;
       const tolerance = fundamental * 0.1;
 
-      if (Math.abs(frequencies[i] - expectedFreq) < tolerance && harmonic >= 1) {
+      if (Math.abs((frequencies[i] ?? 0) - expectedFreq) < tolerance && harmonic >= 1) {
         harmonicEnergy += energy;
       }
     }
@@ -553,10 +553,10 @@ class SpectralFeatureExtractor {
 
   private calculateNoisiness(magnitudes: Float32Array): number {
     // High-frequency energy ratio
-    const totalEnergy = magnitudes.reduce((sum, mag) => sum + mag * mag, 0);
+    const totalEnergy = magnitudes.reduce((sum, mag) => sum + (mag ?? 0) * (mag ?? 0), 0);
     const highFreqStart = Math.floor(magnitudes.length * 0.7);
     const highFreqEnergy = magnitudes.slice(highFreqStart)
-      .reduce((sum, mag) => sum + mag * mag, 0);
+      .reduce((sum, mag) => sum + (mag ?? 0) * (mag ?? 0), 0);
 
     return totalEnergy > 0 ? highFreqEnergy / totalEnergy : 0;
   }
@@ -567,9 +567,9 @@ class SpectralFeatureExtractor {
     let fundamentalFreq = 0;
 
     for (let i = 1; i < Math.min(frequencies.length, 200); i++) { // Up to ~4.4kHz for 44.1kHz
-      if (magnitudes[i] > maxMag) {
-        maxMag = magnitudes[i];
-        fundamentalFreq = frequencies[i];
+      if ((magnitudes[i] ?? 0) > maxMag) {
+        maxMag = magnitudes[i] ?? 0;
+        fundamentalFreq = frequencies[i] ?? 0;
       }
     }
 
@@ -582,8 +582,8 @@ class MelFrequencyProcessor {
   private sampleRate: number;
   private numMelFilters: number;
   private numMfcc: number;
-  private melFilterBank: Float32Array[];
-  private dctMatrix: Float32Array[];
+  private melFilterBank!: Float32Array[];
+  private dctMatrix!: Float32Array[];
 
   constructor(sampleRate: number, numMelFilters: number = 26, numMfcc: number = 13) {
     this.sampleRate = sampleRate;
@@ -619,12 +619,12 @@ class MelFrequencyProcessor {
       for (let j = 0; j < filter.length; j++) {
         const freq = (j * this.sampleRate) / fftSize;
 
-        if (freq < leftHz || freq > rightHz) {
+        if (freq < (leftHz ?? 0) || freq > (rightHz ?? 0)) {
           filter[j] = 0;
-        } else if (freq <= centerHz) {
-          filter[j] = (freq - leftHz) / (centerHz - leftHz);
+        } else if (freq <= (centerHz ?? 0)) {
+          filter[j] = (freq - (leftHz ?? 0)) / ((centerHz ?? 0) - (leftHz ?? 0));
         } else {
-          filter[j] = (rightHz - freq) / (rightHz - centerHz);
+          filter[j] = ((rightHz ?? 0) - freq) / ((rightHz ?? 0) - (centerHz ?? 0));
         }
       }
 
@@ -640,9 +640,9 @@ class MelFrequencyProcessor {
       for (let j = 0; j < this.numMelFilters; j++) {
         dctCoeffs[j] = Math.cos((i * (j + 0.5) * Math.PI) / this.numMelFilters);
         if (i === 0) {
-          dctCoeffs[j] *= 1 / Math.sqrt(this.numMelFilters);
+          dctCoeffs[j] = (dctCoeffs[j] ?? 0) * (1 / Math.sqrt(this.numMelFilters));
         } else {
-          dctCoeffs[j] *= Math.sqrt(2 / this.numMelFilters);
+          dctCoeffs[j] = (dctCoeffs[j] ?? 0) * Math.sqrt(2 / this.numMelFilters);
         }
       }
       this.dctMatrix.push(dctCoeffs);
@@ -654,8 +654,8 @@ class MelFrequencyProcessor {
     const melSpectrum = new Float32Array(this.numMelFilters);
     for (let i = 0; i < this.numMelFilters; i++) {
       let energy = 0;
-      for (let j = 0; j < Math.min(powerSpectrum.length, this.melFilterBank[i].length); j++) {
-        energy += powerSpectrum[j] * this.melFilterBank[i][j];
+      for (let j = 0; j < Math.min(powerSpectrum.length, this.melFilterBank[i]?.length ?? 0); j++) {
+        energy += (powerSpectrum[j] ?? 0) * (this.melFilterBank[i]?.[j] ?? 0);
       }
       melSpectrum[i] = Math.log(energy + 1e-10); // Log mel spectrum
     }
@@ -665,7 +665,7 @@ class MelFrequencyProcessor {
     for (let i = 0; i < this.numMfcc; i++) {
       let sum = 0;
       for (let j = 0; j < this.numMelFilters; j++) {
-        sum += melSpectrum[j] * this.dctMatrix[i][j];
+        sum += (melSpectrum[j] ?? 0) * (this.dctMatrix[i]?.[j] ?? 0);
       }
       mfcc[i] = sum;
     }
@@ -694,7 +694,7 @@ class MelFrequencyProcessor {
     let denominator = 0;
 
     for (let i = 0; i < melSpectrum.length; i++) {
-      const energy = Math.exp(melSpectrum[i]);
+      const energy = Math.exp(melSpectrum[i] ?? 0);
       numerator += i * energy;
       denominator += energy;
     }
@@ -708,7 +708,7 @@ class MelFrequencyProcessor {
     let denominator = 0;
 
     for (let i = 0; i < melSpectrum.length; i++) {
-      const energy = Math.exp(melSpectrum[i]);
+      const energy = Math.exp(melSpectrum[i] ?? 0);
       const deviation = i - centroid;
       numerator += deviation * deviation * energy;
       denominator += energy;
@@ -720,14 +720,14 @@ class MelFrequencyProcessor {
   private calculateMelRolloff(melSpectrum: Float32Array): number {
     let totalEnergy = 0;
     for (let i = 0; i < melSpectrum.length; i++) {
-      totalEnergy += Math.exp(melSpectrum[i]);
+      totalEnergy += Math.exp(melSpectrum[i] ?? 0);
     }
 
     const threshold = totalEnergy * 0.85;
     let cumulativeEnergy = 0;
 
     for (let i = 0; i < melSpectrum.length; i++) {
-      cumulativeEnergy += Math.exp(melSpectrum[i]);
+      cumulativeEnergy += Math.exp(melSpectrum[i] ?? 0);
       if (cumulativeEnergy >= threshold) {
         return i;
       }
@@ -740,7 +740,7 @@ class MelFrequencyProcessor {
 // Chroma feature extractor
 class ChromaFeatureExtractor {
   private sampleRate: number;
-  private chromaMatrix: Float32Array[];
+  private chromaMatrix!: Float32Array[];
 
   constructor(sampleRate: number) {
     this.sampleRate = sampleRate;
@@ -780,8 +780,8 @@ class ChromaFeatureExtractor {
     // Compute chroma vector
     for (let chroma = 0; chroma < 12; chroma++) {
       let energy = 0;
-      for (let i = 0; i < Math.min(powerSpectrum.length, this.chromaMatrix[chroma].length); i++) {
-        energy += powerSpectrum[i] * this.chromaMatrix[chroma][i];
+      for (let i = 0; i < Math.min(powerSpectrum.length, this.chromaMatrix[chroma]?.length ?? 0); i++) {
+        energy += (powerSpectrum[i] ?? 0) * (this.chromaMatrix[chroma]?.[i] ?? 0);
       }
       chromagram[chroma] = energy;
     }
@@ -790,7 +790,7 @@ class ChromaFeatureExtractor {
     const totalEnergy = chromagram.reduce((sum, val) => sum + val, 0);
     if (totalEnergy > 0) {
       for (let i = 0; i < 12; i++) {
-        chromagram[i] /= totalEnergy;
+        chromagram[i] = (chromagram[i] ?? 0) / totalEnergy;
       }
     }
 
@@ -815,8 +815,8 @@ class ChromaFeatureExtractor {
     let denominator = 0;
 
     for (let i = 0; i < 12; i++) {
-      numerator += i * chromagram[i];
-      denominator += chromagram[i];
+      numerator += i * (chromagram[i] ?? 0);
+      denominator += (chromagram[i] ?? 0);
     }
 
     return denominator > 0 ? numerator / denominator : 0;
@@ -828,8 +828,8 @@ class ChromaFeatureExtractor {
 
     for (let i = 0; i < 12; i++) {
       const distance = Math.min(Math.abs(i - centroid), 12 - Math.abs(i - centroid));
-      variance += distance * distance * chromagram[i];
-      totalEnergy += chromagram[i];
+      variance += distance * distance * (chromagram[i] ?? 0);
+      totalEnergy += (chromagram[i] ?? 0);
     }
 
     return totalEnergy > 0 ? Math.sqrt(variance / totalEnergy) : 0;
@@ -852,7 +852,7 @@ class ChromaFeatureExtractor {
       let correlation = this.calculateCorrelation(chromagram, majorProfile, tonic);
       if (correlation > maxCorrelation) {
         maxCorrelation = correlation;
-        bestKey = keyNames[tonic];
+        bestKey = keyNames[tonic] ?? 'C';
         bestMode = 'major';
       }
 
@@ -860,7 +860,7 @@ class ChromaFeatureExtractor {
       correlation = this.calculateCorrelation(chromagram, minorProfile, tonic);
       if (correlation > maxCorrelation) {
         maxCorrelation = correlation;
-        bestKey = keyNames[tonic];
+        bestKey = keyNames[tonic] ?? 'C';
         bestMode = 'minor';
       }
     }
@@ -881,8 +881,8 @@ class ChromaFeatureExtractor {
 
     for (let i = 0; i < 12; i++) {
       const chromaIdx = (i + tonic) % 12;
-      const chromaVal = chromagram[chromaIdx];
-      const profileVal = profile[i];
+      const chromaVal = chromagram[chromaIdx] ?? 0;
+      const profileVal = profile[i] ?? 0;
 
       numerator += chromaVal * profileVal;
       chromaSum += chromaVal;
@@ -981,7 +981,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
         // Scale frequencies by sample rate
         for (let i = 0; i < frame.frequencies.length; i++) {
-          frame.frequencies[i] = (frame.frequencies[i] * this.config.sampleRate) / (2 * (frame.frequencies.length - 1));
+          frame.frequencies[i] = ((frame.frequencies[i] ?? 0) * this.config.sampleRate) / (2 * (frame.frequencies.length - 1));
         }
 
         frames.push(frame);
@@ -1051,10 +1051,10 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
   private applyPreemphasis(signal: Float32Array, coefficient: number): Float32Array {
     const output = new Float32Array(signal.length);
-    output[0] = signal[0];
+    output[0] = signal[0] ?? 0;
 
     for (let i = 1; i < signal.length; i++) {
-      output[i] = signal[i] - coefficient * signal[i - 1];
+      output[i] = (signal[i] ?? 0) - coefficient * (signal[i - 1] ?? 0);
     }
 
     return output;
@@ -1066,16 +1066,20 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     const onsetStrengths: Float32Array = new Float32Array(features.length);
 
     for (let i = 0; i < features.length; i++) {
-      onsetStrengths[i] = features[i].spectralFlux;
+      onsetStrengths[i] = features[i]?.spectralFlux ?? 0;
 
       // Simple peak picking for onsets
       if (i > 2 && i < features.length - 2) {
-        const isLocalMax = features[i].spectralFlux > features[i - 1].spectralFlux &&
-                          features[i].spectralFlux > features[i + 1].spectralFlux &&
-                          features[i].spectralFlux > 0.1; // Threshold
+        const currentFlux = features[i]?.spectralFlux ?? 0;
+        const prevFlux = features[i - 1]?.spectralFlux ?? 0;
+        const nextFlux = features[i + 1]?.spectralFlux ?? 0;
+
+        const isLocalMax = currentFlux > prevFlux &&
+                          currentFlux > nextFlux &&
+                          currentFlux > 0.1; // Threshold
 
         if (isLocalMax) {
-          onsetTimes.push(frames[i].timestamp / 1000); // Convert to seconds
+          onsetTimes.push((frames[i]?.timestamp ?? 0) / 1000); // Convert to seconds
         }
       }
     }
@@ -1112,16 +1116,16 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
   private analyzeHarmonicFeatures(frames: SpectralFrame[]): HarmonicFeatures {
     // Average spectrum for fundamental estimation
-    const avgMagnitudes = new Float32Array(frames[0].magnitudes.length);
+    const avgMagnitudes = new Float32Array(frames[0]?.magnitudes.length ?? 0);
     for (const frame of frames) {
       for (let i = 0; i < avgMagnitudes.length; i++) {
-        avgMagnitudes[i] += frame.magnitudes[i] / frames.length;
+        avgMagnitudes[i] = (avgMagnitudes[i] ?? 0) + (frame.magnitudes[i] ?? 0) / frames.length;
       }
     }
 
-    const fundamentalFrequency = this.estimateFundamentalFrequency(frames[0].frequencies, avgMagnitudes);
-    const harmonics = this.extractHarmonics(frames[0].frequencies, avgMagnitudes, fundamentalFrequency);
-    const partials = this.extractPartials(frames[0].frequencies, avgMagnitudes);
+    const fundamentalFrequency = this.estimateFundamentalFrequency(frames[0]?.frequencies ?? new Float32Array(0), avgMagnitudes);
+    const harmonics = this.extractHarmonics(frames[0]?.frequencies ?? new Float32Array(0), avgMagnitudes, fundamentalFrequency);
+    const partials = this.extractPartials(frames[0]?.frequencies ?? new Float32Array(0), avgMagnitudes);
 
     return {
       fundamentalFrequency,
@@ -1136,10 +1140,10 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
   private analyzePsychoacousticFeatures(frames: SpectralFrame[]): PsychoacousticFeatures {
     // Average spectrum for analysis
-    const avgPowerSpectrum = new Float32Array(frames[0].powerSpectrum.length);
+    const avgPowerSpectrum = new Float32Array(frames[0]?.powerSpectrum.length ?? 0);
     for (const frame of frames) {
       for (let i = 0; i < avgPowerSpectrum.length; i++) {
-        avgPowerSpectrum[i] += frame.powerSpectrum[i] / frames.length;
+        avgPowerSpectrum[i] = (avgPowerSpectrum[i] ?? 0) + (frame.powerSpectrum[i] ?? 0) / frames.length;
       }
     }
 
@@ -1192,14 +1196,14 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
     const intervals = [];
     for (let i = 1; i < onsetTimes.length; i++) {
-      intervals.push(onsetTimes[i] - onsetTimes[i - 1]);
+      intervals.push((onsetTimes[i] ?? 0) - (onsetTimes[i - 1] ?? 0));
     }
 
     // Find most common interval (simplified)
     intervals.sort((a, b) => a - b);
     const medianInterval = intervals[Math.floor(intervals.length / 2)];
 
-    return medianInterval > 0 ? 60 / medianInterval : 0;
+    return (medianInterval ?? 0) > 0 ? 60 / (medianInterval ?? 0) : 0;
   }
 
   private estimateBeats(onsetTimes: number[], tempo: number): number[] {
@@ -1209,7 +1213,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     const beatInterval = 60 / tempo;
     const beats: number[] = [];
 
-    for (let time = 0; time < (onsetTimes[onsetTimes.length - 1] || 0); time += beatInterval) {
+    for (let time = 0; time < ((onsetTimes[onsetTimes.length - 1] ?? 0) || 0); time += beatInterval) {
       beats.push(time);
     }
 
@@ -1219,7 +1223,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
   private calculateEnvelope(frames: SpectralFrame[]): Float32Array {
     const envelope = new Float32Array(frames.length);
     for (let i = 0; i < frames.length; i++) {
-      envelope[i] = frames[i].magnitudes.reduce((sum, mag) => sum + mag, 0);
+      envelope[i] = frames[i]?.magnitudes.reduce((sum, mag) => sum + (mag ?? 0), 0) ?? 0;
     }
     return envelope;
   }
@@ -1252,9 +1256,9 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     let fundamentalFreq = 0;
 
     for (let i = 1; i < Math.min(frequencies.length, 200); i++) {
-      if (magnitudes[i] > maxMag) {
-        maxMag = magnitudes[i];
-        fundamentalFreq = frequencies[i];
+      if ((magnitudes[i] ?? 0) > maxMag) {
+        maxMag = magnitudes[i] ?? 0;
+        fundamentalFreq = frequencies[i] ?? 0;
       }
     }
 
@@ -1276,7 +1280,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
       let minDistance = Infinity;
 
       for (let i = 0; i < frequencies.length; i++) {
-        const distance = Math.abs(frequencies[i] - targetFreq);
+        const distance = Math.abs((frequencies[i] ?? 0) - targetFreq);
         if (distance < minDistance) {
           minDistance = distance;
           closestIndex = i;
@@ -1285,8 +1289,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
       if (minDistance < fundamental * 0.1) { // 10% tolerance
         harmonics.push({
-          frequency: frequencies[closestIndex],
-          amplitude: magnitudes[closestIndex],
+          frequency: frequencies[closestIndex] ?? 0,
+          amplitude: magnitudes[closestIndex] ?? 0,
           phase: 0, // Would need phase information
           partialNumber: harmonic,
           deviationFromHarmonic: minDistance / fundamental
@@ -1302,13 +1306,13 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
     // Simple peak picking
     for (let i = 1; i < frequencies.length - 1; i++) {
-      if (magnitudes[i] > magnitudes[i - 1] && magnitudes[i] > magnitudes[i + 1] && magnitudes[i] > 0.01) {
+      if ((magnitudes[i] ?? 0) > (magnitudes[i - 1] ?? 0) && (magnitudes[i] ?? 0) > (magnitudes[i + 1] ?? 0) && (magnitudes[i] ?? 0) > 0.01) {
         partials.push({
-          frequency: frequencies[i],
-          amplitude: magnitudes[i],
+          frequency: frequencies[i] ?? 0,
+          amplitude: magnitudes[i] ?? 0,
           bandwidth: 50, // Simplified
           phase: 0,
-          confidence: magnitudes[i]
+          confidence: magnitudes[i] ?? 0
         });
       }
     }
@@ -1369,7 +1373,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
       for (let i = 0; i < powerSpectrum.length; i++) {
         const freq = (i * this.config.sampleRate) / (2 * (powerSpectrum.length - 1));
         if (freq >= startFreq && freq < endFreq) {
-          energy += powerSpectrum[i];
+          energy += (powerSpectrum[i] ?? 0);
           count++;
         }
       }
@@ -1395,8 +1399,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
     for (let i = 0; i < barkSpectrum.length; i++) {
       const sharpnessWeight = Math.pow(10, 0.171 * i);
-      numerator += sharpnessWeight * barkSpectrum[i];
-      denominator += barkSpectrum[i];
+      numerator += sharpnessWeight * (barkSpectrum[i] ?? 0);
+      denominator += (barkSpectrum[i] ?? 0);
     }
 
     return denominator > 0 ? 0.11 * numerator / denominator : 0;
@@ -1409,7 +1413,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     for (let i = 0; i < barkSpectrum.length - 1; i++) {
       const beatFreq = Math.abs(this.barkToHz(i + 1) - this.barkToHz(i));
       const roughnessWeight = Math.pow(beatFreq / 70, 0.5) * Math.exp(-beatFreq / 70);
-      roughness += roughnessWeight * Math.min(barkSpectrum[i], barkSpectrum[i + 1]);
+      roughness += roughnessWeight * Math.min(barkSpectrum[i] ?? 0, barkSpectrum[i + 1] ?? 0);
     }
 
     return roughness;
@@ -1422,8 +1426,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     let fluctuation = 0;
     for (let i = 1; i < frames.length; i++) {
       const energyDiff = Math.abs(
-        frames[i].magnitudes.reduce((sum, mag) => sum + mag, 0) -
-        frames[i - 1].magnitudes.reduce((sum, mag) => sum + mag, 0)
+        (frames[i]?.magnitudes.reduce((sum, mag) => sum + (mag ?? 0), 0) ?? 0) -
+        (frames[i - 1]?.magnitudes.reduce((sum, mag) => sum + (mag ?? 0), 0) ?? 0)
       );
       fluctuation += energyDiff;
     }
@@ -1441,7 +1445,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     // Simplified masking threshold
     const threshold = new Float32Array(powerSpectrum.length);
     for (let i = 0; i < threshold.length; i++) {
-      threshold[i] = powerSpectrum[i] * 0.1; // Simplified
+      threshold[i] = (powerSpectrum[i] ?? 0) * 0.1; // Simplified
     }
     return threshold;
   }
@@ -1453,12 +1457,12 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
     for (const frame of frames) {
       let entropy = 0;
-      const totalEnergy = frame.powerSpectrum.reduce((sum, power) => sum + power, 0);
+      const totalEnergy = frame.powerSpectrum.reduce((sum, power) => sum + (power ?? 0), 0);
 
       if (totalEnergy > 0) {
         for (const power of frame.powerSpectrum) {
-          if (power > 0) {
-            const prob = power / totalEnergy;
+          if ((power ?? 0) > 0) {
+            const prob = (power ?? 0) / totalEnergy;
             entropy -= prob * Math.log2(prob);
           }
         }
@@ -1474,8 +1478,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     if (features.length === 0) return 0;
 
     // Variance in spectral features as complexity measure
-    const centroidVariance = this.computeVariance(features.map(f => f.spectralCentroid));
-    const flatnessVariance = this.computeVariance(features.map(f => f.spectralFlatness));
+    const centroidVariance = this.computeVariance(features.map(f => f?.spectralCentroid ?? 0));
+    const flatnessVariance = this.computeVariance(features.map(f => f?.spectralFlatness ?? 0));
 
     return (centroidVariance + flatnessVariance) / 2;
   }
@@ -1484,7 +1488,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     if (features.length < 2) return 0;
 
     // Autocorrelation of spectral centroid as predictability measure
-    const centroids = features.map(f => f.spectralCentroid);
+    const centroids = features.map(f => f?.spectralCentroid ?? 0);
     return this.computeAutocorrelation(centroids, 1);
   }
 
@@ -1494,7 +1498,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     // Inverse of spectral change rate
     let totalChange = 0;
     for (let i = 1; i < features.length; i++) {
-      totalChange += Math.abs(features[i].spectralCentroid - features[i - 1].spectralCentroid);
+      totalChange += Math.abs((features[i]?.spectralCentroid ?? 0) - (features[i - 1]?.spectralCentroid ?? 0));
     }
 
     const averageChange = totalChange / (features.length - 1);
@@ -1520,8 +1524,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     let count = 0;
 
     for (let i = 2; i < features.length; i++) {
-      const diff1 = Math.abs(features[i].spectralCentroid - features[i - 1].spectralCentroid);
-      const diff2 = Math.abs(features[i - 1].spectralCentroid - features[i - 2].spectralCentroid);
+      const diff1 = Math.abs((features[i]?.spectralCentroid ?? 0) - (features[i - 1]?.spectralCentroid ?? 0));
+      const diff2 = Math.abs((features[i - 1]?.spectralCentroid ?? 0) - (features[i - 2]?.spectralCentroid ?? 0));
 
       if (diff2 > 0) {
         totalDivergence += Math.log(diff1 / diff2);
@@ -1534,7 +1538,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
   private computeFractalDimension(features: SpectralFeatures[]): number {
     // Simplified fractal dimension using box-counting
-    const values = features.map(f => f.spectralCentroid);
+    const values = features.map(f => f?.spectralCentroid ?? 0);
     if (values.length < 4) return 1;
 
     // Normalize values
@@ -1544,7 +1548,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
 
     if (range === 0) return 1;
 
-    const normalizedValues = values.map(v => (v - min) / range);
+    const normalizedValues = values.map(v => ((v ?? 0) - min) / range);
 
     // Simple box-counting approximation
     const boxSizes = [0.1, 0.2, 0.5];
@@ -1554,7 +1558,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
       const boxes = new Set<string>();
       for (let i = 0; i < normalizedValues.length; i++) {
         const boxX = Math.floor(i / normalizedValues.length / boxSize);
-        const boxY = Math.floor(normalizedValues[i] / boxSize);
+        const boxY = Math.floor((normalizedValues[i] ?? 0) / boxSize);
         boxes.add(`${boxX},${boxY}`);
       }
       counts.push(boxes.size);
@@ -1563,8 +1567,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     // Linear regression to find fractal dimension
     let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
     for (let i = 0; i < boxSizes.length; i++) {
-      const x = Math.log(1 / boxSizes[i]);
-      const y = Math.log(counts[i]);
+      const x = Math.log(1 / (boxSizes[i] ?? 1));
+      const y = Math.log(counts[i] ?? 0);
       sumX += x;
       sumY += y;
       sumXY += x * y;
@@ -1580,7 +1584,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
   private computeSpectralCoherence(frames: SpectralFrame[]): Float32Array {
     if (frames.length < 2) return new Float32Array(0);
 
-    const numBins = frames[0].magnitudes.length;
+    const numBins = frames[0]?.magnitudes.length ?? 0;
     const coherence = new Float32Array(numBins);
 
     for (let bin = 0; bin < numBins; bin++) {
@@ -1588,8 +1592,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
       let count = 0;
 
       for (let i = 1; i < frames.length; i++) {
-        const current = frames[i].magnitudes[bin];
-        const previous = frames[i - 1].magnitudes[bin];
+        const current = frames[i]?.magnitudes[bin] ?? 0;
+        const previous = frames[i - 1]?.magnitudes[bin] ?? 0;
 
         if (current > 0 && previous > 0) {
           correlation += (current * previous) / Math.sqrt(current * current + previous * previous);
@@ -1620,8 +1624,8 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     let denominator = 0;
 
     for (let i = 0; i < values.length - lag; i++) {
-      const x = values[i] - mean;
-      const y = values[i + lag] - mean;
+      const x = (values[i] ?? 0) - mean;
+      const y = (values[i + lag] ?? 0) - mean;
       numerator += x * y;
       denominator += x * x;
     }
@@ -1654,7 +1658,7 @@ export class AdvancedSpectralAnalyzer extends EventEmitter {
     return { ...this.config };
   }
 
-  public isAnalyzing(): boolean {
+  public getAnalyzingState(): boolean {
     return this.isAnalyzing;
   }
 
@@ -1720,9 +1724,12 @@ export const SpectralAnalysisUtils = {
     const mins: Partial<SpectralFeatures> = {};
     const maxs: Partial<SpectralFeatures> = {};
 
-    for (const key of Object.keys(features[0]) as (keyof SpectralFeatures)[]) {
-      if (typeof features[0][key] === 'number') {
-        const values = features.map(f => f[key] as number);
+    const firstFeature = features[0];
+    if (!firstFeature) return features;
+
+    for (const key of Object.keys(firstFeature) as (keyof SpectralFeatures)[]) {
+      if (typeof firstFeature[key] === 'number') {
+        const values = features.map(f => (f?.[key] as number) ?? 0);
         mins[key] = Math.min(...values) as any;
         maxs[key] = Math.max(...values) as any;
       }

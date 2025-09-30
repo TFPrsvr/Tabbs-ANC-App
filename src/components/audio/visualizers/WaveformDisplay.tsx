@@ -428,6 +428,7 @@ export const WaveformDisplay: React.FC<WaveformDisplayProps> = ({
       };
     } else {
       drawWaveform();
+      return undefined;
     }
   }, [drawWaveform, realTime]);
 

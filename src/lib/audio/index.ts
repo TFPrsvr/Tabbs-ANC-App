@@ -148,25 +148,17 @@ export {
 // Audio Project Management System
 export {
   AudioProjectManager,
-  ProjectTemplates,
-  type AudioProject,
+  type ProjectTemplate as ProjectTemplates,
   type ProjectTrack,
-  type ProjectClip,
   type ProjectSettings,
   type ProjectTemplate,
   type ProjectMetadata,
   type ProjectHistory,
   type ProjectBackup,
-  type TrackParameters,
-  type ClipParameters,
   type TimelineMarker,
   type TimelineRegion,
   type ProjectExport,
-  type ProjectSearchResult,
   type ProjectStatistics,
-  type CollaborationSettings,
-  type ProjectRole,
-  type ProjectPermissions
 } from './project-management';
 
 // Cloud Audio Processing Integration
@@ -561,11 +553,7 @@ export const AudioScienceConstants = {
 
 // Advanced Audio Processing Tools
 export {
-  AudioFormatConverter,
-  type AudioFormat,
-  type ConversionOptions,
-  type ConversionResult,
-  type ConversionProgress
+  AudioFormatConverter
 } from './audio-format-converter';
 
 export {

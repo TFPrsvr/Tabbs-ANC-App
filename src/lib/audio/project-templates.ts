@@ -444,19 +444,25 @@ export class ProjectTemplateManager extends EventEmitter {
   }
 
   private createTracksFromTemplate(trackTemplates: TrackTemplate[]): any[] {
-    return trackTemplates.map(template => ({
-      id: `track-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...template,
-      clips: [],
-      automation: template.automation.map(auto => ({ ...auto }))
-    }));
+    return trackTemplates.map(template => {
+      const { id: _, ...templateWithoutId } = template;
+      return {
+        id: `track-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        ...templateWithoutId,
+        clips: [],
+        automation: template.automation.map(auto => ({ ...auto }))
+      };
+    });
   }
 
   private createEffectsFromTemplate(effectTemplates: EffectTemplate[]): any[] {
-    return effectTemplates.map(template => ({
-      id: `effect-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...template
-    }));
+    return effectTemplates.map(template => {
+      const { id: _, ...templateWithoutId } = template;
+      return {
+        id: `effect-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        ...templateWithoutId
+      };
+    });
   }
 
   private validateTemplateStructure(template: any): void {

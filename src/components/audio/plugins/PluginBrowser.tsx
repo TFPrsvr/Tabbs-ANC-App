@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Search, Filter, Grid, List, Play, Pause, Settings, Download,
-  Upload, Refresh, Star, Clock, User, Tag, Zap, Music, Volume2,
+  Upload, RefreshCw as Refresh, Star, Clock, User, Tag, Zap, Music, Volume2,
   Activity, Sliders, Waves, Radio, Cpu, AlertCircle, CheckCircle
 } from 'lucide-react';
 import { PluginSystem, AudioPlugin, PluginCategory, PluginType, PluginScanResult } from '../../../lib/audio/plugin-system';

@@ -387,10 +387,14 @@ export class ExportSystem extends EventEmitter {
       throw new Error('AudioContext not available');
     }
 
+    if (!audioData.length) {
+      throw new Error('No audio data provided');
+    }
+
     // Create offline context for rendering
     const offlineContext = new OfflineAudioContext(
       settings.channels,
-      audioData[0].length,
+      audioData[0]?.length ?? 0,
       settings.sampleRate
     );
 
@@ -409,7 +413,9 @@ export class ExportSystem extends EventEmitter {
       audioData.forEach(buffer => {
         const sourceData = buffer.getChannelData(Math.min(channel, buffer.numberOfChannels - 1));
         for (let i = 0; i < Math.min(sourceData.length, channelData.length); i++) {
-          channelData[i] += sourceData[i];
+          const currentSample = channelData[i] ?? 0;
+          const sourceSample = sourceData[i] ?? 0;
+          channelData[i] = currentSample + sourceSample;
         }
       });
     }
@@ -469,7 +475,7 @@ export class ExportSystem extends EventEmitter {
       const channelData = audioBuffer.getChannelData(channel);
 
       for (let i = 0; i < length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         maxLevel = Math.max(maxLevel, sample);
       }
     }
@@ -484,7 +490,8 @@ export class ExportSystem extends EventEmitter {
         const channelData = audioBuffer.getChannelData(channel);
 
         for (let i = 0; i < length; i++) {
-          channelData[i] *= gainAdjustment;
+          const currentSample = channelData[i] ?? 0;
+          channelData[i] = currentSample * gainAdjustment;
         }
       }
     }
@@ -587,7 +594,7 @@ export class ExportSystem extends EventEmitter {
     // Audio data
     for (let i = 0; i < length; i++) {
       for (let channel = 0; channel < channels; channel++) {
-        const sample = audioBuffer.getChannelData(channel)[i];
+        const sample = audioBuffer.getChannelData(channel)[i] ?? 0;
         const intSample = Math.max(-1, Math.min(1, sample)) * ((1 << (bitDepth - 1)) - 1);
 
         if (bitDepth === 16) {

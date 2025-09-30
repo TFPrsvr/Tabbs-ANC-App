@@ -254,7 +254,20 @@ export class AutomationSystem extends EventEmitter {
     const pointIndex = lane.points.findIndex(p => p.id === pointId);
     if (pointIndex === -1) return null;
 
-    const updatedPoint = { ...lane.points[pointIndex], ...updates };
+    const currentPoint = lane.points[pointIndex];
+    if (!currentPoint) return null;
+
+    const updatedPoint: AutomationPoint = {
+      ...currentPoint,
+      ...updates,
+      id: currentPoint.id ?? `point-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      time: updates.time ?? currentPoint.time ?? 0,
+      value: updates.value ?? currentPoint.value ?? 0,
+      curve: updates.curve ?? currentPoint.curve ?? 'linear',
+      tension: updates.tension ?? currentPoint.tension ?? 0,
+      selected: updates.selected ?? currentPoint.selected ?? false,
+      locked: updates.locked ?? currentPoint.locked ?? false
+    };
     lane.points[pointIndex] = updatedPoint;
 
     // Re-sort if time changed
@@ -369,11 +382,15 @@ export class AutomationSystem extends EventEmitter {
     }
 
     if (pointsAfter.length === 0) {
-      return pointsBefore[pointsBefore.length - 1].value;
+      return pointsBefore[pointsBefore.length - 1]?.value ?? lane.defaultValue;
     }
 
     const beforePoint = pointsBefore[pointsBefore.length - 1];
     const afterPoint = pointsAfter[0];
+
+    if (!beforePoint || !afterPoint) {
+      return lane.defaultValue;
+    }
 
     // Interpolate based on curve type
     return this.interpolateValue(beforePoint, afterPoint, time);
@@ -546,17 +563,17 @@ export class AutomationSystem extends EventEmitter {
   }
 
   private handleMIDIMessage(event: MIDIMessageEvent): void {
-    const [status, data1, data2] = event.data!;
-    const messageType = status & 0xF0;
-    const channel = status & 0x0F;
+    const [status, data1, data2] = event.data ?? [0, 0, 0];
+    const messageType = (status ?? 0) & 0xF0;
+    const channel = (status ?? 0) & 0x0F;
 
     // Handle CC messages
     if (messageType === 0xB0) {
-      const ccNumber = data1;
-      const value = data2;
+      const ccNumber = data1 ?? 0;
+      const value = data2 ?? 0;
 
       this.controllers.forEach((controller) => {
-        if (controller.enabled && controller.channel === channel && controller.ccNumber === ccNumber) {
+        if (controller.enabled && controller.channel === channel && (controller.ccNumber ?? 0) === ccNumber) {
           this.handleControllerInput(controller, value);
         }
       });
@@ -704,6 +721,10 @@ export class AutomationSystem extends EventEmitter {
       const prevPoint = lane.points[i - 1];
       const currentPoint = lane.points[i];
       const nextPoint = lane.points[i + 1];
+
+      if (!prevPoint || !currentPoint || !nextPoint) {
+        continue;
+      }
 
       const averageValue = (prevPoint.value + currentPoint.value + nextPoint.value) / 3;
       currentPoint.value = currentPoint.value * (1 - strength) + averageValue * strength;

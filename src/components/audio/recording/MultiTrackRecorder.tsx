@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  Play, Pause, Square, RotateCcw, Mic, MicOff, Volume2,
+  Play, Pause, Square, RotateCcw, Mic, MicOff, Volume2, Circle,
   Settings, Clock, FileAudio, Layers, Headphones
 } from 'lucide-react';
 
@@ -219,7 +219,7 @@ export const MultiTrackRecorder: React.FC<MultiTrackRecorderProps> = ({
 
       let sum = 0;
       for (let i = 0; i < dataArray.length; i++) {
-        sum += (dataArray[i] / 255) ** 2;
+        sum += ((dataArray[i] ?? 0) / 255) ** 2;
       }
 
       const rms = Math.sqrt(sum / dataArray.length);

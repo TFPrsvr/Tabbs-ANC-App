@@ -270,7 +270,16 @@ export class AISystem extends EventEmitter {
       autoAnalysis: true,
       suggestionThreshold: 0.7,
       maxSuggestions: 5,
-      preferredModels: {},
+      preferredModels: {
+        'musical-analysis': 'default',
+        'mix-analysis': 'default',
+        'mastering-analysis': 'default',
+        'quality-analysis': 'default',
+        'harmonic-analysis': 'default',
+        'structure-analysis': 'default',
+        'genre-classification': 'default',
+        'mood-analysis': 'default'
+      },
       realTimeAnalysis: false,
       analysisInterval: 1000,
       enableLearning: true,

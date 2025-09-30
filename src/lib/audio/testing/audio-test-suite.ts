@@ -299,7 +299,7 @@ export class AudioTestSuite {
       let clippingCount = 0;
 
       for (let i = 0; i < length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         peak = Math.max(peak, sample);
         rms += sample * sample;
 
@@ -313,8 +313,8 @@ export class AudioTestSuite {
       properties[`channel${channel}`] = {
         peak: peak,
         rms: rms,
-        peakDb: 20 * Math.log10(peak),
-        rmsDb: 20 * Math.log10(rms),
+        peakDb: 20 * Math.log10(peak || 0.0001),
+        rmsDb: 20 * Math.log10(rms || 0.0001),
         clippingCount,
         clippingPercent: (clippingCount / length) * 100
       };
@@ -345,7 +345,7 @@ export class AudioTestSuite {
         maxPeak,
         avgRms,
         totalClipping,
-        dynamicRange: 20 * Math.log10(maxPeak / avgRms)
+        dynamicRange: 20 * Math.log10((maxPeak || 0.0001) / (avgRms || 0.0001))
       },
       duration: 0,
       timestamp: new Date()
@@ -414,7 +414,7 @@ export class AudioTestSuite {
     for (let channel = 0; channel < channels; channel++) {
       const channelData = audioBuffer.getChannelData(channel);
       for (let i = 0; i < length; i++) {
-        if (Math.abs(channelData[i]) >= 0.99) {
+        if (Math.abs(channelData[i] ?? 0) >= 0.99) {
           totalClipping++;
         }
       }
@@ -473,10 +473,10 @@ export class AudioTestSuite {
 
     // Calculate correlation
     for (let i = 0; i < length; i++) {
-      correlation += leftChannel[i] * rightChannel[i];
+      correlation += (leftChannel[i] ?? 0) * (rightChannel[i] ?? 0);
 
       // Check for phase issues (inverted signals)
-      if (Math.abs(leftChannel[i] + rightChannel[i]) < Math.abs(leftChannel[i] - rightChannel[i]) * 0.1) {
+      if (Math.abs((leftChannel[i] ?? 0) + (rightChannel[i] ?? 0)) < Math.abs((leftChannel[i] ?? 0) - (rightChannel[i] ?? 0)) * 0.1) {
         phaseIssues++;
       }
     }
@@ -530,7 +530,7 @@ export class AudioTestSuite {
       for (let channel = 0; channel < channels; channel++) {
         const channelData = audioBuffer.getChannelData(channel);
         for (let i = start; i < end; i++) {
-          blockRms += channelData[i] * channelData[i];
+          blockRms += (channelData[i] ?? 0) * (channelData[i] ?? 0);
         }
       }
 
@@ -540,8 +540,8 @@ export class AudioTestSuite {
 
     // Sort to find quietest blocks (noise floor)
     rmsValues.sort((a, b) => a - b);
-    const noiseFloor = rmsValues[Math.floor(rmsValues.length * 0.1)]; // 10th percentile
-    const noiseFloorDb = 20 * Math.log10(noiseFloor);
+    const noiseFloor = rmsValues[Math.floor(rmsValues.length * 0.1)] ?? 0; // 10th percentile
+    const noiseFloorDb = 20 * Math.log10(noiseFloor || 0.0001);
 
     let status: 'passed' | 'warning' | 'failed';
     let message: string;
@@ -582,14 +582,14 @@ export class AudioTestSuite {
     for (let channel = 0; channel < channels; channel++) {
       const channelData = audioBuffer.getChannelData(channel);
       for (let i = 0; i < length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         peak = Math.max(peak, sample);
         rms += sample * sample;
       }
     }
 
     rms = Math.sqrt(rms / (length * channels));
-    const dynamicRange = 20 * Math.log10(peak / rms);
+    const dynamicRange = 20 * Math.log10((peak || 0.0001) / (rms || 0.0001));
 
     let status: 'passed' | 'warning' | 'failed';
     let message: string;
@@ -613,8 +613,8 @@ export class AudioTestSuite {
         peak,
         rms,
         dynamicRange,
-        peakDb: 20 * Math.log10(peak),
-        rmsDb: 20 * Math.log10(rms),
+        peakDb: 20 * Math.log10(peak || 0.0001),
+        rmsDb: 20 * Math.log10(rms || 0.0001),
         threshold: this.config.qualityThresholds.minDynamicRange
       },
       duration: 0,
@@ -644,7 +644,7 @@ export class AudioTestSuite {
       for (let channel = 0; channel < channels; channel++) {
         const channelData = audioBuffer.getChannelData(channel);
         for (let i = start; i < end; i++) {
-          windowRms += channelData[i] * channelData[i];
+          windowRms += (channelData[i] ?? 0) * (channelData[i] ?? 0);
         }
       }
 
@@ -655,8 +655,8 @@ export class AudioTestSuite {
       }
     }
 
-    const avgLoudness = totalLoudness / validWindows;
-    const lufsEstimate = 20 * Math.log10(avgLoudness) - 0.691; // Simplified conversion
+    const avgLoudness = totalLoudness / (validWindows || 1);
+    const lufsEstimate = 20 * Math.log10(avgLoudness || 0.0001) - 0.691; // Simplified conversion
 
     const targetLoudness = this.config.qualityThresholds.targetLoudness || -23;
     const difference = Math.abs(lufsEstimate - targetLoudness);
@@ -711,8 +711,8 @@ export class AudioTestSuite {
     let rightEnergy = 0;
 
     for (let i = 0; i < length; i++) {
-      const left = leftChannel[i];
-      const right = rightChannel[i];
+      const left = leftChannel[i] ?? 0;
+      const right = rightChannel[i] ?? 0;
 
       if (Math.abs(left - right) < 0.001) {
         identical++;
@@ -725,7 +725,7 @@ export class AudioTestSuite {
 
     const identicalPercent = (identical / length) * 100;
     correlation = correlation / length;
-    const balance = rightEnergy / (leftEnergy + rightEnergy);
+    const balance = rightEnergy / ((leftEnergy + rightEnergy) || 1);
 
     let status: 'passed' | 'warning';
     let message: string;
@@ -769,7 +769,7 @@ export class AudioTestSuite {
       let isSilent = true;
 
       for (let channel = 0; channel < channels; channel++) {
-        if (Math.abs(audioBuffer.getChannelData(channel)[i]) > silenceThreshold) {
+        if (Math.abs(audioBuffer.getChannelData(channel)[i] ?? 0) > silenceThreshold) {
           isSilent = false;
           break;
         }
@@ -813,7 +813,7 @@ export class AudioTestSuite {
         maxSilenceDuration: maxSilenceSeconds,
         totalSilencePercent,
         threshold: this.config.qualityThresholds.maxSilenceDuration,
-        silenceThresholdDb: 20 * Math.log10(silenceThreshold)
+        silenceThresholdDb: 20 * Math.log10(silenceThreshold || 0.0001)
       },
       duration: 0,
       timestamp: new Date()
@@ -844,7 +844,7 @@ export class AudioTestSuite {
     for (let channel = 0; channel < channels; channel++) {
       const channelData = audioBuffer.getChannelData(channel);
       for (let i = 0; i < length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         totalEnergy += sample * sample;
       }
     }
@@ -858,7 +858,7 @@ export class AudioTestSuite {
     const frequencyBalance = Object.values(bands).map(band => band.energy);
     const maxBand = Math.max(...frequencyBalance);
     const minBand = Math.min(...frequencyBalance);
-    const balance = minBand / maxBand;
+    const balance = minBand / (maxBand || 1);
 
     let status: 'passed' | 'warning';
     let message: string;
@@ -970,7 +970,7 @@ export class AudioTestSuite {
     for (let channel = 0; channel < channels; channel++) {
       const channelData = audioBuffer.getChannelData(channel);
       for (let i = 0; i < length; i++) {
-        const sample = Math.abs(channelData[i]);
+        const sample = Math.abs(channelData[i] ?? 0);
         peak = Math.max(peak, sample);
         rms += sample * sample;
         if (sample >= 0.99) clipping++;
@@ -978,7 +978,7 @@ export class AudioTestSuite {
     }
 
     rms = Math.sqrt(rms / (length * channels));
-    const dynamicRange = 20 * Math.log10(peak / rms);
+    const dynamicRange = 20 * Math.log10((peak || 0.0001) / (rms || 0.0001));
 
     // Adjust scores based on measurements
     if (clipping > 0) clarity -= 30;

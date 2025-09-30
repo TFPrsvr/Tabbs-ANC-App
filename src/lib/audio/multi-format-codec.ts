@@ -1046,9 +1046,11 @@ export class MultiFormatCodec extends EventEmitter {
     if (fadeInDuration && fadeInDuration > 0) {
       const fadeInSamples = Math.floor(fadeInDuration * sampleRate);
       for (let ch = 0; ch < result.length; ch++) {
-        for (let i = 0; i < Math.min(fadeInSamples, result[ch]!.length); i++) {
+        const channelData = result[ch];
+        if (!channelData) continue;
+        for (let i = 0; i < Math.min(fadeInSamples, channelData.length); i++) {
           const gain = i / fadeInSamples;
-          result[ch]![i] *= gain;
+          channelData[i] = (channelData[i] ?? 0) * gain;
         }
       }
     }
@@ -1056,10 +1058,12 @@ export class MultiFormatCodec extends EventEmitter {
     if (fadeOutDuration && fadeOutDuration > 0) {
       const fadeOutSamples = Math.floor(fadeOutDuration * sampleRate);
       for (let ch = 0; ch < result.length; ch++) {
-        const startSample = Math.max(0, result[ch]!.length - fadeOutSamples);
-        for (let i = startSample; i < result[ch]!.length; i++) {
-          const gain = (result[ch]!.length - i) / fadeOutSamples;
-          result[ch]![i] *= gain;
+        const channelData = result[ch];
+        if (!channelData) continue;
+        const startSample = Math.max(0, channelData.length - fadeOutSamples);
+        for (let i = startSample; i < channelData.length; i++) {
+          const gain = (channelData.length - i) / fadeOutSamples;
+          channelData[i] = (channelData[i] ?? 0) * gain;
         }
       }
     }

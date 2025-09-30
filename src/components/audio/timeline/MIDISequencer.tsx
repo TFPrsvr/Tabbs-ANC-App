@@ -216,7 +216,7 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
       const trackWidth = 120;
 
       // Track background
-      ctx.fillStyle = track.color || '#4b5563';
+      ctx.fillStyle = track.color ?? '#4b5563';
       ctx.fillRect(x, 5, trackWidth - 5, trackHeaderHeight - 10);
 
       // Track name
@@ -393,12 +393,14 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
     const noteY = pitchToY(note.pitch);
 
     // Skip if note is not visible
-    if (noteX + noteWidth < pianoRollWidth || noteX > canvasRef.current?.width!) return;
-    if (noteY < trackHeaderHeight || noteY > canvasRef.current?.height!) return;
+    const canvasWidth = canvasRef.current?.width ?? 0;
+    const canvasHeight = canvasRef.current?.height ?? 0;
+    if (noteX + noteWidth < pianoRollWidth || noteX > canvasWidth) return;
+    if (noteY < trackHeaderHeight || noteY > canvasHeight) return;
 
     // Note color based on velocity
     const velocityAlpha = note.velocity / 127;
-    const baseColor = track.color || '#3b82f6';
+    const baseColor = track.color ?? '#3b82f6';
     const noteColor = track.muted ? '#6b7280' : baseColor;
 
     // Note background
@@ -436,7 +438,8 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
   ) => {
     const x = beatToPixel(beat) + pianoRollWidth;
 
-    if (x < pianoRollWidth || x > canvasRef.current?.width!) return;
+    const canvasWidth = canvasRef.current?.width ?? 0;
+    if (x < pianoRollWidth || x > canvasWidth) return;
 
     // Playhead line
     ctx.strokeStyle = '#ef4444';
@@ -544,10 +547,10 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
           velocity: 100,
           startTime: Math.max(0, snapBeat(clickBeat)),
           duration: 4 / gridDivision, // Default to one grid division
-          channel: tracks[0].channel
+          channel: tracks[0]?.channel ?? 0
         };
 
-        onNoteCreate(tracks[0].id, newNote);
+        onNoteCreate(tracks[0]?.id ?? '', newNote);
       } else if (!noteClicked) {
         // Clear selection
         setSelectedNotes([]);
@@ -574,12 +577,12 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
       const newBeat = Math.max(0, snapBeat(pixelToBeat(x - pianoRollWidth)));
       const newPitch = Math.max(0, Math.min(127, yToPitch(y)));
 
-      const deltaBeats = newBeat - (dragState.startBeat || 0);
-      const deltaPitch = newPitch - (dragState.startPitch || 0);
+      const deltaBeats = newBeat - (dragState.startBeat ?? 0);
+      const deltaPitch = newPitch - (dragState.startPitch ?? 0);
 
       onNoteChange(dragState.noteId, {
-        startTime: Math.max(0, (dragState.startBeat || 0) + deltaBeats),
-        pitch: Math.max(0, Math.min(127, (dragState.startPitch || 0) + deltaPitch))
+        startTime: Math.max(0, (dragState.startBeat ?? 0) + deltaBeats),
+        pitch: Math.max(0, Math.min(127, (dragState.startPitch ?? 0) + deltaPitch))
       });
     } else if (dragState.type === 'resize' && dragState.noteId) {
       const newBeat = Math.max(0, snapBeat(pixelToBeat(x - pianoRollWidth)));
@@ -597,9 +600,9 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
           });
         }
       } else {
-        const minEnd = (dragState.startBeat || 0) + (4 / gridDivision);
+        const minEnd = (dragState.startBeat ?? 0) + (4 / gridDivision);
         const newEnd = Math.max(newBeat, minEnd);
-        const newDuration = newEnd - (dragState.startBeat || 0);
+        const newDuration = newEnd - (dragState.startBeat ?? 0);
 
         onNoteChange(dragState.noteId, {
           duration: newDuration
@@ -635,7 +638,7 @@ export const MIDISequencer: React.FC<MIDISequencerProps> = ({
       onZoomChange?.(newZoom);
     } else {
       // Scroll
-      const scrollDelta = e.deltaX || e.deltaY;
+      const scrollDelta = e.deltaX ?? e.deltaY;
       const newScrollPosition = Math.max(0, scrollPosition + scrollDelta);
       onScrollChange?.(newScrollPosition);
     }

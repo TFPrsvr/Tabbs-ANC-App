@@ -126,7 +126,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Volume Fader */}
       <AudioFader
         value={volume}
-        onChange={onVolumeChange}
+        onChange={onVolumeChange ?? (() => {})}
         min={0}
         max={100}
         size="sm"
@@ -168,7 +168,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
         {/* Gain */}
         <AudioKnob
           value={gain}
-          onChange={onGainChange}
+          onChange={onGainChange ?? (() => {})}
           min={-20}
           max={60}
           label="GAIN"
@@ -182,7 +182,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
         <div className="flex gap-1">
           <AudioSwitch
             checked={phantom}
-            onChange={onPhantomChange}
+            onChange={onPhantomChange ?? (() => {})}
             variant="toggle"
             size="sm"
             color="red"
@@ -191,7 +191,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
           />
           <AudioSwitch
             checked={highpass}
-            onChange={onHighpassChange}
+            onChange={onHighpassChange ?? (() => {})}
             variant="toggle"
             size="sm"
             color="blue"
@@ -265,7 +265,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Pan */}
       <AudioKnob
         value={pan}
-        onChange={onPanChange}
+        onChange={onPanChange ?? (() => {})}
         min={-100}
         max={100}
         label="PAN"
@@ -277,7 +277,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Volume Fader */}
       <AudioFader
         value={volume}
-        onChange={onVolumeChange}
+        onChange={onVolumeChange ?? (() => {})}
         min={0}
         max={100}
         size="sm"
@@ -347,13 +347,13 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       <div className="flex flex-col gap-2 items-center">
         <AudioKnob
           value={gain}
-          onChange={onGainChange}
+          onChange={onGainChange ?? (() => {})}
           min={-20}
           max={60}
           label="GAIN"
           unit="dB"
           size="sm"
-          variant="professional"
+          variant="modern"
           bipolar
           precision={1}
         />
@@ -361,7 +361,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
         <div className="flex gap-1">
           <AudioSwitch
             checked={phantom}
-            onChange={onPhantomChange}
+            onChange={onPhantomChange ?? (() => {})}
             variant="toggle"
             size="sm"
             color="red"
@@ -370,7 +370,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
           />
           <AudioSwitch
             checked={highpass}
-            onChange={onHighpassChange}
+            onChange={onHighpassChange ?? (() => {})}
             variant="toggle"
             size="sm"
             color="blue"
@@ -391,7 +391,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
           label="HI"
           unit="dB"
           size="sm"
-          variant="professional"
+          variant="modern"
           bipolar
           precision={1}
         />
@@ -403,7 +403,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
           label="MID"
           unit="dB"
           size="sm"
-          variant="professional"
+          variant="modern"
           bipolar
           precision={1}
         />
@@ -415,7 +415,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
           label="LO"
           unit="dB"
           size="sm"
-          variant="professional"
+          variant="modern"
           bipolar
           precision={1}
         />
@@ -487,12 +487,12 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Pan */}
       <AudioKnob
         value={pan}
-        onChange={onPanChange}
+        onChange={onPanChange ?? (() => {})}
         min={-100}
         max={100}
         label="PAN"
         size="sm"
-        variant="professional"
+        variant="modern"
         bipolar
         precision={0}
       />
@@ -500,7 +500,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Volume Fader */}
       <AudioFader
         value={volume}
-        onChange={onVolumeChange}
+        onChange={onVolumeChange ?? (() => {})}
         min={0}
         max={100}
         size="md"
@@ -596,7 +596,7 @@ export const ChannelStrip: React.FC<ChannelStripProps> = ({
       {/* Simple controls */}
       <AudioKnob
         value={volume}
-        onChange={onVolumeChange}
+        onChange={onVolumeChange ?? (() => {})}
         min={0}
         max={100}
         label="LEVEL"

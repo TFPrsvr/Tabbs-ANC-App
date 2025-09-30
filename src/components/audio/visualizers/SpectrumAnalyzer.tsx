@@ -158,7 +158,7 @@ export const SpectrumAnalyzer: React.FC<SpectrumAnalyzerProps> = ({
 
     if (customColors && customColors.length > 0) {
       const index = Math.floor(clampedMag * (customColors.length - 1));
-      return customColors[index] || customColors[0];
+      return customColors[index] || customColors[0] || '#000000';
     }
 
     switch (colorScheme) {

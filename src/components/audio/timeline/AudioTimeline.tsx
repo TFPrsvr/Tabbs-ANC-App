@@ -170,7 +170,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     // Draw tracks
     let trackY = timelineHeight;
     tracks.forEach((track, index) => {
-      const trackHeight = track.height || defaultTrackHeight;
+      const trackHeight = track.height ?? defaultTrackHeight;
       drawTrack(ctx, track, trackY, trackHeight, width, index);
       trackY += trackHeight;
     });
@@ -253,7 +253,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     if (showGrid) {
       ctx.strokeStyle = '#374151';
       ctx.lineWidth = 1;
-      const totalHeight = tracks.reduce((sum, track) => sum + (track.height || defaultTrackHeight), timelineHeight);
+      const totalHeight = tracks.reduce((sum, track) => sum + (track.height ?? defaultTrackHeight), timelineHeight);
 
       for (let time = Math.floor(startTime / gridSize) * gridSize; time <= endTime; time += gridSize) {
         const x = timeToPixel(time) + trackHeaderWidth;
@@ -277,12 +277,12 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     index: number
   ) => {
     // Track background
-    const trackColor = track.color || trackColors[index % trackColors.length];
+    const trackColor = track.color ?? trackColors[index % trackColors.length];
     ctx.fillStyle = track.muted ? '#4b5563' : track.solo ? '#fbbf24' : '#374151';
     ctx.fillRect(trackHeaderWidth, y, width - trackHeaderWidth, height);
 
     // Track header
-    ctx.fillStyle = track.color ? track.color + '40' : trackColor + '40';
+    ctx.fillStyle = (track.color ?? trackColor) + '40';
     ctx.fillRect(0, y, trackHeaderWidth, height);
 
     // Track border
@@ -342,10 +342,11 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     const clipHeight = trackHeight - 8;
 
     // Skip if clip is not visible
-    if (clipX + clipWidth < trackHeaderWidth || clipX > canvasRef.current?.width!) return;
+    const canvasWidth = canvasRef.current?.width ?? 0;
+    if (clipX + clipWidth < trackHeaderWidth || clipX > canvasWidth) return;
 
     // Clip background
-    const clipColor = clip.color || track.color || '#3b82f6';
+    const clipColor = clip.color ?? track.color ?? '#3b82f6';
     ctx.fillStyle = clip.muted ? '#6b7280' : clipColor;
     ctx.fillRect(clipX, clipY, clipWidth, clipHeight);
 
@@ -377,8 +378,8 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     }
 
     // Fade indicators
-    if (clip.fadeIn && clip.fadeIn > 0) {
-      const fadeWidth = clip.fadeIn * pixelsPerSecond;
+    if ((clip.fadeIn ?? 0) > 0) {
+      const fadeWidth = (clip.fadeIn ?? 0) * pixelsPerSecond;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.beginPath();
       ctx.moveTo(clipX, clipY + clipHeight);
@@ -388,8 +389,8 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
       ctx.fill();
     }
 
-    if (clip.fadeOut && clip.fadeOut > 0) {
-      const fadeWidth = clip.fadeOut * pixelsPerSecond;
+    if ((clip.fadeOut ?? 0) > 0) {
+      const fadeWidth = (clip.fadeOut ?? 0) * pixelsPerSecond;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.beginPath();
       ctx.moveTo(clipX + clipWidth, clipY);
@@ -449,10 +450,11 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     height: number
   ) => {
     const x = timeToPixel(marker.time) + trackHeaderWidth;
+    const canvasWidth = canvasRef.current?.width ?? 0;
 
-    if (x < trackHeaderWidth || x > canvasRef.current?.width!) return;
+    if (x < trackHeaderWidth || x > canvasWidth) return;
 
-    const color = marker.color || '#fbbf24';
+    const color = marker.color ?? '#fbbf24';
 
     // Marker line
     ctx.strokeStyle = color;
@@ -488,9 +490,10 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     const endX = timeToPixel(region.endTime) + trackHeaderWidth;
     const width = endX - startX;
 
-    if (endX < trackHeaderWidth || startX > canvasRef.current?.width!) return;
+    const canvasWidth = canvasRef.current?.width ?? 0;
+    if (endX < trackHeaderWidth || startX > canvasWidth) return;
 
-    const color = region.color || '#10b981';
+    const color = region.color ?? '#10b981';
 
     // Region background
     ctx.fillStyle = color + '40';
@@ -522,8 +525,9 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     height: number
   ) => {
     const x = timeToPixel(time) + trackHeaderWidth;
+    const canvasWidth = canvasRef.current?.width ?? 0;
 
-    if (x < trackHeaderWidth || x > canvasRef.current?.width!) return;
+    if (x < trackHeaderWidth || x > canvasWidth) return;
 
     // Playhead line
     ctx.strokeStyle = '#ef4444';
@@ -556,7 +560,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     const timePerPixel = 1 / (50 * zoomLevel);
     const targetTimeSpacing = targetPixelSpacing * timePerPixel;
 
-    return steps.find(step => step >= targetTimeSpacing) || steps[steps.length - 1];
+    return steps.find(step => step >= targetTimeSpacing) ?? steps[steps.length - 1] ?? 1;
   }, []);
 
   // Format time as MM:SS.mmm
@@ -591,7 +595,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
     // Check for clip clicks
     let trackY = timelineHeight;
     for (const track of tracks) {
-      const trackHeight = track.height || defaultTrackHeight;
+      const trackHeight = track.height ?? defaultTrackHeight;
 
       if (y >= trackY && y < trackY + trackHeight) {
         // Check clips in this track
@@ -654,16 +658,16 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
       const newTime = Math.max(0, snapTime(pixelToTime(x - trackHeaderWidth)));
       onTimeChange(newTime);
     } else if (dragState.type === 'clip' && dragState.itemId) {
-      const deltaX = x - (dragState.startX || 0);
+      const deltaX = x - (dragState.startX ?? 0);
       const deltaTime = deltaX / pixelsPerSecond;
-      const newStartTime = Math.max(0, snapTime((dragState.startTime || 0) + deltaTime));
+      const newStartTime = Math.max(0, snapTime((dragState.startTime ?? 0) + deltaTime));
 
       // Determine target track
       let trackY = timelineHeight;
       let targetTrack = 0;
 
       for (let i = 0; i < tracks.length; i++) {
-        const trackHeight = tracks[i].height || defaultTrackHeight;
+        const trackHeight = tracks[i]?.height ?? defaultTrackHeight;
         if (y >= trackY && y < trackY + trackHeight) {
           targetTrack = i;
           break;
@@ -678,15 +682,15 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
         const newTime = snapTime(pixelToTime(x - trackHeaderWidth));
 
         if (resizeState.edge === 'start') {
-          const maxStart = (resizeState.originalStart || 0) + (resizeState.originalDuration || 0) - 0.1;
+          const maxStart = (resizeState.originalStart ?? 0) + (resizeState.originalDuration ?? 0) - 0.1;
           const newStart = Math.max(0, Math.min(newTime, maxStart));
-          const newDuration = (resizeState.originalStart || 0) + (resizeState.originalDuration || 0) - newStart;
-          onClipResize(resizeState.clipId!, newStart, newDuration);
+          const newDuration = (resizeState.originalStart ?? 0) + (resizeState.originalDuration ?? 0) - newStart;
+          onClipResize(resizeState.clipId ?? '', newStart, newDuration);
         } else {
-          const minEnd = (resizeState.originalStart || 0) + 0.1;
+          const minEnd = (resizeState.originalStart ?? 0) + 0.1;
           const newEnd = Math.max(newTime, minEnd);
-          const newDuration = newEnd - (resizeState.originalStart || 0);
-          onClipResize(resizeState.clipId!, resizeState.originalStart || 0, newDuration);
+          const newDuration = newEnd - (resizeState.originalStart ?? 0);
+          onClipResize(resizeState.clipId ?? '', resizeState.originalStart ?? 0, newDuration);
         }
       }
     }
@@ -708,7 +712,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
       onZoomChange?.(newZoom);
     } else {
       // Scroll
-      const scrollDelta = e.deltaX || e.deltaY;
+      const scrollDelta = e.deltaX ?? e.deltaY;
       const newScrollPosition = Math.max(0, scrollPosition + scrollDelta);
       onScrollChange?.(newScrollPosition);
     }
@@ -720,7 +724,7 @@ export const AudioTimeline: React.FC<AudioTimelineProps> = ({
   }, [drawTimeline]);
 
   // Calculate total height
-  const totalHeight = timelineHeight + tracks.reduce((sum, track) => sum + (track.height || defaultTrackHeight), 0);
+  const totalHeight = timelineHeight + tracks.reduce((sum, track) => sum + (track.height ?? defaultTrackHeight), 0);
 
   return (
     <div

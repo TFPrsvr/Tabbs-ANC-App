@@ -75,7 +75,7 @@ let lastRequestTime = Date.now()
 const performanceObserver = typeof process !== 'undefined' && process.hrtime ? {
   startTime: process.hrtime(),
   getElapsed: () => {
-    const elapsed = process.hrtime(performanceObserver.startTime)
+    const elapsed = process.hrtime(performanceObserver?.startTime)
     return elapsed[0] * 1000 + elapsed[1] * 1e-6 // Convert to milliseconds
   }
 } : null
@@ -226,7 +226,7 @@ export default function handler(
       timestamp: new Date().toISOString(),
       system: {
         uptime: typeof process !== 'undefined' ? process.uptime() : 0,
-        loadAverage: typeof process !== 'undefined' && process.loadavg ? process.loadavg() : [0, 0, 0],
+        loadAverage: typeof process !== 'undefined' && (process as any).loadavg ? (process as any).loadavg() : [0, 0, 0],
         memory: getMemoryMetrics(),
         cpu: getCpuMetrics(),
         process: getProcessMetrics()

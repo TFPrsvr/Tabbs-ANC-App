@@ -99,8 +99,8 @@ export interface QualityMetrics {
 // FFT Processor for spectral analysis
 class FFTProcessor {
   private size: number;
-  private cosTable: Float32Array;
-  private sinTable: Float32Array;
+  private cosTable: Float32Array = new Float32Array(0);
+  private sinTable: Float32Array = new Float32Array(0);
 
   constructor(size: number) {
     this.size = size;
@@ -128,8 +128,8 @@ class FFTProcessor {
     // Normalize
     const scale = 1.0 / this.size;
     for (let i = 0; i < this.size; i++) {
-      real[i] *= scale;
-      imag[i] *= scale;
+      real[i] = (real[i] ?? 0) * scale;
+      imag[i] = (imag[i] ?? 0) * scale;
     }
   }
 
@@ -146,18 +146,23 @@ class FFTProcessor {
           const v = i + j + length / 2;
           const twiddle = j * step;
 
-          let cos = this.cosTable[twiddle];
-          let sin = this.sinTable[twiddle];
+          let cos = this.cosTable[twiddle] ?? 0;
+          let sin = this.sinTable[twiddle] ?? 0;
 
           if (inverse) sin = -sin;
 
-          const tempReal = real[v] * cos - imag[v] * sin;
-          const tempImag = real[v] * sin + imag[v] * cos;
+          const realV = real[v] ?? 0;
+          const imagV = imag[v] ?? 0;
+          const realU = real[u] ?? 0;
+          const imagU = imag[u] ?? 0;
 
-          real[v] = real[u] - tempReal;
-          imag[v] = imag[u] - tempImag;
-          real[u] += tempReal;
-          imag[u] += tempImag;
+          const tempReal = realV * cos - imagV * sin;
+          const tempImag = realV * sin + imagV * cos;
+
+          real[v] = realU - tempReal;
+          imag[v] = imagU - tempImag;
+          real[u] = realU + tempReal;
+          imag[u] = imagU + tempImag;
         }
       }
     }
@@ -168,8 +173,14 @@ class FFTProcessor {
     for (let i = 0; i < n; i++) {
       const j = this.reverseBits(i, Math.log2(n));
       if (i < j) {
-        [real[i], real[j]] = [real[j], real[i]];
-        [imag[i], imag[j]] = [imag[j], imag[i]];
+        const realI = real[i] ?? 0;
+        const realJ = real[j] ?? 0;
+        const imagI = imag[i] ?? 0;
+        const imagJ = imag[j] ?? 0;
+        real[i] = realJ;
+        real[j] = realI;
+        imag[i] = imagJ;
+        imag[j] = imagI;
       }
     }
   }
@@ -313,7 +324,7 @@ class ProfessionalEQ {
 
     for (const filter of this.filters) {
       for (let i = 0; i < output.length; i++) {
-        const input_sample = output[i];
+        const input_sample = output[i] ?? 0;
         const output_sample = (filter.b0 * input_sample + filter.b1 * filter.x1 + filter.b2 * filter.x2
                               - filter.a1 * filter.y1 - filter.a2 * filter.y2) / filter.a0;
 
@@ -322,7 +333,7 @@ class ProfessionalEQ {
         filter.y2 = filter.y1;
         filter.y1 = output_sample;
 
-        output[i] = output_sample;
+        output[i] = output_sample ?? 0;
       }
     }
 
@@ -341,7 +352,15 @@ class ProfessionalCompressor {
   private sampleRate: number;
   private envelope: number = 0;
   private gain: number = 1;
-  private config: CompressorConfig;
+  private config: CompressorConfig = {
+    enabled: false,
+    threshold: -18,
+    ratio: 4,
+    attack: 0.003,
+    release: 0.1,
+    knee: 2,
+    makeup: 0
+  };
 
   constructor(sampleRate: number) {
     this.sampleRate = sampleRate;
@@ -355,11 +374,11 @@ class ProfessionalCompressor {
     if (!this.config?.enabled) return input;
 
     const output = new Float32Array(input.length);
-    const attackCoeff = Math.exp(-1.0 / (this.config.attack * this.sampleRate));
+    const attackCoeff = Math.exp(-1.0 / ((this.config.attack ?? 0.003) * this.sampleRate));
     const releaseCoeff = Math.exp(-1.0 / (this.config.release * this.sampleRate));
 
     for (let i = 0; i < input.length; i++) {
-      const inputLevel = Math.abs(input[i]);
+      const inputLevel = Math.abs(input[i] ?? 0);
 
       // Envelope follower
       const targetEnvelope = inputLevel;
@@ -393,7 +412,7 @@ class ProfessionalCompressor {
       // Smooth gain changes
       this.gain += (targetGain - this.gain) * 0.01;
 
-      output[i] = input[i] * this.gain;
+      output[i] = (input[i] ?? 0) * this.gain;
     }
 
     return output;
@@ -403,10 +422,16 @@ class ProfessionalCompressor {
 // Brick-wall limiter with lookahead
 class BrickwallLimiter {
   private sampleRate: number;
-  private delayBuffer: Float32Array;
+  private delayBuffer: Float32Array = new Float32Array(0);
   private delayIndex: number = 0;
   private envelope: number = 0;
-  private config: LimiterConfig;
+  private config: LimiterConfig = {
+    enabled: false,
+    lookahead: 0.005,
+    release: 0.05,
+    ceiling: -1,
+    isr: 1
+  };
 
   constructor(sampleRate: number) {
     this.sampleRate = sampleRate;
@@ -427,12 +452,12 @@ class BrickwallLimiter {
 
     for (let i = 0; i < input.length; i++) {
       // Store input in delay buffer
-      this.delayBuffer[this.delayIndex] = input[i];
+      this.delayBuffer[this.delayIndex] = input[i] ?? 0;
 
       // Look ahead for peaks
       let peakLevel = 0;
       for (let j = 0; j < this.delayBuffer.length; j++) {
-        peakLevel = Math.max(peakLevel, Math.abs(this.delayBuffer[j]));
+        peakLevel = Math.max(peakLevel, Math.abs(this.delayBuffer[j] ?? 0));
       }
 
       // Calculate gain reduction
@@ -449,7 +474,7 @@ class BrickwallLimiter {
       }
 
       // Apply limiting to delayed signal
-      const delayedSample = this.delayBuffer[this.delayIndex];
+      const delayedSample = this.delayBuffer[this.delayIndex] ?? 0;
       output[i] = delayedSample * this.envelope;
 
       // Advance delay buffer
@@ -463,7 +488,11 @@ class BrickwallLimiter {
 // Stereo imaging processor
 class StereoImagingProcessor {
   private sampleRate: number;
-  private bassMonoFilter: BiquadFilter;
+  private bassMonoFilter: BiquadFilter = {
+    b0: 1, b1: 0, b2: 0,
+    a0: 1, a1: 0, a2: 0,
+    x1: 0, x2: 0, y1: 0, y2: 0
+  };
 
   constructor(sampleRate: number) {
     this.sampleRate = sampleRate;
@@ -480,8 +509,8 @@ class StereoImagingProcessor {
 
     for (let i = 0; i < left.length; i++) {
       // Mid/Side processing
-      const mid = (left[i] + right[i]) * 0.5;
-      const side = (left[i] - right[i]) * 0.5;
+      const mid = ((left[i] ?? 0) + (right[i] ?? 0)) * 0.5;
+      const side = ((left[i] ?? 0) - (right[i] ?? 0)) * 0.5;
 
       // Apply stereo width
       const wideMid = mid;
@@ -493,8 +522,8 @@ class StereoImagingProcessor {
 
       // Bass mono processing
       if (config.bassMonoFreq > 0) {
-        const bassLeft = this.applyBiquadFilter(left[i], this.bassMonoFilter);
-        const bassRight = this.applyBiquadFilter(right[i], this.bassMonoFilter);
+        const bassLeft = this.applyBiquadFilter(left[i] ?? 0, this.bassMonoFilter);
+        const bassRight = this.applyBiquadFilter(right[i] ?? 0, this.bassMonoFilter);
         const bassMono = (bassLeft + bassRight) * 0.5;
 
         // Replace bass frequencies with mono
@@ -617,28 +646,30 @@ class LoudnessMeter {
     // Stage 1 filters
     for (const filter of this.kFilterStage1) {
       for (let i = 0; i < output.length; i++) {
-        const sample = output[i];
-        output[i] = (filter.b0 * sample + filter.b1 * filter.x1 + filter.b2 * filter.x2
+        const sample = output[i] ?? 0;
+        const result = (filter.b0 * sample + filter.b1 * filter.x1 + filter.b2 * filter.x2
                     - filter.a1 * filter.y1 - filter.a2 * filter.y2) / filter.a0;
+        output[i] = result;
 
         filter.x2 = filter.x1;
         filter.x1 = sample;
         filter.y2 = filter.y1;
-        filter.y1 = output[i];
+        filter.y1 = result;
       }
     }
 
     // Stage 2 filter
     for (const filter of this.kFilterStage2) {
       for (let i = 0; i < output.length; i++) {
-        const sample = output[i];
-        output[i] = (filter.b0 * sample + filter.b1 * filter.x1 + filter.b2 * filter.x2
+        const sample = output[i] ?? 0;
+        const result = (filter.b0 * sample + filter.b1 * filter.x1 + filter.b2 * filter.x2
                     - filter.a1 * filter.y1 - filter.a2 * filter.y2) / filter.a0;
+        output[i] = result;
 
         filter.x2 = filter.x1;
         filter.x1 = sample;
         filter.y2 = filter.y1;
-        filter.y1 = output[i];
+        filter.y1 = result;
       }
     }
 
@@ -648,7 +679,8 @@ class LoudnessMeter {
   private calculateMeanSquare(signal: Float32Array): number {
     let sum = 0;
     for (let i = 0; i < signal.length; i++) {
-      sum += signal[i] * signal[i];
+      const sample = signal[i] ?? 0;
+      sum += sample * sample;
     }
     return sum / signal.length;
   }
@@ -687,7 +719,7 @@ export class ProfessionalMastering extends EventEmitter {
       throw new Error('Professional mastering requires stereo input (2 channels)');
     }
 
-    let [left, right] = [new Float32Array(audioData[0]), new Float32Array(audioData[1])];
+    let [left, right] = [new Float32Array(audioData[0] ?? []), new Float32Array(audioData[1] ?? [])];
 
     // Configure processors
     this.eq.configureBands(config.frequency);
@@ -699,36 +731,36 @@ export class ProfessionalMastering extends EventEmitter {
 
     // Step 1: EQ Processing
     this.emit('processingStep', { step: 'eq', progress: currentStep / totalSteps });
-    left = this.eq.process(left);
-    right = this.eq.process(right);
+    left = new Float32Array(this.eq.process(left));
+    right = new Float32Array(this.eq.process(right));
     progressCallback?.((++currentStep / totalSteps) * 100);
 
     // Step 2: Compression
     this.emit('processingStep', { step: 'compression', progress: currentStep / totalSteps });
-    left = this.compressor.process(left);
-    right = this.compressor.process(right);
+    left = new Float32Array(this.compressor.process(left));
+    right = new Float32Array(this.compressor.process(right));
     progressCallback?.((++currentStep / totalSteps) * 100);
 
     // Step 3: Stereo Imaging
     this.emit('processingStep', { step: 'stereo', progress: currentStep / totalSteps });
     const stereoResult = this.stereoProcessor.process(left, right, config.stereoImaging);
-    left = stereoResult.left;
-    right = stereoResult.right;
+    left = new Float32Array(stereoResult.left);
+    right = new Float32Array(stereoResult.right);
     progressCallback?.((++currentStep / totalSteps) * 100);
 
     // Step 4: Saturation
     if (config.saturation.enabled) {
       this.emit('processingStep', { step: 'saturation', progress: currentStep / totalSteps });
       const saturationResult = this.applySaturation(left, right, config.saturation);
-      left = saturationResult.left;
-      right = saturationResult.right;
+      left = new Float32Array(saturationResult.left);
+      right = new Float32Array(saturationResult.right);
     }
     progressCallback?.((++currentStep / totalSteps) * 100);
 
     // Step 5: Limiting
     this.emit('processingStep', { step: 'limiting', progress: currentStep / totalSteps });
-    left = this.limiter.process(left);
-    right = this.limiter.process(right);
+    left = new Float32Array(this.limiter.process(left));
+    right = new Float32Array(this.limiter.process(right));
     progressCallback?.((++currentStep / totalSteps) * 100);
 
     // Step 6: Analysis
@@ -752,8 +784,8 @@ export class ProfessionalMastering extends EventEmitter {
     const outputRight = new Float32Array(right.length);
 
     for (let i = 0; i < left.length; i++) {
-      outputLeft[i] = this.saturationFunction(left[i], config);
-      outputRight[i] = this.saturationFunction(right[i], config);
+      outputLeft[i] = this.saturationFunction(left[i] ?? 0, config);
+      outputRight[i] = this.saturationFunction(right[i] ?? 0, config);
     }
 
     return { left: outputLeft, right: outputRight };
@@ -849,7 +881,7 @@ export class ProfessionalMastering extends EventEmitter {
 
     let peak = 0;
     for (let i = 0; i < oversampledLeft.length; i++) {
-      peak = Math.max(peak, Math.abs(oversampledLeft[i]), Math.abs(oversampledRight[i]));
+      peak = Math.max(peak, Math.abs(oversampledLeft[i] ?? 0), Math.abs(oversampledRight[i] ?? 0));
     }
 
     return 20 * Math.log10(peak);
@@ -862,7 +894,7 @@ export class ProfessionalMastering extends EventEmitter {
     for (let i = 0; i < input.length - 1; i++) {
       for (let j = 0; j < factor; j++) {
         const t = j / factor;
-        output[i * factor + j] = input[i] * (1 - t) + input[i + 1] * t;
+        output[i * factor + j] = (input[i] ?? 0) * (1 - t) + (input[i + 1] ?? 0) * t;
       }
     }
 
@@ -877,15 +909,15 @@ export class ProfessionalMastering extends EventEmitter {
     for (let i = 0; i < left.length - blockSize; i += blockSize) {
       let rms = 0;
       for (let j = 0; j < blockSize; j++) {
-        rms += (left[i + j] ** 2 + right[i + j] ** 2) / 2;
+        rms += ((left[i + j] ?? 0) ** 2 + (right[i + j] ?? 0) ** 2) / 2;
       }
       rms = Math.sqrt(rms / blockSize);
       blocks.push(20 * Math.log10(rms + 0.000001));
     }
 
     blocks.sort((a, b) => b - a);
-    const p10 = blocks[Math.floor(blocks.length * 0.1)];
-    const p95 = blocks[Math.floor(blocks.length * 0.95)];
+    const p10 = blocks[Math.floor(blocks.length * 0.1)] ?? 0;
+    const p95 = blocks[Math.floor(blocks.length * 0.95)] ?? 0;
 
     return p10 - p95;
   }
@@ -896,9 +928,11 @@ export class ProfessionalMastering extends EventEmitter {
     let rightPower = 0;
 
     for (let i = 0; i < left.length; i++) {
-      correlation += left[i] * right[i];
-      leftPower += left[i] ** 2;
-      rightPower += right[i] ** 2;
+      const leftSample = left[i] ?? 0;
+      const rightSample = right[i] ?? 0;
+      correlation += leftSample * rightSample;
+      leftPower += leftSample ** 2;
+      rightPower += rightSample ** 2;
     }
 
     const denominator = Math.sqrt(leftPower * rightPower);
@@ -911,7 +945,7 @@ export class ProfessionalMastering extends EventEmitter {
 
     // Create mono signal for analysis
     for (let i = 0; i < fftSize && i < left.length; i++) {
-      mono[i] = (left[i] + right[i]) * 0.5;
+      mono[i] = ((left[i] ?? 0) + (right[i] ?? 0)) * 0.5;
     }
 
     const real = new Float32Array(mono);
@@ -920,7 +954,7 @@ export class ProfessionalMastering extends EventEmitter {
     // Apply window
     for (let i = 0; i < fftSize; i++) {
       const window = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (fftSize - 1)); // Hann window
-      real[i] *= window;
+      real[i] = (real[i] ?? 0) * window;
     }
 
     this.fftProcessor.forward(real, imag);
@@ -929,8 +963,10 @@ export class ProfessionalMastering extends EventEmitter {
     const phaseSpectrum = new Float32Array(fftSize / 2);
 
     for (let i = 0; i < fftSize / 2; i++) {
-      magnitudeSpectrum[i] = Math.sqrt(real[i] ** 2 + imag[i] ** 2);
-      phaseSpectrum[i] = Math.atan2(imag[i], real[i]);
+      const realVal = real[i] ?? 0;
+      const imagVal = imag[i] ?? 0;
+      magnitudeSpectrum[i] = Math.sqrt(realVal ** 2 + imagVal ** 2);
+      phaseSpectrum[i] = Math.atan2(imagVal, realVal);
     }
 
     // Calculate spectral features
@@ -953,8 +989,9 @@ export class ProfessionalMastering extends EventEmitter {
 
     for (let i = 1; i < spectrum.length; i++) {
       const frequency = (i * this.sampleRate) / (2 * spectrum.length);
-      weightedSum += frequency * spectrum[i];
-      magnitudeSum += spectrum[i];
+      const magnitude = spectrum[i] ?? 0;
+      weightedSum += frequency * magnitude;
+      magnitudeSum += magnitude;
     }
 
     return magnitudeSum > 0 ? weightedSum / magnitudeSum : 0;
@@ -963,14 +1000,14 @@ export class ProfessionalMastering extends EventEmitter {
   private calculateSpectralRolloff(spectrum: Float32Array): number {
     let totalEnergy = 0;
     for (let i = 0; i < spectrum.length; i++) {
-      totalEnergy += spectrum[i] ** 2;
+      totalEnergy += (spectrum[i] ?? 0) ** 2;
     }
 
     const threshold = totalEnergy * 0.85; // 85% rolloff
     let cumulativeEnergy = 0;
 
     for (let i = 0; i < spectrum.length; i++) {
-      cumulativeEnergy += spectrum[i] ** 2;
+      cumulativeEnergy += (spectrum[i] ?? 0) ** 2;
       if (cumulativeEnergy >= threshold) {
         return (i * this.sampleRate) / (2 * spectrum.length);
       }
@@ -985,9 +1022,10 @@ export class ProfessionalMastering extends EventEmitter {
     let count = 0;
 
     for (let i = 1; i < spectrum.length; i++) {
-      if (spectrum[i] > 0) {
-        geometricMean += Math.log(spectrum[i]);
-        arithmeticMean += spectrum[i];
+      const magnitude = spectrum[i] ?? 0;
+      if (magnitude > 0) {
+        geometricMean += Math.log(magnitude);
+        arithmeticMean += magnitude;
         count++;
       }
     }
@@ -1006,24 +1044,24 @@ export class ProfessionalMastering extends EventEmitter {
     let noisePower = 0;
 
     for (let i = 0; i < left.length; i++) {
-      const signal = (left[i] + right[i]) * 0.5;
+      const signal = ((left[i] ?? 0) + (right[i] ?? 0)) * 0.5;
       signalPower += signal ** 2;
     }
 
     // Estimate noise as high-frequency content
     const highFreqStart = Math.floor(spectral.magnitudeSpectrum.length * 0.8);
     for (let i = highFreqStart; i < spectral.magnitudeSpectrum.length; i++) {
-      noisePower += spectral.magnitudeSpectrum[i] ** 2;
+      noisePower += (spectral.magnitudeSpectrum[i] ?? 0) ** 2;
     }
 
     const snr = signalPower > 0 && noisePower > 0 ?
       10 * Math.log10(signalPower / noisePower) : 0;
 
     // THD calculation (simplified)
-    const fundamental = spectral.magnitudeSpectrum[1];
+    const fundamental = spectral.magnitudeSpectrum[1] ?? 0;
     let harmonics = 0;
     for (let i = 2; i < Math.min(10, spectral.magnitudeSpectrum.length); i++) {
-      harmonics += spectral.magnitudeSpectrum[i] ** 2;
+      harmonics += (spectral.magnitudeSpectrum[i] ?? 0) ** 2;
     }
 
     const thd = fundamental > 0 ? Math.sqrt(harmonics) / fundamental * 100 : 0;

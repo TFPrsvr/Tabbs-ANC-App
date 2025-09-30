@@ -3,6 +3,7 @@ import {
   Play, Pause, Square, RotateCcw, Save, Upload, Download,
   Mic, Settings, Volume2, Scissors, Copy, Trash2
 } from 'lucide-react';
+import { AudioRecorder } from './AudioRecorder';
 
 export interface RecordingStudioProps {
   onSave?: (recording: AudioRecording) => void;
@@ -107,7 +108,7 @@ export const RecordingStudio: React.FC<RecordingStudioProps> = ({
         let sum = 0;
 
         for (let j = start; j < end; j++) {
-          sum += Math.abs(samples[j]);
+          sum += Math.abs(samples[j] ?? 0);
         }
 
         waveformData.push(sum / (end - start));
@@ -446,7 +447,7 @@ export const RecordingStudio: React.FC<RecordingStudioProps> = ({
         ))}
       </div>
 
-      {track.armed && (
+      {tracks.some(track => track.armed) && (
         <div className="mt-6">
           <AudioRecorder
             onRecordingComplete={handleRecordingComplete}

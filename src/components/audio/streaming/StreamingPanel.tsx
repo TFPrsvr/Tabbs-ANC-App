@@ -152,10 +152,12 @@ export function StreamingPanel({
       let current: any = newSettings;
 
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+        const key = keys[i];
+        if (key) current = current[key];
       }
 
-      current[keys[keys.length - 1]] = value;
+      const lastKey = keys[keys.length - 1];
+      if (lastKey) current[lastKey] = value;
       return newSettings;
     });
   }, []);

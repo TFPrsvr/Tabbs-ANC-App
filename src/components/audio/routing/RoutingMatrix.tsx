@@ -75,14 +75,16 @@ export const RoutingMatrix: React.FC<RoutingMatrixProps> = ({
       for (let j = 0; j < outputs.length; j++) {
         const input = inputs[i];
         const output = outputs[j];
-        const route = routes.find(r => r.sourceId === input.id && r.targetId === output.id);
+        const route = routes.find(r => r.sourceId === input?.id && r.targetId === output?.id);
 
-        cells[i][j] = {
-          sourceId: input.id,
-          targetId: output.id,
+        if (cells[i]) {
+          cells[i]![j] = {
+            sourceId: input?.id ?? '',
+            targetId: output?.id ?? '',
           route,
           crosspoint: !!route
-        };
+          };
+        }
       }
     }
 

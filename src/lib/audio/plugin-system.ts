@@ -680,7 +680,7 @@ export class PluginSystem extends EventEmitter {
       const currentInstance = chain.plugins[i];
       const nextInstance = chain.plugins[i + 1];
 
-      if (currentInstance.processingNode) {
+      if (currentInstance?.processingNode) {
         if (nextInstance?.processingNode) {
           currentInstance.processingNode.connect(nextInstance.processingNode);
         }

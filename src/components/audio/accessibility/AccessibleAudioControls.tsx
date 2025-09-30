@@ -128,7 +128,6 @@ export const AccessibleAudioKnob: React.FC<AccessibleControlProps> = ({
           aria-valuenow={value}
           aria-valuetext={formatValue(value)}
           aria-label={`${label}${description ? `. ${description}` : ''}`}
-          aria-required={required}
           aria-invalid={!!error}
           aria-describedby={description ? `${id}-description` : undefined}
           className={cn(
@@ -309,7 +308,6 @@ export const AccessibleAudioFader: React.FC<AccessibleControlProps> = ({
           aria-valuenow={value}
           aria-valuetext={formatValue(value)}
           aria-label={`${label}${description ? `. ${description}` : ''}`}
-          aria-required={required}
           aria-invalid={!!error}
           aria-describedby={description ? `${id}-description` : undefined}
           aria-orientation="vertical"
@@ -474,16 +472,18 @@ export const useScreenReaderAnnouncements = () => {
     setTimeout(() => setAnnouncement(''), 1000);
   }, []);
 
-  const AnnouncementRegion = React.memo(() => (
-    <div
-      className="sr-only"
-      aria-live="polite"
-      aria-atomic="true"
-      role="status"
-    >
-      {announcement}
-    </div>
-  ));
+  const AnnouncementRegion = React.memo(function AnnouncementRegion() {
+    return (
+      <div
+        className="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+        role="status"
+      >
+        {announcement}
+      </div>
+    );
+  });
 
   return { announce, AnnouncementRegion };
 };

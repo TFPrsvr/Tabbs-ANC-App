@@ -36,7 +36,7 @@ A comprehensive, browser-based audio processing and production suite featuring A
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/anc-audio-app.git
+   git clone https://github.com/TFPrsvr/Tabbs-ANC-App.git
    cd anc-audio-app
    ```
 
@@ -50,7 +50,7 @@ A comprehensive, browser-based audio processing and production suite featuring A
    npm run dev
    ```
 
-4. **Open your browser** and navigate to `http://localhost:3000`
+4. **Open your browser** and navigate to `http://localhost:3007`
 
 ### Basic Usage
 
@@ -76,11 +76,12 @@ A comprehensive, browser-based audio processing and production suite featuring A
 ## 🛠️ Development
 
 ### Technology Stack
-- **Frontend**: Next.js 14 with React 18
-- **TypeScript**: Full type safety throughout the application
+- **Frontend**: Next.js 15.5.0 with React 19.1.0
+- **TypeScript**: Full type safety throughout the application (100% compilation compliance)
 - **Audio Processing**: Web Audio API with custom DSP algorithms
-- **UI Framework**: Tailwind CSS with custom components
-- **AI/ML**: TensorFlow.js for audio analysis and machine learning
+- **UI Framework**: Tailwind CSS v4 with custom components
+- **Authentication**: Clerk for secure user management
+- **Mobile**: Capacitor for Android/iOS deployment
 - **Testing**: Jest and React Testing Library
 
 ### Project Structure
@@ -127,20 +128,29 @@ src/
 
 ```bash
 # Development
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # TypeScript type checking
+npm run dev                    # Start development server (Turbopack)
+npm run dev:debug             # Start with debug inspector
+npm run build                 # Build for production
+npm run build:production      # Full production build pipeline
+npm run start                 # Start production server
+npm run lint                  # Run ESLint with auto-fix
+npm run type-check           # TypeScript type checking
 
 # Testing
-npm test             # Run unit tests
-npm run test:watch   # Run tests in watch mode
-npm run test:coverage # Generate coverage report
+npm test                     # Run unit tests
+npm run test:watch          # Run tests in watch mode
+npm run test:coverage       # Generate coverage report
+npm run test:ci             # CI-ready test run
 
-# Utilities
-npm run analyze      # Analyze bundle size
-npm run clean        # Clean build artifacts
+# Mobile Development
+npm run mobile:android      # Build and open Android
+npm run mobile:ios          # Build and open iOS
+npm run mobile:sync         # Sync mobile platforms
+
+# Production & Deployment
+npm run deploy:production   # Deploy to production
+npm run security:audit      # Security dependency audit
+npm run clean               # Clean build artifacts
 ```
 
 ## 🧪 Testing
@@ -215,21 +225,20 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ### Getting Help
 - 📖 [User Manual](./docs/user-manual.md) - Comprehensive usage guide
 - 🔧 [Troubleshooting Guide](./docs/troubleshooting.md) - Common issues and solutions
-- 💬 [Community Forum](https://github.com/your-username/anc-audio-app/discussions) - Community support
-- 🐛 [Issue Tracker](https://github.com/your-username/anc-audio-app/issues) - Bug reports and feature requests
+- 💬 [Community Forum](https://github.com/TFPrsvr/Tabbs-ANC-App/discussions) - Community support
+- 🐛 [Issue Tracker](https://github.com/TFPrsvr/Tabbs-ANC-App/issues) - Bug reports and feature requests
 
 ### Technical Support
-- **Email**: support@audioapp.com
+- **Repository**: [GitHub Issues](https://github.com/TFPrsvr/Tabbs-ANC-App/issues)
 - **Documentation**: [API Reference](./docs/api-reference.md)
-- **Discord**: [Join our Discord server](https://discord.gg/audioapp)
+- **Community**: [GitHub Discussions](https://github.com/TFPrsvr/Tabbs-ANC-App/discussions)
 
 ## 🏆 Acknowledgments
 
-- Web Audio API community for audio processing standards
-- TensorFlow.js team for machine learning capabilities
-- Open source audio processing libraries
-- Contributors and beta testers
-- Audio engineering community for feedback and suggestions
+- Web Audio API specification for audio processing standards
+- Open source audio processing libraries and algorithms
+- Contributors and community members
+- Audio engineering principles and best practices
 
 ---
 

@@ -156,47 +156,8 @@ const nextConfig = {
     ];
   },
 
-  // Enhanced Turbopack configuration for maximum development performance
-  turbopack: {
-    rules: {
-      // Audio and video file handling for Turbopack
-      '*.{mp3,wav,ogg,m4a,aac,flac,opus}': {
-        loaders: ['file-loader'],
-        as: '*.file',
-      },
-      '*.{mp4,webm,mov,avi,mkv,wmv,flv}': {
-        loaders: ['file-loader'],
-        as: '*.file',
-      },
-      // Web Workers optimization
-      '*.worker.{js,ts}': {
-        loaders: ['worker-loader'],
-        as: '*.worker',
-      },
-      // WASM files for audio processing
-      '*.wasm': {
-        loaders: ['file-loader'],
-        as: '*.wasm',
-      },
-    },
-    resolveAlias: {
-      '@': './src',
-      '@/components': './src/components',
-      '@/lib': './src/lib',
-      '@/types': './src/types',
-      '@/utils': './src/utils',
-    },
-    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.wasm'],
-    // Enhanced module resolution for faster builds
-  },
-
-  // Webpack configuration (fallback for production builds)
+  // Webpack configuration
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Skip webpack modifications when using Turbopack
-    if (process.env.NODE_ENV === 'development' && process.argv.includes('--turbopack')) {
-      return config;
-    }
-
     // Modern JavaScript target optimizations
     config.target = isServer ? 'node' : ['web', 'es2017'];
 
@@ -284,16 +245,8 @@ const nextConfig = {
       },
     });
 
-    // Web Worker support
-    config.module.rules.push({
-      test: /\.worker\.js$/,
-      use: {
-        loader: 'worker-loader',
-        options: {
-          filename: 'static/workers/[name].[contenthash].js',
-        },
-      },
-    });
+    // Web Worker support - use Next.js built-in worker support
+    // Removed worker-loader to prevent Pages Router conflicts
 
     // WebAssembly support for audio processing
     config.experiments = {

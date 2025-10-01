@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-import { Save, Trash2, Tag, Calendar } from 'lucide-react';
+import { Save, Trash2, Tag, Calendar, FileText } from 'lucide-react';
 import { CustomIcon } from '@/components/ui/custom-icon';
 import { AudioRecorder } from '../recording/AudioRecorder';
 import { toast } from 'sonner';

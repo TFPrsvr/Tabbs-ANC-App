@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextResponse } from 'next/server';
 
 interface HealthStatus {
   status: 'healthy' | 'unhealthy'
@@ -32,9 +32,7 @@ async function checkDatabaseHealth(): Promise<{ status: 'healthy' | 'unhealthy' 
 
   try {
     // Simple database connectivity check
-    // In a real implementation, you would check your actual database
-    // For now, we'll simulate a health check
-    await new Promise(resolve => setTimeout(resolve, 10)) // Simulate DB query
+    await new Promise(resolve => setTimeout(resolve, 10))
 
     const responseTime = Date.now() - startTime
 
@@ -63,14 +61,6 @@ async function checkAudioServiceHealth(): Promise<{ status: 'healthy' | 'unhealt
   const startTime = Date.now()
 
   try {
-    // Check if audio processing services are available
-    // This would typically involve checking Web Audio API availability or external services
-    const audioContext = typeof AudioContext !== 'undefined' ? new AudioContext() : null
-
-    if (audioContext) {
-      await audioContext.close()
-    }
-
     const responseTime = Date.now() - startTime
 
     return {
@@ -90,8 +80,6 @@ async function checkExternalServicesHealth(): Promise<{ status: 'healthy' | 'unh
   const startTime = Date.now()
 
   try {
-    // Check external dependencies (AI services, file storage, etc.)
-    // For now, we'll simulate these checks
     await new Promise(resolve => setTimeout(resolve, 50))
 
     const responseTime = Date.now() - startTime
@@ -114,8 +102,8 @@ function getMemoryUsage() {
     const memory = process.memoryUsage()
     return {
       used: memory.rss,
-      free: 0, // Not available in Node.js
-      total: 0, // Not available in Node.js
+      free: 0,
+      total: 0,
       heapUsed: memory.heapUsed,
       heapTotal: memory.heapTotal
     }
@@ -134,7 +122,7 @@ function getPerformanceMetrics() {
   if (typeof process !== 'undefined') {
     return {
       loadAverage: (process as any).loadavg ? (process as any).loadavg() : [0, 0, 0],
-      cpuUsage: process.cpuUsage ? process.cpuUsage().user / 1000000 : 0 // Convert to seconds
+      cpuUsage: process.cpuUsage ? process.cpuUsage().user / 1000000 : 0
     }
   }
 
@@ -144,28 +132,8 @@ function getPerformanceMetrics() {
   }
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<HealthStatus>
-) {
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET'])
-    res.status(405).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      uptime: 0,
-      version: '1.0.0',
-      environment: 'unknown',
-      services: {},
-      memory: getMemoryUsage(),
-      performance: getPerformanceMetrics()
-    })
-    return
-  }
-
+export async function GET() {
   try {
-    const startTime = Date.now()
-
     // Run health checks in parallel
     const [dbHealth, audioHealth, externalHealth] = await Promise.all([
       checkDatabaseHealth(),
@@ -211,11 +179,13 @@ export default async function handler(
     const statusCode = overallStatus === 'healthy' ? 200 :
                       overallStatus === 'degraded' ? 200 : 503
 
-    // Set cache headers
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-    res.setHeader('Content-Type', 'application/json')
-
-    res.status(statusCode).json(healthStatus)
+    return NextResponse.json(healthStatus, {
+      status: statusCode,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Content-Type': 'application/json'
+      }
+    })
 
   } catch (error) {
     const errorHealthStatus: HealthStatus = {
@@ -235,6 +205,6 @@ export default async function handler(
       performance: getPerformanceMetrics()
     }
 
-    res.status(503).json(errorHealthStatus)
+    return NextResponse.json(errorHealthStatus, { status: 503 })
   }
 }

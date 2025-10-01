@@ -8,13 +8,6 @@ export default authMiddleware({
     '/api/health',
     '/api/webhooks(.*)',
   ],
-  ignoredRoutes: [
-    '/_next(.*)',
-    '/favicon.ico',
-    '/manifest.json',
-    '/sw.js',
-    '/icons(.*)',
-  ],
 });
 
 export const config = {

@@ -159,24 +159,30 @@ export default function Dashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 gap-2">
-            <TabsTrigger value="processor" className="flex items-center gap-2">
-              <Wand2 className="w-4 h-4" />
-              🔊 Process
-            </TabsTrigger>
-            <TabsTrigger value="upload" className="flex items-center gap-2">
-              <Upload className="w-4 h-4" />
-              📁 Upload
-            </TabsTrigger>
-            <TabsTrigger value="voice-memos" className="flex items-center gap-2">
-              <Mic className="w-4 h-4" />
-              🎤 Voice Memos
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="w-4 h-4" />
-              📂 My Files
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-6">
+            <TabsList className="inline-flex gap-2 px-4 py-2">
+              <TabsTrigger value="processor" className="flex items-center gap-2 px-6">
+                <Wand2 className="w-4 h-4" />
+                <span className="hidden sm:inline">🔊 Process</span>
+                <span className="sm:hidden">🔊</span>
+              </TabsTrigger>
+              <TabsTrigger value="upload" className="flex items-center gap-2 px-6">
+                <Upload className="w-4 h-4" />
+                <span className="hidden sm:inline">📁 Upload</span>
+                <span className="sm:hidden">📁</span>
+              </TabsTrigger>
+              <TabsTrigger value="voice-memos" className="flex items-center gap-2 px-6">
+                <Mic className="w-4 h-4" />
+                <span className="hidden sm:inline">🎤 Voice Memos</span>
+                <span className="sm:hidden">🎤</span>
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-2 px-6">
+                <History className="w-4 h-4" />
+                <span className="hidden sm:inline">📂 My Files</span>
+                <span className="sm:hidden">📂</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="processor" className="space-y-6">
             {currentFile && currentAudioBuffer ? (

@@ -17,6 +17,10 @@ import { AudioFile } from '@/types';
 import { Upload, Settings, User, Wand2, History, Video, Music, Mic } from 'lucide-react';
 import { VoiceMemoManager } from '@/components/audio/voice-memos';
 
+// Force dynamic rendering to ensure lambda creation
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function Dashboard() {
   const { userId } = useAuth();
   const { getUserPlan } = useUserSubscription();

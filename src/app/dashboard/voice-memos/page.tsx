@@ -4,6 +4,10 @@ import { VoiceMemoManager } from '@/components/audio/voice-memos';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
+// Force dynamic rendering to ensure lambda creation
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function VoiceMemosPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-6">

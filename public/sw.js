@@ -6,31 +6,28 @@ const OFFLINE_URL = '/offline';
 
 // Essential files to cache for offline functionality
 const ESSENTIAL_FILES = [
-  '/',
-  '/dashboard',
-  '/offline',
   '/favicon.ico',
-  '/_next/static/css/app/layout.css',
-  '/_next/static/chunks/webpack.js',
-  '/_next/static/chunks/main-app.js'
-];
-
-// Audio processing files to cache
-const PROCESSING_FILES = [
-  '/workers/separation-worker.js',
-  '/workers/voice-detection-worker.js',
-  '/workers/speech-recognition-worker.js'
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg',
+  '/manifest.json'
 ];
 
 // Install event - cache essential files
 self.addEventListener('install', (event) => {
   console.log('🔧 Service Worker: Installing...');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('📦 Service Worker: Caching essential files');
-        return cache.addAll([...ESSENTIAL_FILES, ...PROCESSING_FILES]);
+        // Try to cache files individually to avoid failing on missing files
+        return Promise.allSettled(
+          ESSENTIAL_FILES.map(file =>
+            cache.add(file).catch(err => {
+              console.warn(`⚠️ Could not cache ${file}:`, err.message);
+            })
+          )
+        );
       })
       .then(() => {
         console.log('✅ Service Worker: Installation complete');

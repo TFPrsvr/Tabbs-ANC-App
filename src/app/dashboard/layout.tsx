@@ -2,10 +2,8 @@ import { ReactNode } from 'react';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
-// Force all dashboard routes to be dynamic and use Node.js runtime
-export const runtime = 'nodejs';
+// Force all dashboard routes to be dynamic
 export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
 
 export default async function DashboardLayout({
   children,

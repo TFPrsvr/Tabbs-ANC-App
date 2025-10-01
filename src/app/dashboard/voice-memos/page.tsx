@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 // Force dynamic rendering to ensure lambda creation
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function VoiceMemosPage() {
   return (

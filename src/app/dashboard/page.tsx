@@ -19,7 +19,6 @@ import { VoiceMemoManager } from '@/components/audio/voice-memos';
 
 // Force dynamic rendering to ensure lambda creation
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export default function Dashboard() {
   const { userId } = useAuth();

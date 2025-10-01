@@ -22,7 +22,7 @@ export default function Home() {
               Ready to process some audio?
             </p>
             <Link href="/dashboard">
-              <Button size="lg" variant="audio" className="text-lg px-8 py-3">
+              <Button size="lg" className="text-lg px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
                 {EMOJIS.DESKTOP} Go to Dashboard
               </Button>
             </Link>
@@ -57,13 +57,13 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <SignUpButton mode="modal">
-              <Button size="lg" variant="audio" className="text-lg px-8 py-3">
+              <Button size="lg" className="text-lg px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
                 {EMOJIS.MICROPHONE} Start Free Trial
               </Button>
             </SignUpButton>
-            
+
             <SignInButton mode="modal">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-2 border-purple-600 text-purple-600 dark:text-purple-400 hover:bg-purple-600 hover:text-white font-semibold">
                 {EMOJIS.SETTINGS} Sign In
               </Button>
             </SignInButton>
@@ -172,7 +172,7 @@ export default function Home() {
             Join thousands of users who&apos;ve upgraded their audio control with ANC Audio Pro.
           </p>
           <SignUpButton mode="modal">
-            <Button size="lg" variant="secondary" className="text-lg px-8 py-3">
+            <Button size="lg" className="text-lg px-8 py-3 bg-white hover:bg-gray-100 text-purple-600 font-bold shadow-xl">
               {EMOJIS.SUCCESS} Get Started Free
             </Button>
           </SignUpButton>

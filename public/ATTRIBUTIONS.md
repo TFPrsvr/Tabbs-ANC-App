@@ -25,6 +25,22 @@ All icons used in this project are from [Noun Project](https://thenounproject.co
 - Audio by ida bagus mahendra putra from [Noun Project](https://thenounproject.com/browse/icons/term/audio/) (CC BY 3.0)
 - Audio by trimenz from [Noun Project](https://thenounproject.com/browse/icons/term/audio/) (CC BY 3.0)
 
+## Media Control Icons
+
+- play by HideMaru from [Noun Project](https://thenounproject.com/browse/icons/term/play/) (CC BY 3.0)
+- Next by HideMaru from [Noun Project](https://thenounproject.com/browse/icons/term/next/) (CC BY 3.0) - Multiple icons
+- Stop by HideMaru from [Noun Project](https://thenounproject.com/browse/icons/term/stop/) (CC BY 3.0)
+- pause by HideMaru from [Noun Project](https://thenounproject.com/browse/icons/term/pause/) (CC BY 3.0)
+- Mute by HideMaru from [Noun Project](https://thenounproject.com/browse/icons/term/mute/) (CC BY 3.0)
+- play by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/play/) (CC BY 3.0) - Multiple icons
+- Eject by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/eject/) (CC BY 3.0)
+- Next by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/next/) (CC BY 3.0)
+- pause by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/pause/) (CC BY 3.0)
+- fast forward by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/fast-forward/) (CC BY 3.0)
+- Record by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/record/) (CC BY 3.0)
+- previous by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/previous/) (CC BY 3.0)
+- Stop by JohnnyZi from [Noun Project](https://thenounproject.com/browse/icons/term/stop/) (CC BY 3.0)
+
 ## License
 
 All icons are licensed under [Creative Commons Attribution 3.0 (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/).

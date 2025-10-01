@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-import { Save, Trash2, FileText, Tag, Calendar } from 'lucide-react';
+import { Save, Trash2, Tag, Calendar } from 'lucide-react';
+import { CustomIcon } from '@/components/ui/custom-icon';
 import { AudioRecorder } from '../recording/AudioRecorder';
 import { toast } from 'sonner';
 
@@ -146,7 +147,7 @@ export const VoiceMemoRecorder: React.FC<VoiceMemoRecorderProps> = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl">
-            <FileText className="w-6 h-6 text-white" />
+            <CustomIcon src="/icons/Notepade.svg" alt="Voice Memo" width={24} height={24} className="brightness-0 invert" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-white">Voice Memo</h2>

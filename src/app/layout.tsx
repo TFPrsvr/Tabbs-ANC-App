@@ -75,7 +75,42 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: '#7c3aed',
+          colorTextOnPrimaryBackground: '#ffffff',
+        },
+        elements: {
+          formButtonPrimary: 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700',
+          card: 'bg-white dark:bg-gray-900',
+          headerTitle: 'text-2xl font-bold',
+          headerSubtitle: 'text-gray-600 dark:text-gray-400',
+          socialButtonsBlockButton: 'border-gray-300 dark:border-gray-700',
+          formFieldLabel: 'text-gray-700 dark:text-gray-300',
+          footerActionLink: 'text-purple-600 hover:text-purple-700',
+        },
+        layout: {
+          socialButtonsPlacement: 'bottom',
+          socialButtonsVariant: 'iconButton',
+          logoPlacement: 'inside',
+        },
+      }}
+      localization={{
+        signIn: {
+          start: {
+            title: 'Sign in to ANC Audio Pro',
+            subtitle: 'Professional audio processing and production suite',
+          },
+        },
+        signUp: {
+          start: {
+            title: 'Create your ANC Audio Pro account',
+            subtitle: 'Start processing audio with AI-powered tools',
+          },
+        },
+      }}
+    >
       <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
         <body className={`${inter.className} antialiased`}>
           <ErrorBoundary component="RootLayout">

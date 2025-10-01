@@ -2,8 +2,6 @@
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import {
-  Play,
-  Pause,
   Trash2,
   Search,
   Filter,
@@ -15,6 +13,7 @@ import {
   Download,
   MoreVertical
 } from 'lucide-react';
+import { CustomIcon } from '@/components/ui/custom-icon';
 import { VoiceMemo } from './VoiceMemoRecorder';
 import { toast } from 'sonner';
 
@@ -325,15 +324,15 @@ export const VoiceMemoLibrary: React.FC<VoiceMemoLibraryProps> = ({
                         onClick={() => handlePlay(memo)}
                         className={`p-2 rounded-lg transition-colors ${
                           playingId === memo.id
-                            ? 'bg-green-600 hover:bg-green-700 text-white'
-                            : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                            ? 'bg-green-600 hover:bg-green-700'
+                            : 'bg-gray-800 hover:bg-gray-700'
                         }`}
                         title={playingId === memo.id ? 'Pause' : 'Play'}
                       >
                         {playingId === memo.id ? (
-                          <Pause className="w-5 h-5" />
+                          <CustomIcon src="/icons/pausePlayer.svg" alt="Pause" width={20} height={20} className="brightness-0 invert" />
                         ) : (
-                          <Play className="w-5 h-5" />
+                          <CustomIcon src="/icons/playPlayer.svg" alt="Play" width={20} height={20} className="brightness-0 invert" />
                         )}
                       </button>
                       <button

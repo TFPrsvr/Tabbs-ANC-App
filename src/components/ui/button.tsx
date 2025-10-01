@@ -10,17 +10,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg",
+        default: "bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white shadow-lg",
         destructive:
           "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg",
         outline:
-          "border-2 border-purple-600 text-purple-600 dark:text-purple-400 hover:bg-purple-600 hover:text-white dark:border-purple-400 dark:hover:bg-purple-500",
+          "border-2 border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-700 hover:text-white dark:border-gray-500 dark:hover:bg-gray-600",
         secondary:
-          "bg-gray-700 text-white hover:bg-gray-600 shadow-md",
-        ghost: "hover:bg-purple-100 hover:text-purple-700 dark:hover:bg-purple-900/30 dark:hover:text-purple-300",
-        link: "text-purple-600 underline-offset-4 hover:underline dark:text-purple-400",
-        audio: "bg-gradient-to-r from-purple-600 via-purple-500 to-violet-600 text-white hover:from-purple-700 hover:via-purple-600 hover:to-violet-700 shadow-lg hover:shadow-purple-500/25",
-        gradient: "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg",
+          "bg-gray-600 text-white hover:bg-gray-700 shadow-md",
+        ghost: "hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100",
+        link: "text-gray-700 underline-offset-4 hover:underline dark:text-gray-300",
+        audio: "bg-gradient-to-r from-gray-700 via-gray-600 to-gray-800 text-white hover:from-gray-800 hover:via-gray-700 hover:to-gray-900 shadow-lg",
+        gradient: "bg-gradient-to-r from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900 shadow-lg",
       },
       size: {
         default: "h-10 px-4 py-2",

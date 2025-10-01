@@ -22,7 +22,7 @@ export default function Home() {
               Ready to process some audio?
             </p>
             <Link href="/dashboard">
-              <Button size="lg" className="text-lg px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
+              <Button size="lg" className="text-lg px-8 py-3">
                 {EMOJIS.DESKTOP} Go to Dashboard
               </Button>
             </Link>
@@ -57,13 +57,13 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <SignUpButton mode="modal">
-              <Button size="lg" className="text-lg px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
+              <Button size="lg" className="text-lg px-8 py-3">
                 {EMOJIS.MICROPHONE} Start Free Trial
               </Button>
             </SignUpButton>
 
             <SignInButton mode="modal">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3 border-2 border-purple-600 text-purple-600 dark:text-purple-400 hover:bg-purple-600 hover:text-white font-semibold">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
                 {EMOJIS.SETTINGS} Sign In
               </Button>
             </SignInButton>
@@ -164,7 +164,7 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-12 text-white">
+        <div className="text-center bg-gradient-to-r from-gray-700 to-gray-800 rounded-2xl p-12 text-white">
           <h2 className="text-3xl font-bold mb-4">
             Ready to Transform Your Audio Experience?
           </h2>
@@ -172,7 +172,7 @@ export default function Home() {
             Join thousands of users who&apos;ve upgraded their audio control with ANC Audio Pro.
           </p>
           <SignUpButton mode="modal">
-            <Button size="lg" className="text-lg px-8 py-3 bg-white hover:bg-gray-100 text-purple-600 font-bold shadow-xl">
+            <Button size="lg" className="text-lg px-8 py-3 bg-white hover:bg-gray-100 text-gray-800 font-bold shadow-xl">
               {EMOJIS.SUCCESS} Get Started Free
             </Button>
           </SignUpButton>

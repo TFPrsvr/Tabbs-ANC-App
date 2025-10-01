@@ -88,7 +88,7 @@ const nextConfig = {
           // Restrict feature permissions
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=()',
+            value: 'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=()',
           },
           // Force HTTPS
           {

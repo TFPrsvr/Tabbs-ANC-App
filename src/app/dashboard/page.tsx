@@ -14,7 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AudioFile } from '@/types';
-import { Upload, Settings, User, Wand2, History, Video, Music } from 'lucide-react';
+import { Upload, Settings, User, Wand2, History, Video, Music, Mic } from 'lucide-react';
+import { VoiceMemoManager } from '@/components/audio/voice-memos';
 
 export default function Dashboard() {
   const { userId } = useAuth();
@@ -155,7 +156,7 @@ export default function Dashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 gap-2">
+          <TabsList className="grid w-full grid-cols-4 gap-2">
             <TabsTrigger value="processor" className="flex items-center gap-2">
               <Wand2 className="w-4 h-4" />
               🔊 Process
@@ -163,6 +164,10 @@ export default function Dashboard() {
             <TabsTrigger value="upload" className="flex items-center gap-2">
               <Upload className="w-4 h-4" />
               📁 Upload
+            </TabsTrigger>
+            <TabsTrigger value="voice-memos" className="flex items-center gap-2">
+              <Mic className="w-4 h-4" />
+              🎤 Voice Memos
             </TabsTrigger>
             <TabsTrigger value="history" className="flex items-center gap-2">
               <History className="w-4 h-4" />
@@ -264,6 +269,10 @@ export default function Dashboard() {
                 onAudioExtracted={handleAudioReady}
               />
             )}
+          </TabsContent>
+
+          <TabsContent value="voice-memos" className="space-y-6">
+            <VoiceMemoManager />
           </TabsContent>
 
           <TabsContent value="history" className="space-y-6">

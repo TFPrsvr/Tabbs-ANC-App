@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import { ServiceWorkerProvider } from '@/components/ui/service-worker-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import "./globals.css";
 
@@ -89,6 +90,7 @@ export default function RootLayout({
                 </div>
                 <Toaster />
                 <SpeedInsights />
+                <Analytics />
               </ServiceWorkerProvider>
             </ThemeProvider>
           </ErrorBoundary>

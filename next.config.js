@@ -3,9 +3,14 @@ const nextConfig = {
   // Production optimizations
   compress: true,
   poweredByHeader: false,
-  
+
+  // Disable ESLint during build (run separately)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // PWA and mobile optimizations
-  
+
   // Asset optimization
   images: {
     formats: ['image/webp', 'image/avif'],

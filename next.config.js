@@ -310,17 +310,14 @@ const nextConfig = {
     }
   }),
 
-  // Fix workspace root warning
-  outputFileTracingRoot: __dirname,
-  
-  // Server external packages configuration
-  serverExternalPackages: [
-    'sharp', // Image processing
-    'canvas', // Canvas operations for audio visualization
-  ],
-
-  // Enable experimental features optimized for Turbopack
+  // Enable experimental features
   experimental: {
+    // Server external packages for Next.js 14
+    serverComponentsExternalPackages: [
+      'sharp', // Image processing
+      'canvas', // Canvas operations for audio visualization
+    ],
+
     // Package import optimizations
     optimizePackageImports: [
       'lucide-react',

@@ -10,17 +10,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-800 hover:to-gray-900 text-white shadow-lg",
+        default: "!bg-gradient-to-r !from-white !to-gray-100 hover:!from-gray-100 hover:!to-gray-200 !text-gray-700 !border !border-gray-300 shadow-lg !font-semibold",
         destructive:
-          "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg",
+          "!bg-gradient-to-r !from-white !to-gray-100 hover:!from-red-50 hover:!to-red-100 !text-red-700 !border !border-red-300 shadow-lg !font-semibold",
         outline:
-          "border-2 border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-700 hover:text-white dark:border-gray-500 dark:hover:bg-gray-600",
+          "!border-2 !border-gray-400 !text-gray-700 !bg-white hover:!bg-gray-100 hover:!border-gray-500 !font-semibold",
         secondary:
-          "bg-gray-600 text-white hover:bg-gray-700 shadow-md",
-        ghost: "hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100",
-        link: "text-gray-700 underline-offset-4 hover:underline dark:text-gray-300",
-        audio: "bg-gradient-to-r from-gray-700 via-gray-600 to-gray-800 text-white hover:from-gray-800 hover:via-gray-700 hover:to-gray-900 shadow-lg",
-        gradient: "bg-gradient-to-r from-gray-600 to-gray-800 text-white hover:from-gray-700 hover:to-gray-900 shadow-lg",
+          "!bg-gradient-to-r !from-gray-200 !to-gray-300 !text-gray-800 hover:!from-gray-300 hover:!to-gray-400 shadow-md !font-semibold",
+        ghost: "hover:!bg-gray-100 hover:!text-gray-800 !text-gray-600 !font-semibold",
+        link: "!text-gray-700 underline-offset-4 hover:underline !font-semibold",
+        audio: "!bg-gradient-to-r !from-white !to-gray-100 !text-gray-700 hover:!from-gray-100 hover:!to-gray-200 shadow-lg !border !border-gray-300 !font-semibold",
+        gradient: "!bg-gradient-to-r !from-white !to-gray-100 !text-gray-700 hover:!from-gray-100 hover:!to-gray-200 shadow-lg !border !border-gray-300 !font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",

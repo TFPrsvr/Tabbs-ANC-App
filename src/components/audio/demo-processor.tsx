@@ -34,28 +34,28 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
       icon: Brain,
       title: 'AI Voice Separation',
       description: 'Isolate and enhance voice frequencies using advanced machine learning',
-      color: 'from-blue-500 to-purple-600',
+      color: 'from-gray-600 to-gray-800',
       metric: '99.2% accuracy'
     },
     {
       icon: Headphones,
       title: 'Active Noise Cancellation',
       description: 'Studio-grade ANC with adaptive filtering for pristine audio',
-      color: 'from-green-500 to-blue-500',
+      color: 'from-gray-500 to-gray-700',
       metric: '-35dB reduction'
     },
     {
       icon: Radio,
       title: 'Spatial Audio Processing',
       description: '3D audio positioning with binaural rendering technology',
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-gray-700 to-gray-900',
       metric: '360° immersion'
     },
     {
       icon: BarChart3,
       title: 'Real-Time Analysis',
       description: 'Live spectral analysis with psychoacoustic modeling',
-      color: 'from-orange-500 to-red-500',
+      color: 'from-gray-600 to-gray-800',
       metric: '<5ms latency'
     }
   ];
@@ -104,10 +104,10 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
   return (
     <div className="space-y-6">
       {/* Main Demo Card */}
-      <Card className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 border-purple-200">
+      <Card className="bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900/20 dark:via-gray-800/20 dark:to-gray-700/20 border-gray-300">
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600">
+            <div className="p-2 rounded-lg bg-gradient-to-r from-gray-600 to-gray-800">
               <Wand2 className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -124,7 +124,7 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
             <Button
               onClick={handleDemoPlay}
               size="lg"
-              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              className="flex-1"
             >
               {isPlaying ? (
                 <>
@@ -170,7 +170,7 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
 
             <Card className="p-4 bg-white/50 dark:bg-gray-800/50">
               <div className="flex items-center gap-2 mb-2">
-                <Brain className="w-4 h-4 text-purple-600" />
+                <Brain className="w-4 h-4 text-gray-700" />
                 <span className="text-sm font-medium">AI Processing</span>
               </div>
               <div className="flex items-center gap-2">
@@ -204,7 +204,7 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
               key={index}
               className={`transition-all duration-500 cursor-pointer ${
                 isActive
-                  ? 'ring-2 ring-purple-400 shadow-lg scale-105'
+                  ? 'ring-2 ring-gray-400 shadow-lg scale-105'
                   : 'hover:shadow-md hover:scale-102'
               }`}
               onClick={() => setActiveFeature(index)}
@@ -239,29 +239,29 @@ export function DemoProcessor({ onUploadClick }: DemoProcessorProps) {
       </div>
 
       {/* Quick Stats */}
-      <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-700 shadow-lg">
+      <Card className="bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900/20 dark:via-gray-800/20 dark:to-gray-700/20 border-2 border-gray-300 dark:border-gray-600 shadow-lg">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
+          <CardTitle className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+            <TrendingUp className="w-5 h-5 text-gray-700" />
             📊 Processing Capabilities
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-purple-200">
-              <div className="text-2xl font-bold text-purple-600">44.1kHz</div>
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-300">
+              <div className="text-2xl font-bold text-gray-700">44.1kHz</div>
               <div className="text-xs text-muted-foreground">Sample Rate</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-blue-200">
-              <div className="text-2xl font-bold text-blue-600">24-bit</div>
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-300">
+              <div className="text-2xl font-bold text-gray-700">24-bit</div>
               <div className="text-xs text-muted-foreground">Bit Depth</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-green-200">
-              <div className="text-2xl font-bold text-green-600">&lt;5ms</div>
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-300">
+              <div className="text-2xl font-bold text-gray-700">&lt;5ms</div>
               <div className="text-xs text-muted-foreground">Latency</div>
             </div>
-            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-orange-200">
-              <div className="text-2xl font-bold text-orange-600">99.2%</div>
+            <div className="text-center p-3 rounded-lg bg-white/60 dark:bg-white/10 border border-gray-300">
+              <div className="text-2xl font-bold text-gray-700">99.2%</div>
               <div className="text-xs text-muted-foreground">Accuracy</div>
             </div>
           </div>
